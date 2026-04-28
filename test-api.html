@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Medical Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Medical Management System API Test</h1>
+    <div id="test-results">
+        <h2>Test Results:</h2>
+        <ul id="results-list"></ul>
+    </div>
+    
+    <script>
+    const API_BASE = 'http://localhost/doctor/public/api';
+    const results = [];
+    
+    async function testEndpoint(method, endpoint, data = null) {
+        try {
+            const url = `${API_BASE}${endpoint}`;
+            const options = {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            const response = await fetch(url, options);
+            const result = await response.json();
+            
+            return {
+                success: response.ok,
+                status: response.status,
+                data: result
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    }
+    
+    async function runTests() {
+        const testResults = [
+            {
+                name: 'Get Patients',
+                test: () => testEndpoint('GET', '/patients')
+            },
+            {
+                name: 'Get Doctors',
+                test: () => testEndpoint('GET', '/doctors')
+            },
+            {
+                name: 'Get Medicines',
+                test: () => testEndpoint('GET', '/medicines')
+            },
+            {
+                name: 'Get Problems (Pre-added)',
+                test: () => testEndpoint('GET', '/problems/pre-added')
+            },
+            {
+                name: 'Get Tests (Pre-added)',
+                test: () => testEndpoint('GET', '/tests/pre-added')
+            },
+            {
+                name: 'Search Medicines',
+                test: () => testEndpoint('GET', '/medicines/search?q=Paracetamol')
+            },
+            {
+                name: 'Medicine Autocomplete',
+                test: () => testEndpoint('GET', '/medicines/search?q=Para')
+            },
+            {
+                name: 'Get Prescriptions',
+                test: () => testEndpoint('GET', '/prescriptions')
+            },
+            {
+                name: 'Get Patient by Unique No',
+                test: () => testEndpoint('GET', '/patients/unique/PAT-12345678')
+            }
+        ];
+        
+        for (const test of testResults) {
+            try {
+                const result = await test.test();
+                const li = document.createElement('li');
+                li.textContent = `${test.name}: ${result.success ? '✓ PASS' : '✗ FAIL'} (${result.status || 'N/A'})`;
+                li.style.color = result.success ? 'green' : 'red';
+                document.getElementById('results-list').appendChild(li);
+                
+                if (result.data) {
+                    const pre = document.createElement('pre');
+                    pre.textContent = JSON.stringify(result.data, null, 2);
+                    pre.style.fontSize = '12px';
+                    pre.style.backgroundColor = '#f5f5f5';
+                    pre.style.padding = '10px';
+                    document.getElementById('results-list').appendChild(pre);
+                }
+            } catch (error) {
+                const li = document.createElement('li');
+                li.textContent = `${test.name}: ✗ ERROR - ${error.message}`;
+                li.style.color = 'red';
+                document.getElementById('results-list').appendChild(li);
+            }
+        }
+    }
+    
+    runTests();
+    </script>
+</body>
+</html>
