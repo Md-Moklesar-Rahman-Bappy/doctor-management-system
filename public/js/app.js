@@ -5,6 +5,11 @@ let searchQuery = '';
 
 // Load medicines with pagination support
 async function loadMedicines(page = 1) {
+    const tbody = document.getElementById('medicinesTableBody');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    }
+    
     try {
         const response = await axios.get('/medicines', {
             params: {
@@ -125,28 +130,46 @@ function changePage(page) {
 
 // Delete medicine function
 async function deleteMedicine(id) {
-    if (!confirm('Are you sure you want to delete this medicine?')) {
-        return;
-    }
-    
-    try {
-        const response = await axios.delete(`/medicines/${id}`);
-        
-        if (response.data.success || response.status === 200 || response.status === 204) {
-            showToast('Medicine deleted successfully!', 'success');
-            // Reload current page
-            loadMedicines(currentPage);
-        } else {
-            showToast(response.data.message || 'Error deleting medicine', 'error');
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const deleteBtn = event ? event.target.closest('button') : null;
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            }
+            
+            try {
+                const response = await axios.delete(`/medicines/${id}`);
+                
+                if (response.data.success || response.status === 200 || response.status === 204) {
+                    Swal.fire('Deleted!', 'Medicine deleted successfully.', 'success');
+                    loadMedicines(currentPage);
+                } else {
+                    Swal.fire('Error!', response.data.message || 'Error deleting medicine', 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                if (error.response && error.response.data && error.response.data.message) {
+                    Swal.fire('Error!', error.response.data.message, 'error');
+                } else {
+                    Swal.fire('Error!', 'Error deleting medicine. Please try again.', 'error');
+                }
+            } finally {
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                }
+            }
         }
-    } catch (error) {
-        console.error('Delete error:', error);
-        if (error.response && error.response.data && error.response.data.message) {
-            showToast(error.response.data.message, 'error');
-        } else {
-            showToast('Error deleting medicine. Please try again.', 'error');
-        }
-    }
+    });
 }
 
 // Edit medicine function
@@ -184,19 +207,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Helper functions
 function showToast(message, type = 'info') {
-    // Check if SweetAlert2 is available
     if (typeof Swal !== 'undefined') {
-        Swal.fire({
+        const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
-            icon: type,
-            title: message,
             showConfirmButton: false,
-            timer: 3000
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
         });
-    } else {
-        // Fallback to native alert for basic feedback
-        alert(message);
+        
+        Toast.fire({
+            icon: type,
+            title: message
+        });
     }
 }
 

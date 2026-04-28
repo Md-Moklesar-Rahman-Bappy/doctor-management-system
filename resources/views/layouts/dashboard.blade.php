@@ -159,6 +159,9 @@
                         {{ session('error') }}
                     </div>
                 @endif
+                @if(isset($breadcrumbs))
+                    @include('components.breadcrumb')
+                @endif
                 @yield('content')
             </main>
         </div>

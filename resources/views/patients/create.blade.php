@@ -1,6 +1,12 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<?php
+$breadcrumbs = [
+    ['label' => 'Patients', 'url' => route('patients.index')],
+    ['label' => 'Add New Patient'],
+];
+?>
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
