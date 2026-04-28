@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\LabTestReport;
 use App\Models\Patient;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class LabTestReportController extends Controller
 {
@@ -26,10 +26,10 @@ class LabTestReportController extends Controller
 
         if ($search) {
             $query->where('test_name', 'like', "%{$search}%")
-                  ->orWhereHas('patient', function ($q) use ($search) {
-                      $q->where('unique_id', 'like', "%{$search}%")
+                ->orWhereHas('patient', function ($q) use ($search) {
+                    $q->where('unique_id', 'like', "%{$search}%")
                         ->orWhere('patient_name', 'like', "%{$search}%");
-                  });
+                });
         }
 
         $reports = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
@@ -69,7 +69,7 @@ class LabTestReportController extends Controller
         if ($request->hasFile('report_images')) {
             $images = [];
             foreach ($request->file('report_images') as $image) {
-                $path = $image->store('lab-reports/' . $report->id, 'public');
+                $path = $image->store('lab-reports/'.$report->id, 'public');
                 $images[] = $path;
             }
             $report->update(['report_image' => json_encode($images)]);
@@ -81,12 +81,24 @@ class LabTestReportController extends Controller
     public function show($id): View
     {
         $report = LabTestReport::with('patient')->findOrFail($id);
+
+        // Authorization check - user can only view reports for their patients
+        if ($report->patient && $report->patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('lab_test_reports.show', compact('report'));
     }
 
     public function edit($id): View
     {
-        $report = LabTestReport::findOrFail($id);
+        $report = LabTestReport::with('patient')->findOrFail($id);
+
+        // Authorization check
+        if ($report->patient && $report->patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $patients = Patient::all();
 
         return view('lab_test_reports.edit', compact('report', 'patients'));
@@ -94,7 +106,12 @@ class LabTestReportController extends Controller
 
     public function update(Request $request, $id): RedirectResponse
     {
-        $report = LabTestReport::findOrFail($id);
+        $report = LabTestReport::with('patient')->findOrFail($id);
+
+        // Authorization check
+        if ($report->patient && $report->patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validator = Validator::make($request->all(), [
             'patient_id' => 'sometimes|required|exists:patients,id',
@@ -115,7 +132,7 @@ class LabTestReportController extends Controller
         if ($request->hasFile('report_images')) {
             $images = [];
             foreach ($request->file('report_images') as $image) {
-                $path = $image->store('lab-reports/' . $report->id, 'public');
+                $path = $image->store('lab-reports/'.$report->id, 'public');
                 $images[] = $path;
             }
             $data['report_image'] = json_encode($images);
@@ -128,7 +145,12 @@ class LabTestReportController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        $report = LabTestReport::findOrFail($id);
+        $report = LabTestReport::with('patient')->findOrFail($id);
+
+        // Authorization check
+        if ($report->patient && $report->patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         // Delete associated images
         if ($report->report_image) {

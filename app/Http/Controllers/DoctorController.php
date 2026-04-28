@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class DoctorController extends Controller
 {
@@ -26,8 +24,8 @@ class DoctorController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%");
         }
 
         $doctors = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
@@ -70,12 +68,24 @@ class DoctorController extends Controller
     public function show($id): View
     {
         $doctor = Doctor::findOrFail($id);
+
+        // Authorization check
+        if ($doctor->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('doctors.show', compact('doctor'));
     }
 
     public function edit($id): View
     {
         $doctor = Doctor::findOrFail($id);
+
+        // Authorization check
+        if ($doctor->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('doctors.edit', compact('doctor'));
     }
 
@@ -83,9 +93,14 @@ class DoctorController extends Controller
     {
         $doctor = Doctor::findOrFail($id);
 
+        // Authorization check
+        if ($doctor->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:doctors,email,' . $id,
+            'email' => 'required|email|unique:doctors,email,'.$id,
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
             'degrees' => 'nullable|array',
@@ -109,6 +124,12 @@ class DoctorController extends Controller
     public function destroy($id): RedirectResponse
     {
         $doctor = Doctor::findOrFail($id);
+
+        // Authorization check
+        if ($doctor->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $doctor->delete();
 
         return redirect('/doctors')->with('success', 'Doctor deleted successfully!');

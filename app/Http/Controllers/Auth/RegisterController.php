@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Doctor;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +32,7 @@ class RegisterController extends Controller
 
         // Create doctor profile
         Doctor::create([
+            'user_id' => $user->id,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => '',

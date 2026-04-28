@@ -15,100 +15,171 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200">
-        <div class="p-4 border-b border-slate-200">
-            <div class="relative max-w-md">
-                <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" placeholder="Search diagnoses..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <form method="GET" action="/problems" class="flex items-center gap-2">
+                <div class="relative">
+                    <input type="text"
+                           name="search"
+                           id="problemSearch"
+                           value="{{ $search ?? '' }}"
+                           placeholder="Search diagnoses..."
+                           class="w-64 px-4 py-2 pl-10 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <button type="submit" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">Search</button>
+                @if($search)
+                <a href="/problems" class="px-3 py-2 text-slate-500 hover:text-slate-700">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                </a>
+                @endif
+            </form>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Diagnosis</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">ICD-10 Code</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Patients</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">SL</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Description</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
+                    @forelse($problems as $index => $problem)
                     <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4"><div class="font-medium text-slate-900">Essential Hypertension</div></td>
-                        <td class="px-6 py-4"><span class="text-slate-600 font-mono">I10</span></td>
-                        <td class="px-6 py-4 text-slate-600">Cardiovascular</td>
-                        <td class="px-6 py-4 text-slate-600">45</td>
-                        <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span></td>
+                        <td class="px-6 py-4 text-sm">{{ $problems->firstItem() + $index }}</td>
+                        <td class="px-6 py-4 text-sm font-medium">{{ $problem->name }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-600">{{ $problem->description ?? 'N/A' }}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
-                                <a href="#" class="p-1 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <a href="/problems/{{ $problem->id }}/edit" class="p-2 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
                                 </a>
-                                <button class="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
+                                @if(auth()->user()->role === 'superadmin')
+                                <form method="POST" action="/problems/{{ $problem->id }}" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded" title="Delete" onclick="return confirm('Are you sure?')">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4"><div class="font-medium text-slate-900">Type 2 Diabetes Mellitus</div></td>
-                        <td class="px-6 py-4"><span class="text-slate-600 font-mono">E11</span></td>
-                        <td class="px-6 py-4 text-slate-600">Endocrine</td>
-                        <td class="px-6 py-4 text-slate-600">32</td>
-                        <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span></td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-2">
-                                <a href="#" class="p-1 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                </a>
-                                <button class="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </div>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-slate-500">
+                            No diagnoses found
+                            @if(auth()->user()->role === 'superadmin')
+                            <br><a href="/problems/create" class="text-emerald-600 hover:underline">Add the first diagnosis</a>
+                            @endif
                         </td>
                     </tr>
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4"><div class="font-medium text-slate-900">Mild Intermittent Asthma</div></td>
-                        <td class="px-6 py-4"><span class="text-slate-600 font-mono">J45.20</span></td>
-                        <td class="px-6 py-4 text-slate-600">Respiratory</td>
-                        <td class="px-6 py-4 text-slate-600">18</td>
-                        <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span></td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-2">
-                                <a href="#" class="p-1 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                </a>
-                                <button class="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-6 py-4"><div class="font-medium text-slate-900">Acute Bronchitis</div></td>
-                        <td class="px-6 py-4"><span class="text-slate-600 font-mono">J20.9</span></td>
-                        <td class="px-6 py-4 text-slate-600">Respiratory</td>
-                        <td class="px-6 py-4 text-slate-600">12</td>
-                        <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Resolved</span></td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-2">
-                                <a href="#" class="p-1 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                </a>
-                                <button class="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
+
+        @if($problems->hasPages())
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 border-t border-slate-200 bg-white">
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-slate-500">
+                    Show
+                    <select onchange="changePerPage(this.value)" class="mx-1 px-2 py-1 border border-slate-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        @php $perPage = $problems->perPage(); @endphp
+                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                    </select>
+                    entries
+                </span>
+                <span class="text-sm text-slate-500">
+                    Showing {{ $problems->firstItem() }} to {{ $problems->lastItem() }} of {{ $problems->total() }}
+                </span>
+            </div>
+
+            <nav class="flex items-center gap-1">
+                @if($problems->previousPageUrl())
+                <a href="{{ $problems->previousPageUrl() }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
+                </a>
+                @else
+                <span class="px-3 py-2 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
+                </span>
+                @endif
+
+                @for($i = max(1, $problems->currentPage() - 2); $i <= min($problems->lastPage(), $problems->currentPage() + 2); $i++)
+                @if($i == $problems->currentPage())
+                <span class="px-3 py-2 text-sm bg-emerald-500 text-white border border-emerald-500 rounded">{{ $i }}</span>
+                @else
+                <a href="{{ $problems->url($i) }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100">{{ $i }}</a>
+                @endif
+                @endfor
+
+                @if($problems->nextPageUrl())
+                <a href="{{ $problems->nextPageUrl() }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
+                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+                @else
+                <span class="px-3 py-2 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
+                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </span>
+                @endif
+            </nav>
+        </div>
+        @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+let searchTimeout;
+function searchProblem(query) {
+    clearTimeout(searchTimeout);
+    const results = document.getElementById('searchResults');
+    if (query.length < 2) {
+        if (results) results.classList.add('hidden');
+        return;
+    }
+    searchTimeout = setTimeout(() => {
+        fetch('/problems/autocomplete?term=' + encodeURIComponent(query))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    let html = '';
+                    data.data.forEach(problem => {
+                        html += `<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectProblem(${problem.id}, '${problem.name.replace(/'/g, "\\'")}')">
+                            <div class="font-medium text-sm">${problem.name}</div>
+                        </div>`;
+                    });
+                    if (results) {
+                        results.innerHTML = html;
+                        results.classList.remove('hidden');
+                    }
+                }
+            });
+    }, 300);
+}
+
+function changePerPage(value) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', value);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('input[name="search"]') && !e.target.closest('#searchResults')) {
+        const results = document.getElementById('searchResults');
+        if (results) results.classList.add('hidden');
+    }
+});
+</script>
+@endpush
 @endsection

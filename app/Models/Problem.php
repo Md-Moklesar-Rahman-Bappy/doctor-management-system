@@ -9,10 +9,10 @@ class Problem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['problem_name'];
+    protected $fillable = ['name', 'description'];
 
     public function scopeSearch($query, $searchTerm)
     {
-        return $query->where('problem_name', 'like', "%{$searchTerm}%");
+        return $query->where('name', 'like', "%{$searchTerm}%");
     }
 }

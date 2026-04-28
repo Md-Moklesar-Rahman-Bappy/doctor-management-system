@@ -115,12 +115,23 @@ class PrescriptionController extends Controller
     {
         $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
 
+        // Authorization check
+        if ($prescription->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('prescriptions.show', compact('prescription'));
     }
 
     public function edit($id): View
     {
         $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
+
+        // Authorization check
+        if ($prescription->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $user = auth()->user();
         $doctor = $user->doctor;
         $problems = Problem::all();
@@ -132,6 +143,11 @@ class PrescriptionController extends Controller
     public function update(Request $request, $id): RedirectResponse
     {
         $prescription = Prescription::findOrFail($id);
+
+        // Authorization check
+        if ($prescription->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validator = Validator::make($request->all(), [
             'patient_id' => 'sometimes|required|exists:patients,id',
@@ -159,6 +175,12 @@ class PrescriptionController extends Controller
     public function destroy($id): RedirectResponse
     {
         $prescription = Prescription::findOrFail($id);
+
+        // Authorization check
+        if ($prescription->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $prescription->delete();
 
         return redirect('/prescriptions')->with('success', 'Prescription deleted successfully!');

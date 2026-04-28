@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class PatientController extends Controller
 {
@@ -24,7 +24,7 @@ class PatientController extends Controller
 
         if ($search) {
             $query->where('unique_id', 'like', "%{$search}%")
-                  ->orWhere('patient_name', 'like', "%{$search}%");
+                ->orWhere('patient_name', 'like', "%{$search}%");
         }
 
         $patients = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
@@ -52,7 +52,7 @@ class PatientController extends Controller
 
         Patient::create([
             'user_id' => auth()->id(),
-            'unique_id' => 'PAT-' . strtoupper(substr(md5(uniqid()), 0, 8)),
+            'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
             'patient_name' => $request->patient_name,
             'age' => $request->age,
             'sex' => $request->sex,
@@ -65,18 +65,35 @@ class PatientController extends Controller
     public function show($id): View
     {
         $patient = Patient::with('prescriptions', 'labTestReports')->findOrFail($id);
+
+        // Authorization check - patients can view their own profile, doctors can view their patients
+        if ($patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('patients.show', compact('patient'));
     }
 
     public function edit($id): View
     {
         $patient = Patient::findOrFail($id);
+
+        // Authorization check
+        if ($patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('patients.edit', compact('patient'));
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
         $patient = Patient::findOrFail($id);
+
+        // Authorization check
+        if ($patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validator = Validator::make($request->all(), [
             'patient_name' => 'required|string|max:255',
@@ -102,6 +119,12 @@ class PatientController extends Controller
     public function destroy($id): RedirectResponse
     {
         $patient = Patient::findOrFail($id);
+
+        // Authorization check
+        if ($patient->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $patient->delete();
 
         return redirect('/patients')->with('success', 'Patient deleted successfully!');
@@ -122,7 +145,7 @@ class PatientController extends Controller
     {
         $patient = Patient::with('prescriptions', 'labTestReports')->where('unique_id', $uniqueId)->first();
 
-        if (!$patient) {
+        if (! $patient) {
             return response()->json(['success' => false, 'message' => 'Patient not found']);
         }
 

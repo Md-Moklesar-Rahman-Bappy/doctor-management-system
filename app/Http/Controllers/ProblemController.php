@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Problem;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Response;
 
 class ProblemController extends Controller
 {
@@ -15,20 +14,20 @@ class ProblemController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
-        
+
         $query = Problem::query();
-        
+
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
         $problems = $query->orderBy('id', 'desc')
             ->paginate($perPage)
             ->appends($request->except('page'));
-        
+
         return view('problems.index', compact('problems', 'search'));
     }
 
@@ -52,19 +51,21 @@ class ProblemController extends Controller
     public function show($id): View
     {
         $problem = Problem::findOrFail($id);
+
         return view('problems.show', compact('problem'));
     }
 
     public function edit($id): View
     {
         $problem = Problem::findOrFail($id);
+
         return view('problems.edit', compact('problem'));
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
         $problem = Problem::findOrFail($id);
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -77,10 +78,16 @@ class ProblemController extends Controller
 
     public function destroy($id): RedirectResponse
     {
+        $problem = Problem::findOrFail($id);
+
+        // Authorization check - only superadmin can delete
+        if (auth()->user()->role !== 'superadmin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         try {
-            $problem = Problem::findOrFail($id);
             $problem->delete();
-            
+
             return redirect('/problems')->with('success', 'Problem deleted successfully!');
         } catch (\Exception $e) {
             return redirect('/problems')->with('error', 'Error deleting problem. Please try again.');
@@ -93,10 +100,10 @@ class ProblemController extends Controller
         $problems = Problem::where('name', 'like', "%{$term}%")
             ->limit(10)
             ->get();
-        
+
         return response()->json([
-            'success' => true, 
-            'data' => $problems
+            'success' => true,
+            'data' => $problems,
         ]);
     }
 
@@ -104,6 +111,7 @@ class ProblemController extends Controller
     public function apiIndex(): JsonResponse
     {
         $problems = Problem::all();
+
         return response()->json(['success' => true, 'data' => $problems]);
     }
 
@@ -122,19 +130,19 @@ class ProblemController extends Controller
     public function apiShow($id): JsonResponse
     {
         $problem = Problem::find($id);
-        
-        if (!$problem) {
+
+        if (! $problem) {
             return response()->json(['success' => false, 'message' => 'Problem not found'], 404);
         }
-        
+
         return response()->json(['success' => true, 'data' => $problem]);
     }
 
     public function apiUpdate(Request $request, $id): JsonResponse
     {
         $problem = Problem::find($id);
-        
-        if (!$problem) {
+
+        if (! $problem) {
             return response()->json(['success' => false, 'message' => 'Problem not found'], 404);
         }
 
@@ -151,8 +159,8 @@ class ProblemController extends Controller
     public function apiDestroy($id): JsonResponse
     {
         $problem = Problem::find($id);
-        
-        if (!$problem) {
+
+        if (! $problem) {
             return response()->json(['success' => false, 'message' => 'Problem not found'], 404);
         }
 

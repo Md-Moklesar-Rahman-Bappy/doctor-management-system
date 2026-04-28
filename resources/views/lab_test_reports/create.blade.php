@@ -46,7 +46,7 @@
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-slate-700 mb-2">Report Images</label>
                     <div id="images-container">
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class="flex items-center gap-2 mb-2 image-row">
                             <input type="file" name="report_images[]" accept="image/*" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg">
                             <button type="button" class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeImage(this)">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -78,7 +78,7 @@ let imageIndex = 1;
 function addImage() {
     const container = document.getElementById('images-container');
     const html = `
-        <div class="flex items-center gap-2 mb-2">
+        <div class="flex items-center gap-2 mb-2 image-row">
             <input type="file" name="report_images[]" accept="image/*" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg">
             <button type="button" class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeImage(this)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -89,7 +89,7 @@ function addImage() {
 }
 
 function removeImage(btn) {
-    btn.closest('.flex.items-center.gap-2')?.remove();
+    btn.closest('.image-row')?.remove();
 }
 </script>
 @endpush
