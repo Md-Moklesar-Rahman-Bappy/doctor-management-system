@@ -7,7 +7,7 @@
             <h3 class="text-2xl font-bold text-slate-900">Doctors</h3>
             <p class="text-slate-500">Manage doctor records</p>
         </div>
-        <a href="/doctors/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg">
+        <a href="{{ route('doctors.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
@@ -30,7 +30,7 @@
                     Search
                 </button>
                 @if($search)
-                <a href="/doctors" class="px-3 py-2 text-slate-500 hover:text-slate-700">
+                <a href="{{ route('doctors.index') }}" class="px-3 py-2 text-slate-500 hover:text-slate-700">
                     <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     Clear
                 </a>
@@ -68,10 +68,10 @@
                         </td>
                         <td class="px-4 py-4">
                             <div class="flex items-center gap-2">
-                                <a href="/doctors/{{ $doctor->id }}" class="p-3 text-sky-600 hover:bg-sky-50 rounded-lg" title="View">
+                                <a href="{{ route('doctors.show', $doctor->id) }}" class="p-3 text-sky-600 hover:bg-sky-50 rounded-lg" title="View">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057 1.274 8.057 0 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </a>
-                                <a href="/doctors/{{ $doctor->id }}/edit" class="p-3 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit">
+                                <a href="{{ route('doctors.edit', $doctor->id) }}" class="p-3 text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </a>
                                 <form action="/doctors/{{ $doctor->id }}" method="POST" class="inline">

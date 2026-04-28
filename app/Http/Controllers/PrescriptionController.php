@@ -8,14 +8,16 @@ use App\Models\Prescription;
 use App\Models\Problem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
 class PrescriptionController extends Controller
 {
-    public function __construct()
+    protected PrescriptionService $prescriptionService;
+
+    public function __construct(PrescriptionService $prescriptionService)
     {
         $this->middleware('auth');
+        $this->prescriptionService = $prescriptionService;
     }
 
     public function index(Request $request): View
@@ -55,40 +57,16 @@ class PrescriptionController extends Controller
         return view('prescriptions.create', compact('doctor', 'problems', 'labTests', 'selectedPatientId'));
     }
 
-    public function store(Request $request)
+    public function store(StorePrescriptionRequest $request)
     {
         $user = auth()->user();
         $doctor = $user->doctor;
 
-        $validator = Validator::make($request->all(), [
-            'patient_id' => 'required_without:new_patient_name|exists:patients,id',
-            'doctor_id' => 'required|exists:doctors,id',
-            'problem' => 'nullable|array',
-            'tests' => 'nullable|array',
-            'medicines' => 'nullable|array',
-            'new_patient_name' => 'required_without:patient_id|string|max:255',
-            'new_patient_age' => 'required_with:new_patient_name|integer|min:0|max:150',
-            'new_patient_sex' => 'required_with:new_patient_name|in:male,female',
-            'new_patient_date' => 'required_with:new_patient_name|date',
-        ]);
-
-        if ($validator->fails()) {
-            if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()]);
-            }
-
-            return back()->withErrors($validator)->withInput();
-        }
-
         // If creating new patient inline
         if ($request->filled('new_patient_name')) {
-            $patient = Patient::create([
+            $patient = Patient::create($request->validated() + [
                 'user_id' => auth()->id(),
                 'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
-                'patient_name' => $request->new_patient_name,
-                'age' => $request->new_patient_age,
-                'sex' => $request->new_patient_sex,
-                'date' => $request->new_patient_date,
             ]);
             $patientId = $patient->id;
         } else {
@@ -140,25 +118,13 @@ class PrescriptionController extends Controller
         return view('prescriptions.edit', compact('prescription', 'doctor', 'problems', 'labTests'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdatePrescriptionRequest $request, $id): RedirectResponse
     {
         $prescription = Prescription::findOrFail($id);
 
         // Authorization check
         if ($prescription->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
-        }
-
-        $validator = Validator::make($request->all(), [
-            'patient_id' => 'sometimes|required|exists:patients,id',
-            'doctor_id' => 'sometimes|required|exists:doctors,id',
-            'problem' => 'nullable|array',
-            'tests' => 'nullable|array',
-            'medicines' => 'nullable|array',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
         }
 
         $prescription->update([

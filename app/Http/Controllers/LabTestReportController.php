@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLabTestReportRequest;
+use App\Http\Requests\UpdateLabTestReportRequest;
 use App\Models\LabTestReport;
 use App\Models\Patient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\View\View;
 use Illuminate\View\View;
 
 class LabTestReportController extends Controller
@@ -49,26 +49,6 @@ class LabTestReportController extends Controller
     public function store(StoreLabTestReportRequest $request): RedirectResponse
     {
         $report = LabTestReport::create($request->validated() + ['report_image' => null]);
-
-        // Handle multiple image uploads
-        if ($request->hasFile('report_images')) {
-            $images = [];
-            foreach ($request->file('report_images') as $image) {
-                $path = $image->store('lab-reports/' . $report->id, 'public');
-                $images[] = $path;
-            }
-            $report->update(['report_image' => json_encode($images)]);
-        }
-
-        return redirect('/lab-test-reports')->with('success', 'Lab test report created successfully!');
-    }
-
-        $report = LabTestReport::create([
-            'patient_id' => $request->patient_id,
-            'test_name' => $request->test_name,
-            'report_text' => $request->report_text,
-            'report_image' => null,
-        ]);
 
         // Handle multiple image uploads
         if ($request->hasFile('report_images')) {
@@ -119,36 +99,6 @@ class LabTestReportController extends Controller
         }
 
         $data = $request->validated();
-
-        if ($request->hasFile('report_images')) {
-            $images = [];
-            foreach ($request->file('report_images') as $image) {
-                $path = $image->store('lab-reports/' . $report->id, 'public');
-                $images[] = $path;
-            }
-            $data['report_image'] = json_encode($images);
-        }
-
-        $report->update($data);
-
-        return redirect('/lab-test-reports')->with('success', 'Lab test report updated successfully!');
-    }
-
-        $validator = Validator::make($request->all(), [
-            'patient_id' => 'sometimes|required|exists:patients,id',
-            'test_name' => 'sometimes|required|string|max:255',
-            'report_text' => 'nullable|string',
-            'report_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $data = [
-            'test_name' => $request->test_name ?? $report->test_name,
-            'report_text' => $request->report_text ?? $report->report_text,
-        ];
 
         if ($request->hasFile('report_images')) {
             $images = [];

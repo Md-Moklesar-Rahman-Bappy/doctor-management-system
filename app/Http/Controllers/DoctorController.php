@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UpdateDoctorRequest;
 use App\Models\Doctor;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\View\View;
 
 class DoctorController extends Controller
@@ -42,7 +42,7 @@ class DoctorController extends Controller
     {
         Doctor::create($request->validated() + ['user_id' => auth()->id(), 'email_verified' => false]);
 
-        return redirect('/doctors')->with('success', 'Doctor created successfully!');
+        return redirect()->route('doctors.index')->with('success', 'Doctor created successfully!');
     }
 
     public function show($id): View
@@ -80,30 +80,7 @@ class DoctorController extends Controller
 
         $doctor->update($request->validated());
 
-        return redirect('/doctors')->with('success', 'Doctor updated successfully!');
-    }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:doctors,email,'.$id,
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'degrees' => 'nullable|array',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $doctor->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'degrees' => $request->degrees ? json_encode($request->degrees) : null,
-        ]);
-
-        return redirect('/doctors')->with('success', 'Doctor updated successfully!');
+        return redirect()->route('doctors.index')->with('success', 'Doctor updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -117,7 +94,7 @@ class DoctorController extends Controller
 
         $doctor->delete();
 
-        return redirect('/doctors')->with('success', 'Doctor deleted successfully!');
+        return redirect()->route('doctors.index')->with('success', 'Doctor deleted successfully!');
     }
 
     public function search(Request $request)

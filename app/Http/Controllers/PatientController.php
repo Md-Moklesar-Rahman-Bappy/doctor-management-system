@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePatientRequest;
+use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 use Illuminate\View\View;
 
 class PatientController extends Controller
@@ -38,18 +39,9 @@ class PatientController extends Controller
 
     public function store(StorePatientRequest $request): RedirectResponse
     {
-        Patient::create($request->validated() + ['user_id' => auth()->id(), 'unique_id' => 'PAT-' . strtoupper(substr(md5(uniqid()), 0, 8)]);
-
-        return redirect('/patients')->with('success', 'Patient created successfully!');
-    }
-
-        Patient::create([
+        Patient::create($request->validated() + [
             'user_id' => auth()->id(),
             'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
-            'patient_name' => $request->patient_name,
-            'age' => $request->age,
-            'sex' => $request->sex,
-            'date' => $request->date,
         ]);
 
         return redirect('/patients')->with('success', 'Patient created successfully!');

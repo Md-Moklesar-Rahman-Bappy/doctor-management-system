@@ -4,7 +4,7 @@
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
-            <a href="/doctors" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+            <a href="{{ route('doctors.index') }}" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -70,7 +70,7 @@
                 @endif
 
                 <div class="flex gap-3 pt-4">
-                    <a href="/doctors" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</a>
+                    <a href="{{ route('doctors.index') }}" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</a>
                     <button type="submit" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
                         Save Doctor
