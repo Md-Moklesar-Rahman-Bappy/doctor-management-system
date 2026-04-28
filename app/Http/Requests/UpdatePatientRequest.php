@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePatientRequest extends FormRequest
@@ -37,18 +36,6 @@ class UpdatePatientRequest extends FormRequest
             'sex.in' => 'Sex must be either male or female.',
             'date.required' => 'Date is required.',
             'date.date' => 'Please enter a valid date.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePrescriptionRequest extends FormRequest
@@ -13,6 +12,7 @@ class UpdatePrescriptionRequest extends FormRequest
     public function authorize(): bool
     {
         $prescription = $this->route('prescription');
+
         return $prescription && $prescription->user_id === auth()->id();
     }
 
@@ -24,19 +24,6 @@ class UpdatePrescriptionRequest extends FormRequest
             'problem' => 'nullable|array',
             'tests' => 'nullable|array',
             'medicines' => 'nullable|array',
-        ];
-    }
-}
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

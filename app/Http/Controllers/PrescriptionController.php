@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePrescriptionRequest;
+use App\Http\Requests\UpdatePrescriptionRequest;
 use App\Models\LabTest;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Models\Problem;
+use App\Services\PrescriptionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -45,11 +48,11 @@ class PrescriptionController extends Controller
         $doctor = $user->doctor;
 
         if (! $doctor) {
-            return redirect('/doctors/create')->with('error', 'Please create your doctor profile first.');
+            return redirect()->route('doctors.create')->with('error', 'Please create your doctor profile first.');
         }
 
-        $problems = Problem::all();
-        $labTests = LabTest::all();
+        $problems = Problem::orderBy('name')->paginate(50);
+        $labTests = LabTest::orderBy('test')->paginate(50);
 
         // If patient_id is passed from patient profile
         $selectedPatientId = $request->get('patient_id');
@@ -59,34 +62,16 @@ class PrescriptionController extends Controller
 
     public function store(StorePrescriptionRequest $request)
     {
-        $user = auth()->user();
-        $doctor = $user->doctor;
+        $doctor = auth()->user()->doctor ?? null;
+        $doctorId = $doctor ? $doctor->id : $request->doctor_id;
 
-        // If creating new patient inline
-        if ($request->filled('new_patient_name')) {
-            $patient = Patient::create($request->validated() + [
-                'user_id' => auth()->id(),
-                'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
-            ]);
-            $patientId = $patient->id;
-        } else {
-            $patientId = $request->patient_id;
-        }
-
-        $prescription = Prescription::create([
-            'user_id' => auth()->id(),
-            'patient_id' => $patientId,
-            'doctor_id' => $doctor ? $doctor->id : $request->doctor_id,
-            'problem' => $request->problem ? json_encode($request->problem) : null,
-            'tests' => $request->tests ? json_encode($request->tests) : null,
-            'medicines' => $request->medicines ? json_encode($request->medicines) : null,
-        ]);
+        $prescription = $this->prescriptionService->createPrescription($request, $doctorId);
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true, 'prescription_id' => $prescription->id]);
         }
 
-        return redirect('/prescriptions')->with('success', 'Prescription created successfully!');
+        return redirect()->route('prescriptions.index')->with('success', 'Prescription created successfully!');
     }
 
     public function show($id): View
@@ -112,8 +97,8 @@ class PrescriptionController extends Controller
 
         $user = auth()->user();
         $doctor = $user->doctor;
-        $problems = Problem::all();
-        $labTests = LabTest::all();
+        $problems = Problem::orderBy('name')->paginate(50);
+        $labTests = LabTest::orderBy('test')->paginate(50);
 
         return view('prescriptions.edit', compact('prescription', 'doctor', 'problems', 'labTests'));
     }
@@ -127,15 +112,9 @@ class PrescriptionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $prescription->update([
-            'patient_id' => $request->patient_id ?? $prescription->patient_id,
-            'doctor_id' => $request->doctor_id ?? $prescription->doctor_id,
-            'problem' => $request->problem ? json_encode($request->problem) : $prescription->problem,
-            'tests' => $request->tests ? json_encode($request->tests) : $prescription->tests,
-            'medicines' => $request->medicines ? json_encode($request->medicines) : $prescription->medicines,
-        ]);
+        $this->prescriptionService->updatePrescription($request, $prescription);
 
-        return redirect('/prescriptions')->with('success', 'Prescription updated successfully!');
+        return redirect()->route('prescriptions.index')->with('success', 'Prescription updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -149,15 +128,12 @@ class PrescriptionController extends Controller
 
         $prescription->delete();
 
-        return redirect('/prescriptions')->with('success', 'Prescription deleted successfully!');
+        return redirect()->route('prescriptions.index')->with('success', 'Prescription deleted successfully!');
     }
 
     public function getPatientPrescriptions($patientId)
     {
-        $prescriptions = Prescription::with(['doctor'])
-            ->where('patient_id', $patientId)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $prescriptions = $this->prescriptionService->getPatientPrescriptions($patientId);
 
         return response()->json(['success' => true, 'data' => $prescriptions]);
     }

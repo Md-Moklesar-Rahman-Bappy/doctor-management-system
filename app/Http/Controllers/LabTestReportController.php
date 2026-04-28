@@ -40,7 +40,7 @@ class LabTestReportController extends Controller
 
     public function create(Request $request): View
     {
-        $patients = Patient::all();
+        $patients = Patient::orderBy('patient_name')->paginate(50);
         $selectedPatientId = $request->get('patient_id');
 
         return view('lab_test_reports.create', compact('patients', 'selectedPatientId'));
@@ -60,7 +60,7 @@ class LabTestReportController extends Controller
             $report->update(['report_image' => json_encode($images)]);
         }
 
-        return redirect('/lab-test-reports')->with('success', 'Lab test report created successfully!');
+        return redirect()->route('lab_test_reports.index')->with('success', 'Lab test report created successfully!');
     }
 
     public function show($id): View
@@ -84,7 +84,7 @@ class LabTestReportController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $patients = Patient::all();
+        $patients = Patient::orderBy('patient_name')->paginate(50);
 
         return view('lab_test_reports.edit', compact('report', 'patients'));
     }
@@ -111,7 +111,7 @@ class LabTestReportController extends Controller
 
         $report->update($data);
 
-        return redirect('/lab-test-reports')->with('success', 'Lab test report updated successfully!');
+        return redirect()->route('lab_test_reports.index')->with('success', 'Lab test report updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -135,6 +135,6 @@ class LabTestReportController extends Controller
 
         $report->delete();
 
-        return redirect('/lab-test-reports')->with('success', 'Lab test report deleted successfully!');
+        return redirect()->route('lab_test_reports.index')->with('success', 'Lab test report deleted successfully!');
     }
 }

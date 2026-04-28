@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabTestReportRequest extends FormRequest
@@ -34,18 +33,6 @@ class StoreLabTestReportRequest extends FormRequest
             'report_images.*.image' => 'File must be an image.',
             'report_images.*.mimes' => 'Image must be JPEG, PNG, JPG, or GIF.',
             'report_images.*.max' => 'Image size cannot exceed 2MB.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

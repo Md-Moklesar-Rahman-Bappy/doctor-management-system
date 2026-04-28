@@ -36,16 +36,11 @@ class ProblemController extends Controller
         return view('problems.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProblemRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        Problem::create($request->validated());
 
-        Problem::create($validated);
-
-        return redirect('/problems')->with('success', 'Problem created successfully!');
+        return redirect()->route('problems.index')->with('success', 'Problem created successfully!');
     }
 
     public function show($id): View
@@ -62,18 +57,13 @@ class ProblemController extends Controller
         return view('problems.edit', compact('problem'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateProblemRequest $request, $id): RedirectResponse
     {
         $problem = Problem::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        $problem->update($request->validated());
 
-        $problem->update($validated);
-
-        return redirect('/problems')->with('success', 'Problem updated successfully!');
+        return redirect()->route('problems.index')->with('success', 'Problem updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -88,9 +78,9 @@ class ProblemController extends Controller
         try {
             $problem->delete();
 
-            return redirect('/problems')->with('success', 'Problem deleted successfully!');
+            return redirect()->route('problems.index')->with('success', 'Problem deleted successfully!');
         } catch (\Exception $e) {
-            return redirect('/problems')->with('error', 'Error deleting problem. Please try again.');
+            return redirect()->route('problems.index')->with('error', 'Error deleting problem. Please try again.');
         }
     }
 
@@ -115,14 +105,9 @@ class ProblemController extends Controller
         return response()->json(['success' => true, 'data' => $problems]);
     }
 
-    public function apiStore(Request $request): JsonResponse
+    public function apiStore(StoreProblemRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $problem = Problem::create($validated);
+        $problem = Problem::create($request->validated());
 
         return response()->json(['success' => true, 'data' => $problem], 201);
     }
@@ -138,7 +123,7 @@ class ProblemController extends Controller
         return response()->json(['success' => true, 'data' => $problem]);
     }
 
-    public function apiUpdate(Request $request, $id): JsonResponse
+    public function apiUpdate(UpdateProblemRequest $request, $id): JsonResponse
     {
         $problem = Problem::find($id);
 
@@ -146,12 +131,7 @@ class ProblemController extends Controller
             return response()->json(['success' => false, 'message' => 'Problem not found'], 404);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|nullable|string',
-        ]);
-
-        $problem->update($validated);
+        $problem->update($request->validated());
 
         return response()->json(['success' => true, 'data' => $problem]);
     }

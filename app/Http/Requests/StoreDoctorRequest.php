@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDoctorRequest extends FormRequest
@@ -35,18 +34,6 @@ class StoreDoctorRequest extends FormRequest
             'email.unique' => 'This email is already registered.',
             'phone.required' => 'Phone number is required.',
             'address.required' => 'Address is required.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

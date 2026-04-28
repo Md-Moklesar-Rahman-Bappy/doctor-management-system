@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePrescriptionRequest extends FormRequest
@@ -39,18 +38,6 @@ class StorePrescriptionRequest extends FormRequest
             'new_patient_age.required_with' => 'Age is required.',
             'new_patient_sex.required_with' => 'Sex is required.',
             'new_patient_date.required_with' => 'Date is required.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

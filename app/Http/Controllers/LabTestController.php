@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLabTestRequest;
+use App\Http\Requests\UpdateLabTestRequest;
 use App\Models\LabTest;
+use App\Services\ExportService;
+use App\Services\ImportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LabTestController extends Controller
 {
-    public function __construct()
+    protected ImportService $importService;
+
+    protected ExportService $exportService;
+
+    public function __construct(ImportService $importService, ExportService $exportService)
     {
         $this->middleware('auth')->except(['autocomplete', 'search']);
+        $this->importService = $importService;
+        $this->exportService = $exportService;
     }
 
     public function index(Request $request): View
@@ -45,7 +54,7 @@ class LabTestController extends Controller
     {
         LabTest::create($request->validated());
 
-        return redirect('/lab_tests')->with('success', 'Lab Test created successfully!');
+        return redirect()->route('lab_tests.index')->with('success', 'Lab Test created successfully!');
     }
 
     public function edit($id): View
@@ -61,7 +70,7 @@ class LabTestController extends Controller
 
         $test->update($request->validated());
 
-        return redirect('/lab_tests')->with('success', 'Lab Test updated successfully!');
+        return redirect()->route('lab_tests.index')->with('success', 'Lab Test updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -70,9 +79,9 @@ class LabTestController extends Controller
             $test = LabTest::findOrFail($id);
             $test->delete();
 
-            return redirect('/lab_tests')->with('success', 'Lab Test deleted successfully!');
+            return redirect()->route('lab_tests.index')->with('success', 'Lab Test deleted successfully!');
         } catch (\Exception $e) {
-            return redirect('/lab_tests')->with('error', 'Error deleting lab test. Please try again.');
+            return redirect()->route('lab_tests.index')->with('error', 'Error deleting lab test. Please try again.');
         }
     }
 
@@ -110,138 +119,24 @@ class LabTestController extends Controller
 
     public function import(Request $request): RedirectResponse
     {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,xlsx,xls,txt|max:51200',
-        ]);
+        $columnMap = [
+            'department' => 0,
+            'sample_type' => 1,
+            'panel' => 2,
+            'test' => 3,
+            'code' => 4,
+            'unit' => 5,
+            'result_type' => 6,
+            'normal_range' => 7,
+        ];
 
-        $file = $request->file('file');
-        $path = $file->getRealPath();
-        $extension = $file->getClientOriginalExtension();
+        $totalImported = $this->importService->importFromFile($request, new LabTest, $columnMap);
 
-        $rows = [];
-
-        try {
-            if (in_array($extension, ['xlsx', 'xls'])) {
-                $spreadsheet = IOFactory::load($path);
-                $worksheet = $spreadsheet->getActiveSheet();
-                $rows = $worksheet->toArray();
-            } else {
-                if (($handle = fopen($path, 'r')) !== false) {
-                    // Detect delimiter
-                    $delimiters = [',', ';', "\t", '|'];
-                    $firstLine = fgets($handle);
-                    rewind($handle);
-
-                    $delimiter = ',';
-                    if ($firstLine) {
-                        $maxCount = 0;
-                        foreach ($delimiters as $delim) {
-                            $count = count(str_getcsv($firstLine, $delim));
-                            if ($count > $maxCount) {
-                                $maxCount = $count;
-                                $delimiter = $delim;
-                            }
-                        }
-                    }
-
-                    // Skip BOM if present
-                    $bom = fread($handle, 3);
-                    if ($bom !== "\xEF\xBB\xBF") {
-                        rewind($handle);
-                    }
-
-                    while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
-                        $rows[] = $data;
-                    }
-                    fclose($handle);
-                }
-            }
-        } catch (\Exception $e) {
-            return redirect('/lab_tests')->with('error', 'Error reading file: '.$e->getMessage());
+        if ($totalImported === 0) {
+            return redirect()->route('lab_tests.index')->with('error', 'File is empty or could not be read.');
         }
 
-        if (empty($rows)) {
-            return redirect('/lab_tests')->with('error', 'File is empty or could not be read.');
-        }
-
-        // Remove header row if present
-        if (count($rows) > 0) {
-            $firstRow = $rows[0];
-            $headerIndicators = ['department', 'test', 'code', 'sample_type'];
-            $isHeader = false;
-            foreach ($headerIndicators as $indicator) {
-                foreach ($firstRow as $cell) {
-                    if (is_string($cell) && stripos(trim($cell), $indicator) !== false) {
-                        $isHeader = true;
-                        break 2;
-                    }
-                }
-            }
-            if ($isHeader) {
-                array_shift($rows);
-            }
-        }
-
-        if (empty($rows)) {
-            return redirect('/lab_tests')->with('error', 'No data found after removing header row.');
-        }
-
-        $batchSize = 500;
-        $batches = array_chunk($rows, $batchSize);
-        $totalImported = 0;
-
-        foreach ($batches as $batch) {
-            $records = [];
-            foreach ($batch as $data) {
-                if (empty($data) || ! is_array($data)) {
-                    continue;
-                }
-
-                $department = trim($data[0] ?? '');
-                $sampleType = trim($data[1] ?? '');
-                $panel = trim($data[2] ?? '');
-                $test = trim($data[3] ?? '');
-                $code = trim($data[4] ?? '');
-                $unit = trim($data[5] ?? '');
-                $resultType = trim($data[6] ?? '');
-                $normalRange = trim($data[7] ?? '');
-
-                if (empty($code)) {
-                    $code = 'LAB-'.strtoupper(substr(preg_replace('/\s+/', '', $department), 0, 3).substr(preg_replace('/\s+/', '', $test), 0, 3).rand(100, 999));
-                }
-
-                $records[] = [
-                    'department' => $department,
-                    'sample_type' => $sampleType,
-                    'panel' => $panel,
-                    'test' => $test,
-                    'code' => $code,
-                    'unit' => $unit,
-                    'result_type' => $resultType,
-                    'normal_range' => $normalRange,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            if (! empty($records)) {
-                try {
-                    LabTest::insert($records);
-                    $totalImported += count($records);
-                } catch (\Exception $e) {
-                    foreach ($records as $record) {
-                        try {
-                            LabTest::create($record);
-                            $totalImported++;
-                        } catch (\Exception $e2) {
-                            // Skip failed record
-                        }
-                    }
-                }
-            }
-        }
-
-        return redirect('/lab_tests')->with('success', "{$totalImported} lab tests imported successfully!");
+        return redirect()->route('lab_tests.index')->with('success', "{$totalImported} lab tests imported successfully!");
     }
 
     public function template(): StreamedResponse
@@ -270,31 +165,18 @@ class LabTestController extends Controller
                 ->orWhere('department', 'like', "%{$search}%");
         }
 
-        $tests = $query->orderBy('id', 'desc')->get();
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="lab_tests_export.csv"',
+        $columns = [
+            'department' => 'department',
+            'sample_type' => 'sample_type',
+            'panel' => 'panel',
+            'test' => 'test',
+            'code' => 'code',
+            'unit' => 'unit',
+            'result_type' => 'result_type',
+            'normal_range' => 'normal_range',
         ];
 
-        return response()->stream(function () use ($tests) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['department', 'sample_type', 'panel', 'test', 'code', 'unit', 'result_type', 'normal_range']);
-
-            foreach ($tests as $test) {
-                fputcsv($handle, [
-                    $test->department,
-                    $test->sample_type,
-                    $test->panel,
-                    $test->test,
-                    $test->code,
-                    $test->unit,
-                    $test->result_type,
-                    $test->normal_range,
-                ]);
-            }
-            fclose($handle);
-        }, 200, $headers);
+        return $this->exportService->exportToCsv($query, $columns, 'lab_tests_export.csv');
     }
 
     public function autocomplete(Request $request)

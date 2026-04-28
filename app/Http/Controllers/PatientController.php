@@ -6,6 +6,7 @@ use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PatientController extends Controller
@@ -44,7 +45,7 @@ class PatientController extends Controller
             'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
         ]);
 
-        return redirect('/patients')->with('success', 'Patient created successfully!');
+        return redirect()->route('patients.index')->with('success', 'Patient created successfully!');
     }
 
     public function show($id): View
@@ -82,7 +83,7 @@ class PatientController extends Controller
 
         $patient->update($request->validated());
 
-        return redirect('/patients')->with('success', 'Patient updated successfully!');
+        return redirect()->route('patients.index')->with('success', 'Patient updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -96,7 +97,7 @@ class PatientController extends Controller
 
         $patient->delete();
 
-        return redirect('/patients')->with('success', 'Patient deleted successfully!');
+        return redirect()->route('patients.index')->with('success', 'Patient deleted successfully!');
     }
 
     public function autocomplete(Request $request)

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMedicineRequest extends FormRequest
@@ -34,18 +33,6 @@ class UpdateMedicineRequest extends FormRequest
         return [
             'brand_name.required' => 'Brand name is required.',
             'dosage_type.required' => 'Dosage type is required.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

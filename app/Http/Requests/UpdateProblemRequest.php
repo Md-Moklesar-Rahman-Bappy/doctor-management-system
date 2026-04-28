@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProblemRequest extends FormRequest
@@ -30,18 +29,6 @@ class UpdateProblemRequest extends FormRequest
         return [
             'name.required' => 'Problem name is required.',
             'name.max' => 'Problem name cannot exceed 255 characters.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }

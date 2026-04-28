@@ -2,19 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMedicineRequest;
+use App\Http\Requests\UpdateMedicineRequest;
 use App\Models\Medicine;
+use App\Services\ExportService;
+use App\Services\ImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MedicineController extends Controller
 {
-    public function __construct()
+    protected ImportService $importService;
+
+    protected ExportService $exportService;
+
+    public function __construct(ImportService $importService, ExportService $exportService)
     {
         $this->middleware('auth')->except(['autocomplete', 'search']);
+        $this->importService = $importService;
+        $this->exportService = $exportService;
     }
 
     public function index(Request $request): View
@@ -46,7 +55,7 @@ class MedicineController extends Controller
     {
         Medicine::create($request->validated());
 
-        return redirect('/medicines')->with('success', 'Medicine created successfully!');
+        return redirect()->route('medicines.index')->with('success', 'Medicine created successfully!');
     }
 
     public function show($id): View
@@ -69,7 +78,7 @@ class MedicineController extends Controller
 
         $medicine->update($request->validated());
 
-        return redirect('/medicines')->with('success', 'Medicine updated successfully!');
+        return redirect()->route('medicines.index')->with('success', 'Medicine updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -78,9 +87,9 @@ class MedicineController extends Controller
             $medicine = Medicine::findOrFail($id);
             $medicine->delete();
 
-            return redirect('/medicines')->with('success', 'Medicine deleted successfully!');
+            return redirect()->route('medicines.index')->with('success', 'Medicine deleted successfully!');
         } catch (\Exception $e) {
-            return redirect('/medicines')->with('error', 'Error deleting medicine. Please try again.');
+            return redirect()->route('medicines.index')->with('error', 'Error deleting medicine. Please try again.');
         }
     }
 
@@ -115,65 +124,22 @@ class MedicineController extends Controller
 
     public function import(Request $request): RedirectResponse
     {
-        $request->validate([
-            'file' => 'required|file|mimes:csv,xlsx,xls,txt|max:51200',
-        ]);
+        $columnMap = [
+            'brand_name' => 0,
+            'generic_name' => 1,
+            'dosage_type' => 2,
+            'strength' => 3,
+            'company_name' => 4,
+            'package_mark' => 5,
+        ];
 
-        $file = $request->file('file');
-        $path = $file->getRealPath();
-        $extension = $file->getClientOriginalExtension();
+        $totalImported = $this->importService->importFromFile($request, new Medicine, $columnMap);
 
-        $rows = [];
-
-        if (in_array($extension, ['xlsx', 'xls'])) {
-            $spreadsheet = IOFactory::load($path);
-            $worksheet = $spreadsheet->getActiveSheet();
-            $rows = $worksheet->toArray();
-        } else {
-            if (($handle = fopen($path, 'r')) !== false) {
-                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                    $rows[] = $data;
-                }
-                fclose($handle);
-            }
+        if ($totalImported === 0) {
+            return redirect()->route('medicines.index')->with('error', 'File is empty or could not be read.');
         }
 
-        if (empty($rows)) {
-            return redirect('/medicines')->with('error', 'File is empty or could not be read.');
-        }
-
-        array_shift($rows); // Skip header
-
-        $batchSize = 500;
-        $batches = array_chunk($rows, $batchSize);
-        $totalImported = 0;
-
-        foreach ($batches as $batch) {
-            $records = [];
-            foreach ($batch as $data) {
-                if (empty($data[0])) {
-                    continue;
-                }
-
-                $records[] = [
-                    'brand_name' => $data[0] ?? '',
-                    'generic_name' => $data[1] ?? '',
-                    'dosage_type' => $data[2] ?? '',
-                    'strength' => $data[3] ?? '',
-                    'company_name' => $data[4] ?? '',
-                    'package_mark' => $data[5] ?? '',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            if (! empty($records)) {
-                Medicine::insert($records);
-                $totalImported += count($records);
-            }
-        }
-
-        return redirect('/medicines')->with('success', "{$totalImported} medicines imported successfully!");
+        return redirect()->route('medicines.index')->with('success', "{$totalImported} medicines imported successfully!");
     }
 
     public function template(): StreamedResponse
@@ -202,28 +168,15 @@ class MedicineController extends Controller
                 ->orWhere('company_name', 'like', "%{$search}%");
         }
 
-        $medicines = $query->orderBy('id', 'desc')->get();
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="medicines_export.csv"',
+        $columns = [
+            'brand_name' => 'brand_name',
+            'generic_name' => 'generic_name',
+            'dosage_type' => 'dosage_type',
+            'strength' => 'strength',
+            'company_name' => 'company_name',
+            'package_mark' => 'package_mark',
         ];
 
-        return response()->stream(function () use ($medicines) {
-            $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['brand_name', 'generic_name', 'dosage_type', 'strength', 'company_name', 'package_mark']);
-
-            foreach ($medicines as $medicine) {
-                fputcsv($handle, [
-                    $medicine->brand_name,
-                    $medicine->generic_name,
-                    $medicine->dosage_type,
-                    $medicine->strength,
-                    $medicine->company_name,
-                    $medicine->package_mark,
-                ]);
-            }
-            fclose($handle);
-        }, 200, $headers);
+        return $this->exportService->exportToCsv($query, $columns, 'medicines_export.csv');
     }
 }

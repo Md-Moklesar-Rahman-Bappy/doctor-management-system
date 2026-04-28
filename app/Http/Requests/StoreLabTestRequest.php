@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabTestRequest extends FormRequest
@@ -37,18 +36,6 @@ class StoreLabTestRequest extends FormRequest
             'test.required' => 'Test name is required.',
             'code.required' => 'Test code is required.',
             'code.unique' => 'This code is already in use.',
-        ];
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
         ];
     }
 }
