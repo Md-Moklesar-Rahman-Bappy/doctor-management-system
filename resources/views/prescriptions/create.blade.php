@@ -27,11 +27,11 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="font-semibold text-slate-900">{{ $doctor->name ?? 'No doctor profile' }}</div>
+                        <div class="font-semibold text-slate-900">{{ ->name ?? 'No doctor profile' }}</div>
                         <div class="text-sm text-slate-500">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
-                <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
+                <input type="hidden" name="doctor_id" value="{{ ->id ?? '' }}">
             </div>
 
             <!-- Patient Search & Info -->
@@ -46,7 +46,7 @@
                                placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
                         <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
                     </div>
-                    <input type="hidden" name="patient_id" id="patient-id" value="{{ $selectedPatientId ?? '' }}">
+                    <input type="hidden" name="patient_id" id="patient-id" value="{{  ?? '' }}">
                 </div>
 
                 <!-- Toggle New Patient -->
@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- Existing Patient Info (Autofill) -->
-                <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'hidden' }}">
+                <div id="existing-patient-info" class="{{  ? '' : 'hidden' }}">
                     <div class="p-4 bg-slate-50 rounded-lg">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>
@@ -220,16 +220,17 @@ document.getElementById('patient-search').addEventListener('input', function() {
     }
 
     searchTimeout = setTimeout(() => {
-        fetch(`/patients/autocomplete?term=${encodeURIComponent(searchTerm)}`)
+        fetch(/patients/autocomplete?term=)
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data.length > 0) {
-                    dropdown.innerHTML = data.data.map(p => `
-                        <div class="px-4 py-2 hover:bg-slate-100 cursor-pointer" onclick='selectPatient(${JSON.stringify(p)})'>
-                            <span class="font-medium">${p.unique_id}</span> - ${p.patient_name}
-                            <span class="text-sm text-slate-500 ml-2">Age: ${p.age}, ${p.sex}</span>
-                        </div>
-                    `).join('');
+                    dropdown.innerHTML = data.data.map(p => {
+                        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+                        return '<div class="px-4 py-2 hover:bg-slate-100 cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
+                            '<span class="font-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                            '<span class="text-sm text-slate-500 ml-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                            '</div>';
+                    }).join('');
                     dropdown.classList.remove('hidden');
                 } else {
                     dropdown.innerHTML = '<div class="px-4 py-2 text-slate-500">No patients found</div>';
@@ -239,17 +240,18 @@ document.getElementById('patient-search').addEventListener('input', function() {
     }, 300);
 });
 
-function selectPatient(patient) {
-    document.getElementById('patient-id').value = patient.id;
-    document.getElementById('patient-search').value = patient.unique_id + ' - ' + patient.patient_name;
+function selectPatient(encodedData) {
+    const p = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+    document.getElementById('patient-id').value = p.id;
+    document.getElementById('patient-search').value = p.unique_id + ' - ' + p.patient_name;
     document.getElementById('patient-dropdown').classList.add('hidden');
 
     // Autofill patient info
-    document.getElementById('info-unique-id').textContent = patient.unique_id;
-    document.getElementById('info-name').value = patient.patient_name;
-    document.getElementById('info-age').value = patient.age;
-    document.getElementById('info-sex').value = patient.sex;
-    document.getElementById('prescription-date').value = patient.date || '{{ date("Y-m-d") }}';
+    document.getElementById('info-unique-id').textContent = p.unique_id;
+    document.getElementById('info-name').value = p.patient_name;
+    document.getElementById('info-age').value = p.age;
+    document.getElementById('info-sex').value = p.sex;
+    document.getElementById('prescription-date').value = p.date || '{{ date("Y-m-d") }}';
     document.getElementById('existing-patient-info').classList.remove('hidden');
 
     // Hide new patient form
@@ -279,24 +281,22 @@ document.addEventListener('click', function(e) {
 // Medicine functions
 function addMedicine() {
     const container = document.getElementById('medicines-container');
-    const html = `
-        <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
-            <div class="col-span-5">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][name]" placeholder="Medicine name">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][dosage]" placeholder="Dosage (e.g. 500mg)">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][frequency]" placeholder="Frequency (e.g. 3x/day)">
-            </div>
-            <div class="col-span-1">
-                <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </div>
-    `;
+    const html = '<div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
+        '<div class="col-span-5">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][name]" placeholder="Medicine name">' +
+        '</div>' +
+        '<div class="col-span-3">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][dosage]" placeholder="Dosage (e.g. 500mg)">' +
+        '</div>' +
+        '<div class="col-span-3">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
+        '</div>' +
+        '<div class="col-span-1">' +
+            '<button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">' +
+                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+            '</button>' +
+        '</div>' +
+    '</div>';
     container.insertAdjacentHTML('beforeend', html);
     medicineIndex++;
 }
@@ -345,7 +345,7 @@ document.getElementById('prescription-form').addEventListener('submit', function
     .then(data => {
         if (data.success) {
             createdPrescriptionId = data.prescription_id;
-            document.getElementById('download-pdf').href = `/prescriptions/${createdPrescriptionId}`;
+            document.getElementById('download-pdf').href = '/prescriptions/' + createdPrescriptionId;
             document.getElementById('action-buttons').classList.add('hidden');
             document.getElementById('print-options').classList.remove('hidden');
             window.scrollTo({ top: document.getElementById('print-options').offsetTop, behavior: 'smooth' });
@@ -369,24 +369,22 @@ function resetForm() {
     document.getElementById('new-patient-toggle').checked = false;
     document.getElementById('selected-problems').innerHTML = '';
     document.getElementById('selected-tests').innerHTML = '';
-    document.getElementById('medicines-container').innerHTML = `
-        <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
-            <div class="col-span-5">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][name]" placeholder="Medicine name">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">
-            </div>
-            <div class="col-span-1">
-                <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </div>
-    `;
+    document.getElementById('medicines-container').innerHTML = '<div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
+        '<div class="col-span-5">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][name]" placeholder="Medicine name">' +
+        '</div>' +
+        '<div class="col-span-3">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">' +
+        '</div>' +
+        '<div class="col-span-3">' +
+            '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
+        '</div>' +
+        '<div class="col-span-1">' +
+            '<button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">' +
+                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+            '</button>' +
+        '</div>' +
+    '</div>';
     document.getElementById('problems-json').value = '';
     document.getElementById('tests-json').value = '';
     medicineIndex = 1;
@@ -399,4 +397,4 @@ function resetForm() {
 }
 </script>
 @endpush
-@endsection
+@endsection>
