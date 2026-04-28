@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Prescription;
-use App\Models\Patient;
-use App\Models\Doctor;
-use App\Models\Problem;
 use App\Models\LabTest;
-use Illuminate\Http\Request;
+use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\Problem;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class PrescriptionController extends Controller
 {
@@ -29,7 +28,7 @@ class PrescriptionController extends Controller
         if ($search) {
             $query->whereHas('patient', function ($q) use ($search) {
                 $q->where('unique_id', 'like', "%{$search}%")
-                  ->orWhere('patient_name', 'like', "%{$search}%");
+                    ->orWhere('patient_name', 'like', "%{$search}%");
             });
         }
 
@@ -38,12 +37,12 @@ class PrescriptionController extends Controller
         return view('prescriptions.index', compact('prescriptions', 'search'));
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
         $user = auth()->user();
         $doctor = $user->doctor;
 
-        if (!$doctor) {
+        if (! $doctor) {
             return redirect('/doctors/create')->with('error', 'Please create your doctor profile first.');
         }
 
@@ -77,6 +76,7 @@ class PrescriptionController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()]);
             }
+
             return back()->withErrors($validator)->withInput();
         }
 
@@ -84,7 +84,7 @@ class PrescriptionController extends Controller
         if ($request->filled('new_patient_name')) {
             $patient = Patient::create([
                 'user_id' => auth()->id(),
-                'unique_id' => 'PAT-' . strtoupper(substr(md5(uniqid()), 0, 8)),
+                'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
                 'patient_name' => $request->new_patient_name,
                 'age' => $request->new_patient_age,
                 'sex' => $request->new_patient_sex,
@@ -114,6 +114,7 @@ class PrescriptionController extends Controller
     public function show($id): View
     {
         $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
+
         return view('prescriptions.show', compact('prescription'));
     }
 
