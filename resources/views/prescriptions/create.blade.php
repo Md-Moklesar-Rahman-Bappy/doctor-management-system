@@ -27,11 +27,11 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="font-semibold text-slate-900">{{ ->name ?? 'No doctor profile' }}</div>
+                        <div class="font-semibold text-slate-900">{{ $doctor->name ?? 'No doctor profile' }}</div>
                         <div class="text-sm text-slate-500">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
-                <input type="hidden" name="doctor_id" value="{{ ->id ?? '' }}">
+                <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
             </div>
 
             <!-- Patient Search & Info -->
@@ -46,7 +46,7 @@
                                placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
                         <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
                     </div>
-                    <input type="hidden" name="patient_id" id="patient-id" value="{{  ?? '' }}">
+                    <input type="hidden" name="patient_id" id="patient-id" value="{{ $selectedPatientId ?? '' }}">
                 </div>
 
                 <!-- Toggle New Patient -->
@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- Existing Patient Info (Autofill) -->
-                <div id="existing-patient-info" class="{{  ? '' : 'hidden' }}">
+                <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'hidden' }}">
                     <div class="p-4 bg-slate-50 rounded-lg">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>

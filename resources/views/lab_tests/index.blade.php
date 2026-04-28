@@ -227,102 +227,85 @@
 
 @push('scripts')
 <script>
-    let searchTimeout;
+let searchTimeout;
 
-    function searchTest(query) {
-        clearTimeout(searchTimeout);
+function searchTest(query) {
+    clearTimeout(searchTimeout);
 
+    const results = document.getElementById('searchDropdown');
+
+    if (query.length < 2) {
+        results.classList.add('hidden');
+        return;
+    }
+
+    searchTimeout = setTimeout(() => {
+        fetch('/lab_tests/autocomplete?term=' + encodeURIComponent(query))
+            .then(res => res.json())
+            .then(data => {
+                if (data.data && data.data.length > 0) {
+                    let html = '';
+                    data.data.forEach(test => {
+                        const testName = test.test || '';
+                        const department = test.department || '';
+                        const code = test.code || '';
+                        html += `<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectTest(${test.id}, '${testName.replace(/'/g, "\\'")}')">
+                            <div class="font-medium text-sm">${testName}</div>
+                            <div class="text-xs text-slate-500">${department} - ${code}</div>
+                        </div>`;
+                    });
+                    html += `<div class="border-t border-slate-200 px-4 py-2 hover:bg-slate-100 cursor-pointer text-sm text-emerald-600 font-medium" onclick="showAllTestResults('${query.replace(/'/g, "\\'")}')">
+                        Show all results for "${query}"
+                    </div>`;
+                    results.innerHTML = html;
+                    results.classList.remove('hidden');
+                } else {
+                    results.innerHTML = '<div class="px-4 py-2 text-xs text-slate-500">No results found</div>';
+                    results.classList.remove('hidden');
+                }
+            })
+            .catch(err => console.error('Search error:', err));
+    }, 300);
+}
+
+function selectTest(id, name) {
+    document.getElementById('searchDropdown').classList.add('hidden');
+    document.getElementById('searchInput').value = name;
+    window.location.href = '/lab_tests/' + id;
+}
+
+function showAllTestResults(query) {
+    document.getElementById('searchDropdown').classList.add('hidden');
+    document.getElementById('searchInput').value = query;
+    document.querySelector('form[action="/lab_tests"]').submit();
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement.id === 'searchInput') {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query.length >= 2) {
+            showAllTestResults(query);
+        }
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#searchInput') && !e.target.closest('#searchDropdown')) {
         const results = document.getElementById('searchDropdown');
-
-        if (query.length < 2) {
-            results.classList.add('hidden');
-            return;
-        }
-
-        searchTimeout = setTimeout(() => {
-            fetch('/lab_tests/autocomplete?term=' + encodeURIComponent(query))
-                .then(res => res.json())
-                .then(data => {
-                    if (data.data && data.data.length > 0) {
-                        let html = '';
-                        data.data.forEach(test => {
-                            const displayName = test.test || '';
-                            const displayCode = test.code || '';
-                            const displayDept = test.department || '';
-                            html += '<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectTest(' + test.id + ', \'' + displayName.replace(/'/g, "\\'") + '\')">' +
-                                '<div class="font-medium text-sm">' + displayName + '</div>' +
-                                '<div class="text-xs text-slate-500">' + displayCode + ' - ' + displayDept + '</div>' +
-                            '</div>';
-                        });
-                        html += '<div class="border-t border-slate-200 px-4 py-2 hover:bg-slate-100 cursor-pointer text-sm text-emerald-600 font-medium" onclick="showAllResults(\'' + query.replace(/'/g, "\\'") + '\')">Show all results for "' + query + '"</div>';
-                        results.innerHTML = html;
-                        results.classList.remove('hidden');
-                    } else {
-                        results.innerHTML = '<div class="px-4 py-2 text-xs text-slate-500">No results found</div>';
-                        results.classList.remove('hidden');
-                    }
-                })
-                .catch(err => console.error('Search error:', err));
-        }, 300);
+        if (results) results.classList.add('hidden');
     }
+});
 
-    function selectTest(id, name) {
-        document.getElementById('searchDropdown').classList.add('hidden');
-        document.getElementById('searchInput').value = name;
-        window.location.href = '/lab_tests/' + id;
-    }
+function changePerPage(value) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', value);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
 
-    function showAllResults(query) {
-        document.getElementById('searchDropdown').classList.add('hidden');
-        document.getElementById('searchInput').value = query;
-        document.querySelector('form[action="/lab_tests"]').submit();
-    }
-
-    function deleteTest(id) {
-        if (!confirm('Are you sure you want to delete this test?')) return;
-        fetch('/lab_tests/' + id, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: '_method=DELETE'
-        })
-        .then(res => {
-            window.location.reload();
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Error deleting test. Please try again.');
-        });
-    }
-
-    function changePerPage(value) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('per_page', value);
-        url.searchParams.set('page', 1);
-        window.location.href = url.toString();
-    }
-
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('#searchInput') && !e.target.closest('#searchDropdown')) {
-            const results = document.getElementById('searchDropdown');
-            if (results) results.classList.add('hidden');
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && document.activeElement.id === 'searchInput') {
-            const query = document.getElementById('searchInput').value.trim();
-            if (query.length >= 2) {
-                showAllResults(query);
-            }
-        }
-    });
-
-    setTimeout(() => {
-        document.querySelectorAll('[id^="toast-"]').forEach(toast => toast.remove());
-    }, 5000);
+setTimeout(() => {
+    document.querySelectorAll('[id^="toast-"]').forEach(toast => toast.remove());
+}, 5000);
 </script>
 @endpush
 @endsection

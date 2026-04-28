@@ -56,7 +56,7 @@ class PrescriptionController extends Controller
         return view('prescriptions.create', compact('doctor', 'problems', 'labTests', 'selectedPatientId'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $user = auth()->user();
         $doctor = $user->doctor;
@@ -74,6 +74,9 @@ class PrescriptionController extends Controller
         ]);
 
         if ($validator->fails()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Validation failed', 'errors' => $validator->errors()]);
+            }
             return back()->withErrors($validator)->withInput();
         }
 
@@ -92,7 +95,7 @@ class PrescriptionController extends Controller
             $patientId = $request->patient_id;
         }
 
-        Prescription::create([
+        $prescription = Prescription::create([
             'user_id' => auth()->id(),
             'patient_id' => $patientId,
             'doctor_id' => $doctor ? $doctor->id : $request->doctor_id,
@@ -100,6 +103,10 @@ class PrescriptionController extends Controller
             'tests' => $request->tests ? json_encode($request->tests) : null,
             'medicines' => $request->medicines ? json_encode($request->medicines) : null,
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'prescription_id' => $prescription->id]);
+        }
 
         return redirect('/prescriptions')->with('success', 'Prescription created successfully!');
     }

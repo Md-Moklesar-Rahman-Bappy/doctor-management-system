@@ -23,9 +23,11 @@ class LabTestController extends Controller
         $query = LabTest::query();
 
         if ($search) {
-            $query->where('test', 'like', "%{$search}%")
+            $query->where(function ($q) use ($search) {
+                $q->where('test', 'like', "%{$search}%")
                   ->orWhere('code', 'like', "%{$search}%")
                   ->orWhere('department', 'like', "%{$search}%");
+            });
         }
 
         $tests = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
@@ -103,9 +105,11 @@ class LabTestController extends Controller
         $query = LabTest::query();
 
         if ($term) {
-            $query->where('test', 'like', "%{$term}%")
+            $query->where(function ($q) use ($term) {
+                $q->where('test', 'like', "%{$term}%")
                   ->orWhere('code', 'like', "%{$term}%")
                   ->orWhere('department', 'like', "%{$term}%");
+            });
         }
 
         $tests = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
@@ -205,47 +209,34 @@ class LabTestController extends Controller
         $batchSize = 500;
         $batches = array_chunk($rows, $batchSize);
         $totalImported = 0;
-        $skippedDuplicates = 0;
-        $skippedEmpty = 0;
 
         foreach ($batches as $batch) {
             $records = [];
             foreach ($batch as $data) {
-                if (empty($data) || !is_array($data)) {
-                    $skippedEmpty++;
-                    continue;
-                }
+                if (empty($data) || !is_array($data)) continue;
 
-                $code = trim($data[4] ?? '');
-                $test = trim($data[3] ?? '');
                 $department = trim($data[0] ?? '');
+                $sampleType = trim($data[1] ?? '');
+                $panel = trim($data[2] ?? '');
+                $test = trim($data[3] ?? '');
+                $code = trim($data[4] ?? '');
+                $unit = trim($data[5] ?? '');
+                $resultType = trim($data[6] ?? '');
+                $normalRange = trim($data[7] ?? '');
 
-                // Skip if required fields missing
-                if (empty($test) || empty($department)) {
-                    $skippedEmpty++;
-                    continue;
-                }
-
-                // Auto-generate code if empty
                 if (empty($code)) {
                     $code = 'LAB-' . strtoupper(substr(preg_replace('/\s+/', '', $department), 0, 3) . substr(preg_replace('/\s+/', '', $test), 0, 3) . rand(100, 999));
                 }
 
-                // Check for duplicate code
-                if (LabTest::where('code', $code)->exists()) {
-                    $skippedDuplicates++;
-                    continue;
-                }
-
                 $records[] = [
                     'department' => $department,
-                    'sample_type' => trim($data[1] ?? ''),
-                    'panel' => trim($data[2] ?? ''),
+                    'sample_type' => $sampleType,
+                    'panel' => $panel,
                     'test' => $test,
                     'code' => $code,
-                    'unit' => trim($data[5] ?? ''),
-                    'result_type' => trim($data[6] ?? ''),
-                    'normal_range' => trim($data[7] ?? ''),
+                    'unit' => $unit,
+                    'result_type' => $resultType,
+                    'normal_range' => $normalRange,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -256,7 +247,6 @@ class LabTestController extends Controller
                     LabTest::insert($records);
                     $totalImported += count($records);
                 } catch (\Exception $e) {
-                    // Try inserting one by one on batch failure
                     foreach ($records as $record) {
                         try {
                             LabTest::create($record);
@@ -269,15 +259,7 @@ class LabTestController extends Controller
             }
         }
 
-        $message = "{$totalImported} lab tests imported successfully!";
-        if ($skippedDuplicates > 0) {
-            $message .= " {$skippedDuplicates} duplicates skipped.";
-        }
-        if ($skippedEmpty > 0) {
-            $message .= " {$skippedEmpty} empty/invalid rows skipped.";
-        }
-
-        return redirect('/lab_tests')->with('success', $message);
+        return redirect('/lab_tests')->with('success', "{$totalImported} lab tests imported successfully!");
     }
 
     public function template(): \Symfony\Component\HttpFoundation\StreamedResponse
