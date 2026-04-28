@@ -28,7 +28,6 @@
                     <div class="text-sm text-slate-500">{{ auth()->user()->email }}</div>
                 </div>
             </div>
-            <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
         </div>
 
         <!-- Patient Search & Info -->
@@ -54,7 +53,7 @@
                 </label>
             </div>
 
-            <!-- Existing Patient Info (Autofilled) -->
+            <!-- Existing Patient Info (Autofill) -->
             <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'hidden' }}">
                 <div class="p-4 bg-slate-50 rounded-lg">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -63,15 +62,15 @@
                             <p class="font-medium text-slate-900" id="info-unique-id">-</p>
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-500 mb-1">Patient Name *</label>
+                            <label class="block text-xs text-slate-500 mb-1">Patient Name</label>
                             <input type="text" id="info-name" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-100" readonly>
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-500 mb-1">Age *</label>
+                            <label class="block text-xs text-slate-500 mb-1">Age</label>
                             <input type="text" id="info-age" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-100" readonly>
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-500 mb-1">Sex *</label>
+                            <label class="block text-xs text-slate-500 mb-1">Sex</label>
                             <input type="text" id="info-sex" class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-100" readonly>
                         </div>
                     </div>
@@ -172,7 +171,7 @@
         <!-- Action Buttons -->
         <div class="flex gap-3" id="action-buttons">
             <a href="/prescriptions" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">Cancel</a>
-            <button type="submit" form="prescription-form" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
+            <button type="button" onclick="submitPrescription()" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0a1 1 0 011-1h2a1 1 0 011 1v3M4 7h16"/></svg>
                 Generate Prescription
             </button>
@@ -190,32 +189,19 @@
                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Download PDF
                 </a>
-                <a href="/prescriptions/create" class="px-6 py-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">
+                <button onclick="resetForm()" class="px-6 py-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">
                     Create New Prescription
-                </a>
+                </button>
             </div>
         </div>
     </div>
-
-    <!-- Hidden Form -->
-    <form method="POST" action="/prescriptions" id="prescription-form" class="hidden">
-        @csrf
-        <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
-        <input type="hidden" name="patient_id" id="form-patient-id">
-        <input type="hidden" name="new_patient_name" id="form-new-patient-name">
-        <input type="hidden" name="new_patient_age" id="form-new-patient-age">
-        <input type="hidden" name="new_patient_sex" id="form-new-patient-sex">
-        <input type="hidden" name="new_patient_date" id="form-new-patient-date">
-        <input type="hidden" name="problem[]" id="form-problems-json">
-        <input type="hidden" name="tests[]" id="form-tests-json">
-        <input type="hidden" name="medicines" id="form-medicines-json">
-    </form>
 </div>
 
 @push('scripts')
 <script>
 let medicineIndex = 1;
 let searchTimeout;
+let createdPrescriptionId = null;
 
 // Patient search with live AJAX
 document.getElementById('patient-search').addEventListener('input', function() {
@@ -315,11 +301,8 @@ function removeMedicine(btn) {
     btn.closest('.medicine-row').remove();
 }
 
-// Form submission
-document.getElementById('prescription-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // Validate patient
+// Submit prescription via AJAX
+function submitPrescription() {
     const patientId = document.getElementById('patient-id').value;
     const newPatientName = document.getElementById('new-patient-name').value;
 
@@ -328,30 +311,77 @@ document.getElementById('prescription-form').addEventListener('submit', function
         return;
     }
 
-    // Set form values
-    document.getElementById('form-patient-id').value = patientId;
-    document.getElementById('form-new-patient-name').value = newPatientName;
-    document.getElementById('form-new-patient-age').value = document.getElementById('new-patient-age').value;
-    document.getElementById('form-new-patient-sex').value = document.getElementById('new-patient-sex').value;
-    document.getElementById('form-new-patient-date').value = document.getElementById('new-patient-date').value;
-    document.getElementById('form-problems-json').value = document.getElementById('problems-json').value;
-    document.getElementById('form-tests-json').value = document.getElementById('tests-json').value;
-
     // Collect medicines
     const medicines = [];
     document.querySelectorAll('.medicine-row').forEach(row => {
-        const name = row.querySelector('input[name*="[name]"]')?.value;
-        const dosage = row.querySelector('input[name*="[dosage]"]')?.value;
-        const frequency = row.querySelector('input[name*="[frequency]"]')?.value;
-        if (name) {
-            medicines.push({ name, dosage, frequency });
+        const nameInput = row.querySelector('input[name*="[name]"]');
+        const dosageInput = row.querySelector('input[name*="[dosage]"]');
+        const frequencyInput = row.querySelector('input[name*="[frequency]"]');
+        if (nameInput && nameInput.value) {
+            medicines.push({
+                name: nameInput.value,
+                dosage: dosageInput ? dosageInput.value : '',
+                frequency: frequencyInput ? frequencyInput.value : ''
+            });
         }
     });
-    document.getElementById('form-medicines-json').value = JSON.stringify(medicines);
 
-    // Submit form
-    this.submit();
-});
+    // Build form data
+    const formData = new FormData();
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('doctor_id', '{{ $doctor->id ?? '' }}');
+    formData.append('problem[]', document.getElementById('problems-json').value);
+    formData.append('tests[]', document.getElementById('tests-json').value);
+    formData.append('medicines', JSON.stringify(medicines));
+
+    if (patientId) {
+        formData.append('patient_id', patientId);
+    } else {
+        formData.append('new_patient_name', newPatientName);
+        formData.append('new_patient_age', document.getElementById('new-patient-age').value);
+        formData.append('new_patient_sex', document.getElementById('new-patient-sex').value);
+        formData.append('new_patient_date', document.getElementById('new-patient-date').value);
+    }
+
+    // Submit via fetch
+    fetch('/prescriptions', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            createdPrescriptionId = data.prescription_id;
+            document.getElementById('download-pdf').href = `/prescriptions/${createdPrescriptionId}/pdf`;
+            document.getElementById('action-buttons').classList.add('hidden');
+            document.getElementById('print-options').classList.remove('hidden');
+        } else {
+            alert('Error creating prescription: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(err => {
+        alert('Error creating prescription');
+    });
+}
+
+function resetForm() {
+    // Reset form
+    document.getElementById('patient-id').value = '';
+    document.getElementById('patient-search').value = '';
+    document.getElementById('existing-patient-info').classList.add('hidden');
+    document.getElementById('new-patient-form').classList.add('hidden');
+    document.getElementById('new-patient-toggle').checked = false;
+    document.getElementById('selected-problems').innerHTML = '';
+    document.getElementById('selected-tests').innerHTML = '';
+    document.getElementById('medicines-container').innerHTML = '';
+    document.getElementById('problems-json').value = '';
+    document.getElementById('tests-json').value = '';
+    medicineIndex = 1;
+
+    // Show form, hide print options
+    document.getElementById('action-buttons').classList.remove('hidden');
+    document.getElementById('print-options').classList.add('hidden');
+}
 </script>
 @endpush
 @endsection
