@@ -182,7 +182,7 @@
             <h5 class="text-lg font-semibold text-slate-900 mb-4">Prescription Created Successfully!</h5>
             <div class="flex gap-3">
                 <button onclick="window.print()" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-7-2v-4a2 2 0 017-2zm8 0V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v6"/></svg>
+                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4a2 2 0 012-2zm8 0V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v6"/></svg>
                     Print Prescription
                 </button>
                 <a href="#" id="download-pdf" class="px-6 py-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">
@@ -219,13 +219,13 @@ document.getElementById('patient-search').addEventListener('input', function() {
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data.length > 0) {
-                    dropdown.innerHTML = data.data.map(p => `
-                        <div class="px-4 py-2 hover:bg-slate-100 cursor-pointer"
-                             onclick="selectPatient(${p.id}, '${p.unique_id}', '${p.patient_name}', ${p.age}, '${p.sex}', '${p.date}')">
+                    dropdown.innerHTML = data.data.map(p => {
+                        const patientData = JSON.stringify({id: p.id, unique_id: p.unique_id, name: p.patient_name, age: p.age, sex: p.sex, date: p.date}).replace(/"/g, '&quot;');
+                        return `<div class="px-4 py-2 hover:bg-slate-100 cursor-pointer" onclick='selectPatient(${patientData})'>
                             <span class="font-medium">${p.unique_id}</span> - ${p.patient_name}
                             <span class="text-sm text-slate-500 ml-2">Age: ${p.age}, ${p.sex}</span>
-                        </div>
-                    `).join('');
+                        </div>`;
+                    }).join('');
                     dropdown.classList.remove('hidden');
                 } else {
                     dropdown.innerHTML = '<div class="px-4 py-2 text-slate-500">No patients found</div>';
@@ -235,17 +235,17 @@ document.getElementById('patient-search').addEventListener('input', function() {
     }, 300);
 });
 
-function selectPatient(id, uniqueId, name, age, sex, date) {
-    document.getElementById('patient-id').value = id;
-    document.getElementById('patient-search').value = uniqueId + ' - ' + name;
+function selectPatient(patient) {
+    document.getElementById('patient-id').value = patient.id;
+    document.getElementById('patient-search').value = patient.unique_id + ' - ' + patient.name;
     document.getElementById('patient-dropdown').classList.add('hidden');
 
     // Autofill patient info
-    document.getElementById('info-unique-id').textContent = uniqueId;
-    document.getElementById('info-name').value = name;
-    document.getElementById('info-age').value = age;
-    document.getElementById('info-sex').value = sex;
-    document.getElementById('prescription-date').value = date || '{{ date("Y-m-d") }}';
+    document.getElementById('info-unique-id').textContent = patient.unique_id;
+    document.getElementById('info-name').value = patient.name;
+    document.getElementById('info-age').value = patient.age;
+    document.getElementById('info-sex').value = patient.sex;
+    document.getElementById('prescription-date').value = patient.date || '{{ date("Y-m-d") }}';
     document.getElementById('existing-patient-info').classList.remove('hidden');
 
     // Hide new patient form
@@ -330,8 +330,8 @@ function submitPrescription() {
     const formData = new FormData();
     formData.append('_token', '{{ csrf_token() }}');
     formData.append('doctor_id', '{{ $doctor->id ?? '' }}');
-    formData.append('problem[]', document.getElementById('problems-json').value);
-    formData.append('tests[]', document.getElementById('tests-json').value);
+    formData.append('problem[]', document.getElementById('problems-json').value || '[]');
+    formData.append('tests[]', document.getElementById('tests-json').value || '[]');
     formData.append('medicines', JSON.stringify(medicines));
 
     if (patientId) {
@@ -352,7 +352,7 @@ function submitPrescription() {
     .then(data => {
         if (data.success) {
             createdPrescriptionId = data.prescription_id;
-            document.getElementById('download-pdf').href = `/prescriptions/${createdPrescriptionId}/pdf`;
+            document.getElementById('download-pdf').href = `/prescriptions/${createdPrescriptionId}`;
             document.getElementById('action-buttons').classList.add('hidden');
             document.getElementById('print-options').classList.remove('hidden');
         } else {
