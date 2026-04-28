@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Illuminate\View\View;
 
 class LabTestReportController extends Controller
 {
@@ -45,18 +46,22 @@ class LabTestReportController extends Controller
         return view('lab_test_reports.create', compact('patients', 'selectedPatientId'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreLabTestReportRequest $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|exists:patients,id',
-            'test_name' => 'required|string|max:255',
-            'report_text' => 'nullable|string',
-            'report_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $report = LabTestReport::create($request->validated() + ['report_image' => null]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+        // Handle multiple image uploads
+        if ($request->hasFile('report_images')) {
+            $images = [];
+            foreach ($request->file('report_images') as $image) {
+                $path = $image->store('lab-reports/' . $report->id, 'public');
+                $images[] = $path;
+            }
+            $report->update(['report_image' => json_encode($images)]);
         }
+
+        return redirect('/lab-test-reports')->with('success', 'Lab test report created successfully!');
+    }
 
         $report = LabTestReport::create([
             'patient_id' => $request->patient_id,
@@ -104,7 +109,7 @@ class LabTestReportController extends Controller
         return view('lab_test_reports.edit', compact('report', 'patients'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateLabTestReportRequest $request, $id): RedirectResponse
     {
         $report = LabTestReport::with('patient')->findOrFail($id);
 
@@ -112,6 +117,22 @@ class LabTestReportController extends Controller
         if ($report->patient && $report->patient->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
+
+        $data = $request->validated();
+
+        if ($request->hasFile('report_images')) {
+            $images = [];
+            foreach ($request->file('report_images') as $image) {
+                $path = $image->store('lab-reports/' . $report->id, 'public');
+                $images[] = $path;
+            }
+            $data['report_image'] = json_encode($images);
+        }
+
+        $report->update($data);
+
+        return redirect('/lab-test-reports')->with('success', 'Lab test report updated successfully!');
+    }
 
         $validator = Validator::make($request->all(), [
             'patient_id' => 'sometimes|required|exists:patients,id',

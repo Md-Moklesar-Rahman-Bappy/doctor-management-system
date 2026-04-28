@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 use Illuminate\View\View;
 
 class PatientController extends Controller
@@ -37,18 +36,12 @@ class PatientController extends Controller
         return view('patients.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StorePatientRequest $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'patient_name' => 'required|string|max:255',
-            'age' => 'required|integer|min:0|max:150',
-            'sex' => 'required|in:male,female',
-            'date' => 'required|date',
-        ]);
+        Patient::create($request->validated() + ['user_id' => auth()->id(), 'unique_id' => 'PAT-' . strtoupper(substr(md5(uniqid()), 0, 8)]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
+        return redirect('/patients')->with('success', 'Patient created successfully!');
+    }
 
         Patient::create([
             'user_id' => auth()->id(),
@@ -86,7 +79,7 @@ class PatientController extends Controller
         return view('patients.edit', compact('patient'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdatePatientRequest $request, $id): RedirectResponse
     {
         $patient = Patient::findOrFail($id);
 
@@ -95,23 +88,7 @@ class PatientController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $validator = Validator::make($request->all(), [
-            'patient_name' => 'required|string|max:255',
-            'age' => 'required|integer|min:0|max:150',
-            'sex' => 'required|in:male,female',
-            'date' => 'required|date',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $patient->update([
-            'patient_name' => $request->patient_name,
-            'age' => $request->age,
-            'sex' => $request->sex,
-            'date' => $request->date,
-        ]);
+        $patient->update($request->validated());
 
         return redirect('/patients')->with('success', 'Patient updated successfully!');
     }

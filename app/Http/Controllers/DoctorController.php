@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 use Illuminate\View\View;
 
 class DoctorController extends Controller
@@ -38,29 +38,9 @@ class DoctorController extends Controller
         return view('doctors.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreDoctorRequest $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:doctors,email',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'degrees' => 'nullable|array',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        Doctor::create([
-            'user_id' => auth()->id(),
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'degrees' => $request->degrees ? json_encode($request->degrees) : null,
-            'email_verified' => false,
-        ]);
+        Doctor::create($request->validated() + ['user_id' => auth()->id(), 'email_verified' => false]);
 
         return redirect('/doctors')->with('success', 'Doctor created successfully!');
     }
@@ -89,7 +69,7 @@ class DoctorController extends Controller
         return view('doctors.edit', compact('doctor'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateDoctorRequest $request, $id): RedirectResponse
     {
         $doctor = Doctor::findOrFail($id);
 
@@ -97,6 +77,11 @@ class DoctorController extends Controller
         if ($doctor->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
+
+        $doctor->update($request->validated());
+
+        return redirect('/doctors')->with('success', 'Doctor updated successfully!');
+    }
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',

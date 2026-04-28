@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medicine;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MedicineController extends Controller
 {
@@ -27,8 +27,8 @@ class MedicineController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('brand_name', 'like', "%{$search}%")
-                  ->orWhere('generic_name', 'like', "%{$search}%")
-                  ->orWhere('company_name', 'like', "%{$search}%");
+                    ->orWhere('generic_name', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%");
             });
         }
 
@@ -42,16 +42,9 @@ class MedicineController extends Controller
         return view('medicines.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreMedicineRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'brand_name' => 'required|string|max:255',
-            'dosage_type' => 'required|string|max:50',
-            'company_name' => 'nullable|string|max:255',
-            'package_mark' => 'nullable|string|max:50',
-        ]);
-
-        Medicine::create($validated);
+        Medicine::create($request->validated());
 
         return redirect('/medicines')->with('success', 'Medicine created successfully!');
     }
@@ -59,27 +52,22 @@ class MedicineController extends Controller
     public function show($id): View
     {
         $medicine = Medicine::findOrFail($id);
+
         return view('medicines.show', compact('medicine'));
     }
 
     public function edit($id): View
     {
         $medicine = Medicine::findOrFail($id);
+
         return view('medicines.edit', compact('medicine'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateMedicineRequest $request, $id): RedirectResponse
     {
         $medicine = Medicine::findOrFail($id);
 
-        $validated = $request->validate([
-            'brand_name' => 'required|string|max:255',
-            'dosage_type' => 'required|string|max:50',
-            'company_name' => 'nullable|string|max:255',
-            'package_mark' => 'nullable|string|max:50',
-        ]);
-
-        $medicine->update($validated);
+        $medicine->update($request->validated());
 
         return redirect('/medicines')->with('success', 'Medicine updated successfully!');
     }
@@ -106,7 +94,7 @@ class MedicineController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $medicines
+            'data' => $medicines,
         ]);
     }
 
@@ -121,7 +109,7 @@ class MedicineController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $medicines
+            'data' => $medicines,
         ]);
     }
 
@@ -163,7 +151,9 @@ class MedicineController extends Controller
         foreach ($batches as $batch) {
             $records = [];
             foreach ($batch as $data) {
-                if (empty($data[0])) continue;
+                if (empty($data[0])) {
+                    continue;
+                }
 
                 $records[] = [
                     'brand_name' => $data[0] ?? '',
@@ -177,7 +167,7 @@ class MedicineController extends Controller
                 ];
             }
 
-            if (!empty($records)) {
+            if (! empty($records)) {
                 Medicine::insert($records);
                 $totalImported += count($records);
             }
@@ -186,7 +176,7 @@ class MedicineController extends Controller
         return redirect('/medicines')->with('success', "{$totalImported} medicines imported successfully!");
     }
 
-    public function template(): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function template(): StreamedResponse
     {
         $headers = [
             'Content-Type' => 'text/csv',
@@ -201,15 +191,15 @@ class MedicineController extends Controller
         }, 200, $headers);
     }
 
-    public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(Request $request): StreamedResponse
     {
         $search = $request->input('search', '');
         $query = Medicine::query();
 
         if ($search) {
             $query->where('brand_name', 'like', "%{$search}%")
-                  ->orWhere('generic_name', 'like', "%{$search}%")
-                  ->orWhere('company_name', 'like', "%{$search}%");
+                ->orWhere('generic_name', 'like', "%{$search}%")
+                ->orWhere('company_name', 'like', "%{$search}%");
         }
 
         $medicines = $query->orderBy('id', 'desc')->get();

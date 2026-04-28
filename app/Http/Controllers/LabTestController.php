@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\LabTest;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LabTestController extends Controller
 {
@@ -25,8 +26,8 @@ class LabTestController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('test', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('department', 'like', "%{$search}%");
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhere('department', 'like', "%{$search}%");
             });
         }
 
@@ -40,20 +41,9 @@ class LabTestController extends Controller
         return view('lab_tests.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreLabTestRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'department' => 'required|string|max:255',
-            'sample_type' => 'required|string|max:255',
-            'panel' => 'nullable|string|max:255',
-            'test' => 'required|string|max:255',
-            'code' => 'required|string|max:255|unique:lab_tests',
-            'unit' => 'nullable|string|max:50',
-            'result_type' => 'nullable|string|max:50',
-            'normal_range' => 'nullable|string|max:255',
-        ]);
-
-        LabTest::create($validated);
+        LabTest::create($request->validated());
 
         return redirect('/lab_tests')->with('success', 'Lab Test created successfully!');
     }
@@ -61,25 +51,15 @@ class LabTestController extends Controller
     public function edit($id): View
     {
         $test = LabTest::findOrFail($id);
+
         return view('lab_tests.edit', compact('test'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateLabTestRequest $request, $id): RedirectResponse
     {
         $test = LabTest::findOrFail($id);
 
-        $validated = $request->validate([
-            'department' => 'required|string|max:255',
-            'sample_type' => 'required|string|max:255',
-            'panel' => 'nullable|string|max:255',
-            'test' => 'required|string|max:255',
-            'code' => 'required|string|max:255|unique:lab_tests,code,' . $id,
-            'unit' => 'nullable|string|max:50',
-            'result_type' => 'nullable|string|max:50',
-            'normal_range' => 'nullable|string|max:255',
-        ]);
-
-        $test->update($validated);
+        $test->update($request->validated());
 
         return redirect('/lab_tests')->with('success', 'Lab Test updated successfully!');
     }
@@ -107,8 +87,8 @@ class LabTestController extends Controller
         if ($term) {
             $query->where(function ($q) use ($term) {
                 $q->where('test', 'like', "%{$term}%")
-                  ->orWhere('code', 'like', "%{$term}%")
-                  ->orWhere('department', 'like', "%{$term}%");
+                    ->orWhere('code', 'like', "%{$term}%")
+                    ->orWhere('department', 'like', "%{$term}%");
             });
         }
 
@@ -124,7 +104,7 @@ class LabTestController extends Controller
                 'total' => $tests->total(),
                 'from' => $tests->firstItem(),
                 'to' => $tests->lastItem(),
-            ]
+            ],
         ]);
     }
 
@@ -177,7 +157,7 @@ class LabTestController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            return redirect('/lab_tests')->with('error', 'Error reading file: ' . $e->getMessage());
+            return redirect('/lab_tests')->with('error', 'Error reading file: '.$e->getMessage());
         }
 
         if (empty($rows)) {
@@ -213,7 +193,9 @@ class LabTestController extends Controller
         foreach ($batches as $batch) {
             $records = [];
             foreach ($batch as $data) {
-                if (empty($data) || !is_array($data)) continue;
+                if (empty($data) || ! is_array($data)) {
+                    continue;
+                }
 
                 $department = trim($data[0] ?? '');
                 $sampleType = trim($data[1] ?? '');
@@ -225,7 +207,7 @@ class LabTestController extends Controller
                 $normalRange = trim($data[7] ?? '');
 
                 if (empty($code)) {
-                    $code = 'LAB-' . strtoupper(substr(preg_replace('/\s+/', '', $department), 0, 3) . substr(preg_replace('/\s+/', '', $test), 0, 3) . rand(100, 999));
+                    $code = 'LAB-'.strtoupper(substr(preg_replace('/\s+/', '', $department), 0, 3).substr(preg_replace('/\s+/', '', $test), 0, 3).rand(100, 999));
                 }
 
                 $records[] = [
@@ -242,7 +224,7 @@ class LabTestController extends Controller
                 ];
             }
 
-            if (!empty($records)) {
+            if (! empty($records)) {
                 try {
                     LabTest::insert($records);
                     $totalImported += count($records);
@@ -262,7 +244,7 @@ class LabTestController extends Controller
         return redirect('/lab_tests')->with('success', "{$totalImported} lab tests imported successfully!");
     }
 
-    public function template(): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function template(): StreamedResponse
     {
         $headers = [
             'Content-Type' => 'text/csv',
@@ -277,15 +259,15 @@ class LabTestController extends Controller
         }, 200, $headers);
     }
 
-    public function export(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(Request $request): StreamedResponse
     {
         $search = $request->input('search', '');
         $query = LabTest::query();
 
         if ($search) {
             $query->where('test', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('department', 'like', "%{$search}%");
+                ->orWhere('code', 'like', "%{$search}%")
+                ->orWhere('department', 'like', "%{$search}%");
         }
 
         $tests = $query->orderBy('id', 'desc')->get();
@@ -326,13 +308,14 @@ class LabTestController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $tests
+            'data' => $tests,
         ]);
     }
 
     public function show($id): View
     {
         $test = LabTest::findOrFail($id);
+
         return view('lab_tests.show', compact('test'));
     }
 }

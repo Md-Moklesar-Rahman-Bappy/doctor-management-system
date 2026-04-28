@@ -58,29 +58,33 @@ This project provides full CRUD coverage for doctors, patients, prescriptions, p
     ```
 
 2. Install dependencies:
-    ```bash
-    composer install
-    npm install
-    npm run dev
-    ```
+```bash
+composer install
+```
+```bash
+npm install
+```
+```bash
+npm run dev
+```
 
 3. Configure environment:
 - Copy .env.example → .env
 - Update database credentials
 - Set APP_KEY:
-    ```bash
-    php artisan key:generate
-    ```
+```bash
+php artisan key:generate
+```
 
 4. Run migrations:
-    ```bash
-    php artisan migrate
-    ```
+```bash
+php artisan migrate
+```
 
 5. Seed default admin:
-    ```bash
-    php artisan db:seed
-    ```
+```bash
+php artisan db:seed
+```
 - Login: admin@admin.com / 12345678
 
 ## 🧭 Usage
