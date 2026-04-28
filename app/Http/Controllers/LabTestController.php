@@ -220,11 +220,18 @@ class LabTestController extends Controller
                 $test = trim($data[3] ?? '');
                 $department = trim($data[0] ?? '');
 
-                if (empty($code) || empty($test) || empty($department)) {
+                // Skip if required fields missing
+                if (empty($test) || empty($department)) {
                     $skippedEmpty++;
                     continue;
                 }
 
+                // Auto-generate code if empty
+                if (empty($code)) {
+                    $code = 'LAB-' . strtoupper(substr(preg_replace('/\s+/', '', $department), 0, 3) . substr(preg_replace('/\s+/', '', $test), 0, 3) . rand(100, 999));
+                }
+
+                // Check for duplicate code
                 if (LabTest::where('code', $code)->exists()) {
                     $skippedDuplicates++;
                     continue;

@@ -214,7 +214,7 @@ document.getElementById('patient-search').addEventListener('input', function() {
     const searchTerm = this.value;
     const dropdown = document.getElementById('patient-dropdown');
 
-    if (searchTerm.length < 2) {
+    if (searchTerm.length < 3) {
         dropdown.classList.add('hidden');
         return;
     }
