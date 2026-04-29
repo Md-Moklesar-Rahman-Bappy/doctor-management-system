@@ -1,16 +1,56 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
-    ['label' => 'Lab Test Reports', 'url' => route('lab_test_reports.index')],
+    ['label' => 'Lab Reports', 'url' => route('lab_test_reports.index')],
 ];
-?>
+@endphp
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h3 class="text-2xl font-bold text-slate-900">Lab Test Reports</h3>
-            <p class="text-slate-500">Manage patient lab test reports</p>
+            <h1 class="text-2xl font-bold text-secondary-900">Lab Reports</h1>
+            <p class="text-secondary-500">Manage patient lab test reports</p>
+        </div>
+        <a href="{{ route('lab_test_reports.create') }}" class="btn-primary inline-flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Lab Report
+        </a>
+    </div>
+
+    @if(session('success'))
+        <x-alert variant="success" :dismissible="true">
+            {{ session('success') }}
+        </x-alert>
+    @endif
+
+    @if(session('error'))
+        <x-alert variant="danger" :dismissible="true">
+            {{ session('error') }}
+        </x-alert>
+    @endif
+
+    <x-card>
+        <div class="p-4 border-b border-secondary-200">
+            <form method="GET" action="{{ route('lab_test_reports.index') }}" class="flex items-center gap-2">
+                <div class="relative flex-1 max-w-md">
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search by patient ID or name..." class="w-full pl-10 pr-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <button type="submit" class="btn-secondary">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Search
+                </button>
+                @if($search)
+                <a href="{{ route('lab_test_reports.index') }}" class="px-3 py-2 text-secondary-500 hover:text-secondary-700">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                </a>
+                @endif
+            </form>
         </div>
         <a href="/lab-test-reports/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

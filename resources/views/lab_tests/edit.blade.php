@@ -10,8 +10,8 @@ $breadcrumbs = [
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
-            <a href="/lab_tests" class="p-2 hover:bg-slate-100 rounded-lg">
-                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('lab_tests.index') }}" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
@@ -21,63 +21,40 @@ $breadcrumbs = [
     </div>
 
     <div class="max-w-3xl">
-        <form action="/lab_tests/{{ $test->id }}" method="POST" class="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            @csrf
-            @method('PUT')
+        <x-card>
+            <form action="{{ route('lab_tests.update', $test->id) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Department *</label>
-                    <input type="text" name="department" value="{{ $test->department }}" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-input name="department" label="Department" :value="old('department', $test->department)" placeholder="e.g., Biochemistry" required />
+
+                    <x-input name="sample_type" label="Sample Type" :value="old('sample_type', $test->sample_type)" placeholder="e.g., Blood, Urine" required />
+
+                    <x-input name="panel" label="Panel" :value="old('panel', $test->panel)" placeholder="e.g., Liver Function" required />
+
+                    <x-input name="test" label="Test Name" :value="old('test', $test->test)" placeholder="e.g., ALT, AST" required />
+
+                    <x-input name="code" label="Code" :value="old('code', $test->code)" placeholder="e.g., SGPT" />
+
+                    <x-input name="unit" label="Unit" :value="old('unit', $test->unit)" placeholder="e.g., U/L, mg/dL" />
+
+                    <x-select name="result_type" label="Result Type" :options="[
+                        'Numeric' => 'Numeric',
+                        'Text' => 'Text',
+                        'Qualitative' => 'Qualitative',
+                        'Range' => 'Range',
+                    ]" :value="old('result_type', $test->result_type)" placeholder="Select type" required />
+
+                    <x-input name="normal_range" label="Normal Range" :value="old('normal_range', $test->normal_range)" placeholder="e.g., 7-56 or Normal" />
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Sample Type *</label>
-                    <input type="text" name="sample_type" value="{{ $test->sample_type }}" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+                    <a href="{{ route('lab_tests.index') }}" class="btn-secondary">Cancel</a>
+                    <x-button type="submit">Update Test</x-button>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Panel *</label>
-                    <input type="text" name="panel" value="{{ $test->panel }}" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Test Name *</label>
-                    <input type="text" name="test" value="{{ $test->test }}" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Code</label>
-                    <input type="text" name="code" value="{{ $test->code }}" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Unit</label>
-                    <input type="text" name="unit" value="{{ $test->unit }}" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Result Type *</label>
-                    <select name="result_type" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="">Select type</option>
-                        <option value="Numeric" {{ $test->result_type == 'Numeric' ? 'selected' : '' }}>Numeric</option>
-                        <option value="Text" {{ $test->result_type == 'Text' ? 'selected' : '' }}>Text</option>
-                        <option value="Qualitative" {{ $test->result_type == 'Qualitative' ? 'selected' : '' }}>Qualitative</option>
-                        <option value="Range" {{ $test->result_type == 'Range' ? 'selected' : '' }}>Range</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Normal Range</label>
-                    <input type="text" name="normal_range" value="{{ $test->normal_range }}" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g., 7-56 or Normal">
-                </div>
-            </div>
-
-            <div class="flex gap-3 pt-4">
-                <a href="/lab_tests" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">Cancel</a>
-                <button type="submit" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">Update Test</button>
-            </div>
-        </form>
+            </form>
+        </x-card>
     </div>
 </div>
 @endsection

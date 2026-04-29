@@ -9,94 +9,157 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    /* Primary Colors - Medical Emerald */
-    --color-primary-50: #ecfdf5;
-    --color-primary-100: #d1fae5;
-    --color-primary-200: #a7f3d0;
-    --color-primary-300: #6ee7b7;
-    --color-primary-400: #34d399;
-    --color-primary-500: #10b981;
-    --color-primary-600: #059669;
-    --color-primary-700: #047857;
-    --color-primary-800: #065f46;
-    --color-primary-900: #064e3b;
+    /* ===== TailAdmin Brand Colors (Primary) ===== */
+    --color-brand-25: #f9fafe;
+    --color-brand-50: #eff4ff;
+    --color-brand-100: #dbe5ff;
+    --color-brand-200: #bacfff;
+    --color-brand-300: #91b4ff;
+    --color-brand-400: #6188ff;
+    --color-brand-500: #465fff;
+    --color-brand-600: #3b4fde;
+    --color-brand-700: #2c3fb5;
+    --color-brand-800: #25338c;
+    --color-brand-900: #1e2a73;
+    --color-brand-950: #0f1533;
 
-    /* Secondary Colors - Slate */
-    --color-secondary-50: #f8fafc;
-    --color-secondary-100: #f1f5f9;
-    --color-secondary-200: #e2e8f0;
-    --color-secondary-300: #cbd5e1;
-    --color-secondary-400: #94a3b8;
-    --color-secondary-500: #64748b;
-    --color-secondary-600: #475569;
-    --color-secondary-700: #334155;
-    --color-secondary-800: #1e293b;
-    --color-secondary-900: #0f172a;
+    /* ===== Gray Scale - TailAdmin ===== */
+    --color-gray-25: #fcfcfd;
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+    --color-gray-950: #030712;
 
-    /* Accent Colors */
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-danger: #ef4444;
-    --color-info: #3b82f6;
+    /* ===== Success Colors ===== */
+    --color-success-25: #f6fef9;
+    --color-success-50: #ecfdf3;
+    --color-success-100: #d1fadf;
+    --color-success-200: #a6f4c5;
+    --color-success-300: #6ce9a6;
+    --color-success-400: #32d583;
+    --color-success-500: #12b76a;
+    --color-success-600: #039855;
+    --color-success-700: #027a48;
+    --color-success-800: #05603a;
+    --color-success-900: #074d31;
+    --color-success-950: #051f14;
 
-    /* Shadows */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    /* ===== Error Colors ===== */
+    --color-error-25: #fef6f6;
+    --color-error-50: #fef3f2;
+    --color-error-100: #fee4e2;
+    --color-error-200: #fecdca;
+    --color-error-300: #fda29b;
+    --color-error-400: #f97066;
+    --color-error-500: #f04438;
+    --color-error-600: #d92d20;
+    --color-error-700: #b42318;
+    --color-error-800: #912018;
+    --color-error-900: #771d1d;
+    --color-error-950: #3e0707;
 
-    /* Border Radius */
+    /* ===== Warning Colors ===== */
+    --color-warning-25: #fffcf5;
+    --color-warning-50: #fff7e6;
+    --color-warning-100: #ffefc7;
+    --color-warning-200: #ffd59e;
+    --color-warning-300: #ffc078;
+    --color-warning-400: #ffa94d;
+    --color-warning-500: #fa8232;
+    --color-warning-600: #e56e2b;
+    --color-warning-700: #c7510e;
+    --color-warning-800: #a03a09;
+    --color-warning-900: #832d07;
+    --color-warning-950: #451404;
+
+    /* ===== Blue Light (Info) Colors ===== */
+    --color-blue-light-25: #f5faff;
+    --color-blue-light-50: #eaf3ff;
+    --color-blue-light-100: #d1e6ff;
+    --color-blue-light-200: #b1d4ff;
+    --color-blue-light-300: #84bcff;
+    --color-blue-light-400: #53a0ff;
+    --color-blue-light-500: #3783f5;
+    --color-blue-light-600: #1c6de4;
+    --color-blue-light-700: #1559c1;
+    --color-blue-light-800: #174a9f;
+    --color-blue-light-900: #163d82;
+    --color-blue-light-950: #0b1e42;
+
+    /* ===== Shadows - TailAdmin Style ===== */
+    --shadow-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    --shadow-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+    --shadow-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+    --shadow-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+
+    /* ===== Border Radius ===== */
     --radius-sm: 0.375rem;
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
     --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
 }
 
-/* Navigation Styles */
+/* ===== TailAdmin Layout Styles ===== */
+
+/* Sidebar */
+.sidebar {
+    @apply fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-transform duration-300;
+}
+
+.sidebar-header {
+    @apply flex items-center gap-3 px-6 h-16 border-b border-gray-200;
+}
+
+.sidebar-logo {
+    @apply w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center;
+}
+
 .nav-item {
-    @apply flex items-center gap-3 px-4 py-2.5 text-secondary-600 hover:bg-secondary-100 hover:text-secondary-900 rounded-lg transition-all duration-200 text-sm font-medium;
+    @apply flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-all duration-200 text-sm font-medium;
 }
 
 .nav-item.active {
     @apply bg-primary-50 text-primary-700 hover:bg-primary-100;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+/* Header */
+.header {
+    @apply sticky top-0 z-40 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8;
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
+/* Cards */
+.card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
 }
 
-::-webkit-scrollbar-thumb {
-    @apply bg-secondary-300 rounded-full;
+.card-header {
+    @apply px-6 py-4 border-b border-gray-200;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-secondary-400;
+.card-body {
+    @apply p-6;
 }
 
-/* Smooth Transitions */
-* {
-    @apply transition-colors duration-150;
+/* Stats Card */
+.stats-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
 }
 
-/* Card Hover Effects */
-.card-hover {
-    @apply hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+.stats-card-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center;
 }
 
-/* Input Focus Styles */
-input:focus, select:focus, textarea:focus {
-    @apply ring-2 ring-primary-500 border-primary-500 outline-none;
-}
-
-/* Button Base */
+/* Buttons - TailAdmin Style */
 .btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
 }
@@ -106,7 +169,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-secondary {
-    @apply btn bg-white text-secondary-700 border border-secondary-300 hover:bg-secondary-50 focus:ring-secondary-500 shadow-sm;
+    @apply btn bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500 shadow-sm;
 }
 
 .btn-danger {
@@ -121,9 +184,50 @@ input:focus, select:focus, textarea:focus {
     @apply btn bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-500 shadow-sm;
 }
 
-/* Table Styles */
-.table-hover tr:hover {
-    @apply bg-secondary-50;
+/* Form Elements - TailAdmin Style */
+.form-input {
+    @apply w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900 placeholder-gray-400;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+}
+
+.form-help {
+    @apply mt-1.5 text-xs text-gray-500;
+}
+
+.form-error {
+    @apply mt-1.5 text-xs text-red-600;
+}
+
+/* Table Styles - TailAdmin */
+.table-container {
+    @apply overflow-x-auto;
+}
+
+.table {
+    @apply w-full;
+}
+
+.table thead {
+    @apply bg-gray-50;
+}
+
+.table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider;
+}
+
+.table td {
+    @apply px-4 py-4 text-sm;
+}
+
+.table tbody tr {
+    @apply border-b border-gray-200 transition-colors;
+}
+
+.table tbody tr:hover {
+    @apply bg-gray-50;
 }
 
 /* Badge Styles */
@@ -132,7 +236,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .badge-success {
-    @apply badge bg-primary-100 text-primary-800;
+    @apply badge bg-emerald-100 text-emerald-800;
 }
 
 .badge-warning {
@@ -147,60 +251,13 @@ input:focus, select:focus, textarea:focus {
     @apply badge bg-blue-100 text-blue-800;
 }
 
-/* Form Styles */
-.form-input {
-    @apply w-full px-4 py-2.5 text-sm border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-secondary-900 placeholder-secondary-400;
-}
-
-.form-label {
-    @apply block text-sm font-medium text-secondary-700 mb-1.5;
-}
-
-.form-help {
-    @apply mt-1.5 text-xs text-secondary-500;
-}
-
-.form-error {
-    @apply mt-1.5 text-xs text-red-600;
-}
-
-/* Card Styles */
-.card {
-    @apply bg-white rounded-xl border border-secondary-200 shadow-sm;
-}
-
-.card-header {
-    @apply px-6 py-4 border-b border-secondary-200;
-}
-
-.card-body {
-    @apply p-6;
-}
-
-/* Empty State */
-.empty-state {
-    @apply flex flex-col items-center justify-center py-12 px-4;
-}
-
-.empty-state-icon {
-    @apply w-16 h-16 text-secondary-300 mb-4;
-}
-
-.empty-state-title {
-    @apply text-lg font-medium text-secondary-900 mb-2;
-}
-
-.empty-state-description {
-    @apply text-sm text-secondary-500 text-center max-w-sm;
-}
-
 /* Alert Styles */
 .alert {
     @apply flex items-start gap-3 p-4 rounded-lg border text-sm;
 }
 
 .alert-success {
-    @apply alert bg-primary-50 border-primary-200 text-primary-800;
+    @apply alert bg-emerald-50 border-emerald-200 text-emerald-800;
 }
 
 .alert-danger {
@@ -215,30 +272,53 @@ input:focus, select:focus, textarea:focus {
     @apply alert bg-blue-50 border-blue-200 text-blue-800;
 }
 
-/* Modal Styles */
-.modal-backdrop {
-    @apply fixed inset-0 bg-secondary-900/50 z-50 flex items-center justify-center p-4;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-.modal-content {
-    @apply bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.modal-header {
-    @apply flex items-center justify-between px-6 py-4 border-b border-secondary-200;
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
 }
 
-.modal-body {
-    @apply p-6;
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
 }
 
-.modal-footer {
-    @apply flex items-center justify-end gap-3 px-6 py-4 border-t border-secondary-200;
+/* Page Title */
+.page-title {
+    @apply text-2xl font-bold text-gray-900;
+}
+
+.page-description {
+    @apply text-gray-500 mt-1;
+}
+
+/* Empty State */
+.empty-state {
+    @apply flex flex-col items-center justify-center py-12 px-4;
+}
+
+.empty-state-icon {
+    @apply w-16 h-16 text-gray-300 mb-4;
+}
+
+.empty-state-title {
+    @apply text-lg font-medium text-gray-900 mb-2;
+}
+
+.empty-state-description {
+    @apply text-sm text-gray-500 text-center max-w-sm;
 }
 
 /* Pagination */
 .pagination {
-    @apply flex items-center justify-center gap-1;
+    @apply flex items-center gap-1;
 }
 
 .page-link {
@@ -250,9 +330,41 @@ input:focus, select:focus, textarea:focus {
 }
 
 .page-link-inactive {
-    @apply text-secondary-600 hover:bg-secondary-100;
+    @apply text-gray-600 hover:bg-gray-100;
 }
 
+/* Search Input */
+.search-input {
+    @apply w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm bg-white;
+}
+
+/* Dropdown */
+.dropdown {
+    @apply absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto;
+}
+
+/* Modal */
+.modal-backdrop {
+    @apply fixed inset-0 bg-gray-900/50 z-50 flex items-center justify-center p-4;
+}
+
+.modal-content {
+    @apply bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto;
+}
+
+.modal-header {
+    @apply flex items-center justify-between px-6 py-4 border-b border-gray-200;
+}
+
+.modal-body {
+    @apply p-6;
+}
+
+.modal-footer {
+    @apply flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200;
+}
+
+/* Print Styles */
 @media print {
     body * {
         visibility: hidden;
@@ -278,19 +390,19 @@ input:focus, select:focus, textarea:focus {
 
     .bg-white {
         box-shadow: none !important;
-        border: 1px solid #e2e8f0 !important;
+        border: 1px solid #e5e7eb !important;
     }
 
-    .text-secondary-500 {
-        color: #64748b !important;
+    .text-gray-500 {
+        color: #6b7280 !important;
     }
 
-    .text-secondary-900 {
-        color: #0f172a !important;
+    .text-gray-900 {
+        color: #111827 !important;
     }
 
     h3, h5 {
-        color: #0f172a !important;
+        color: #111827 !important;
     }
 
     table {
@@ -299,17 +411,17 @@ input:focus, select:focus, textarea:focus {
     }
 
     th, td {
-        border: 1px solid #e2e8f0 !important;
+        border: 1px solid #e5e7eb !important;
         padding: 8px !important;
     }
 
     th {
-        background-color: #f8fafc !important;
+        background-color: #f9fafb !important;
     }
 
     .inline-flex, .rounded-full {
-        background-color: #f1f5f9 !important;
-        color: #334155 !important;
+        background-color: #f3f4f6 !important;
+        color: #374151 !important;
     }
 
     @page {

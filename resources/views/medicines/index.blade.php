@@ -7,10 +7,11 @@ $breadcrumbs = [
 ];
 @endphp
 <div>
+    <!-- Page Header -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-secondary-900">Medicines</h1>
-            <p class="text-secondary-500">Manage medicine inventory</p>
+            <h3 class="page-title">Medicines</h3>
+            <p class="page-description">Manage medicine inventory</p>
         </div>
         <a href="{{ route('medicines.create') }}" class="btn-primary inline-flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,421 +22,195 @@ $breadcrumbs = [
     </div>
 
     @if(session('success'))
-    <x-alert variant="success" :dismissible="true">
-        {{ session('success') }}
-    </x-alert>
+        <x-alert variant="success" :dismissible="true">
+            {{ session('success') }}
+        </x-alert>
     @endif
 
     @if(session('warning'))
-    <x-alert variant="warning" :dismissible="true">
-        <div class="flex items-center justify-between w-full">
-            <span>{{ session('warning') }}</span>
-            <div class="flex items-center gap-2">
-                @if(session('duplicate_rows'))
-                <a href="/medicines/download-duplicates" class="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">Duplicates</a>
-                @endif
-                @if(session('failed_rows'))
-                <a href="/medicines/download-failed" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
-                @endif
+        <x-alert variant="warning" :dismissible="true">
+            <div class="flex items-center justify-between w-full">
+                <span>{{ session('warning') }}</span>
+                <div class="flex items-center gap-2">
+                    @if(session('failed_rows'))
+                    <a href="{{ route('medicines.export-failed') }}" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
+                    @endif
+                </div>
             </div>
-        </div>
-    </x-alert>
-    @endif
-
-    @if(session('error'))
-    <x-alert variant="danger" :dismissible="true">
-        {{ session('error') }}
-    </x-alert>
+        </x-alert>
     @endif
 
     <x-card>
-        <div class="p-4 border-b border-secondary-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <!-- Filter/Search Header -->
+        <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <form method="GET" action="{{ route('medicines.index') }}" class="flex items-center gap-2 flex-1">
                 <div class="relative flex-1 max-w-md">
-                    <input type="text"
-                           name="search"
-                           id="medicineSearch"
-                           value="{{ $search ?? '' }}"
-                           placeholder="Search brand or generic name..."
-                           class="w-full pl-10 pr-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                           autocomplete="off">
-                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <input type="text" name="search" value="{{ $search ?? '' }}"
+                           class="search-input" placeholder="Search brand or generic name...">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-secondary-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"></div>
                 </div>
                 <button type="submit" class="btn-secondary">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Search
                 </button>
                 @if($search)
-                <a href="{{ route('medicines.index') }}" class="px-3 py-2 text-secondary-500 hover:text-secondary-700">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                <a href="{{ route('medicines.index') }}" class="px-3 py-2 text-gray-500 hover:text-gray-700">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear
                 </a>
                 @endif
             </form>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('medicines.template') }}" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Download Template">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Template
+                <a href="{{ route('medicines.template') }}" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Download Template">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                    Template
                 </a>
-                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Export CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Export
+                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Export CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4 4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export
                 </button>
-                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Import CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Import
-                </button>
-            </div>
-        </div>
-        <a href="/medicines/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Add Medicine
-        </a>
-    </div>
-
-    @if(session('success'))
-    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg flex items-center justify-between">
-        <span>{{ session('success') }}</span>
-    </div>
-    @endif
-
-    @if(session('warning'))
-    <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg">
-        <div class="flex items-center justify-between">
-                <span>{{ session('warning') }}</span>
-            <div class="flex items-center gap-2">
-                @if(session('duplicate_rows'))
-                <a href="/medicines/download-duplicates" class="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">Duplicates</a>
-                @endif
-                @if(session('failed_rows'))
-                <a href="/medicines/download-failed" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-        {{ session('error') }}
-    </div>
-    @endif
-
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div class="p-4 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <form method="GET" action="/medicines" class="flex items-center gap-2">
-                <div class="relative">
-                    <input type="text"
-                           name="search"
-                           id="medicineSearch"
-                           value="{{ $search ?? '' }}"
-                           placeholder="Search brand or generic name..."
-                           class="w-64 px-4 py-2 pl-10 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                           autocomplete="off"
-                           onkeyup="searchMedicine(this.value)">
-                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"></div>
-                </div>
-                <button type="submit" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">Search</button>
-                @if($search)
-                <a href="/medicines" class="px-3 py-2 text-slate-500 hover:text-slate-700">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
-                </a>
-                @endif
-            </form>
-
-            <div class="flex items-center gap-2">
-                <a href="/medicines/template" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Download Template">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> Template
-                </a>
-                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Export CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4 4l-4 4m0 0l-4-4m4 4V4"/></svg> Export
-                </button>
-                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Import CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Import
+                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Import CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                    Import
                 </button>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-        <table class="w-full">
-            <thead class="bg-slate-50 border-b border-slate-200">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">SL</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
-                        <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
-                            Brand Name
-                            @if(request('sort') == 'brand_name')
-                                <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
-                            @endif
-                        </a>
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
-                        <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
-                            Generic Name
-                            @if(request('sort') == 'generic_name')
-                                <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
-                            @endif
-                        </a>
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Dosage Type</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Strength</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Company</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Package</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Action</th>
-                </tr>
-            </thead>
-            <tbody id="medicinesTableBody" class="divide-y divide-slate-200">
-                @forelse($medicines as $index => $medicine)
-                <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 text-sm">{{ $medicines->firstItem() + $index }}</td>
-                    <td class="px-4 py-3 text-sm font-medium">{{ $medicine->brand_name }}</td>
-                    <td class="px-4 py-3 text-sm">{{ $medicine->generic_name }}</td>
-                    <td class="px-4 py-3 text-sm">{{ $medicine->dosage_type }}</td>
-                    <td class="px-4 py-3 text-sm">{{ $medicine->strength }}</td>
-                    <td class="px-4 py-3 text-sm">{{ $medicine->company_name ?? 'N/A' }}</td>
-                    <td class="px-4 py-3 text-sm">{{ $medicine->package_mark ?? 'N/A' }}</td>
-                    <td class="px-4 py-3">
-                        <div class="flex items-center gap-2">
-                            <a href="/medicines/{{ $medicine->id }}/edit" class="p-3 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        <!-- Table -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>
+                            <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                                Brand Name
+                                @if(request('sort') == 'brand_name')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
                             </a>
-                            <form method="POST" action="/medicines/{{ $medicine->id }}" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="p-3 text-red-600 hover:bg-red-50 rounded" title="Delete" onclick="return confirm('Are you sure?')">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" class="px-4 py-12 text-center">
-                        <div class="flex flex-col items-center gap-4">
-                            <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-                            </svg>
-                            <div>
-                                <p class="text-lg font-medium text-slate-500">No medicines found</p>
-                                <p class="text-sm text-slate-400 mt-1">Add your first medicine to get started</p>
+                        </th>
+                        <th>
+                            <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                                Generic Name
+                                @if(request('sort') == 'generic_name')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th>Dosage Type</th>
+                        <th>Strength</th>
+                        <th>Company</th>
+                        <th>Package</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($medicines as $index => $medicine)
+                    <tr>
+                        <td class="text-gray-600">{{ $medicines->firstItem() + $index }}</td>
+                        <td>
+                            <div class="font-medium text-gray-900">{{ $medicine->brand_name }}</div>
+                        </td>
+                        <td class="text-gray-600">{{ $medicine->generic_name }}</td>
+                        <td class="text-gray-600">{{ $medicine->dosage_type }}</td>
+                        <td class="text-gray-600">{{ $medicine->strength }}</td>
+                        <td class="text-gray-600">{{ $medicine->company_name ?? 'N/A' }}</td>
+                        <td class="text-gray-600">{{ $medicine->package_mark ?? 'N/A' }}</td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <a href="{{ route('medicines.edit', $medicine->id) }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </a>
+                                <form method="POST" action="{{ route('medicines.destroy', $medicine->id) }}" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 text-danger hover:bg-red-50 rounded-lg transition-colors" title="Delete" onclick="return confirm('Are you sure?')">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
                             </div>
-                            <a href="{{ route('medicines.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-lg">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                Add Medicine
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-12">
+                            <x-empty-state
+                                title="No medicines found"
+                                description="Add your first medicine to get started"
+                            >
+                                <x-slot:action>
+                                    <a href="{{ route('medicines.create') }}" class="btn-primary inline-flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        Add Medicine
+                                    </a>
+                                </x-slot:action>
+                            </x-empty-state>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         @if($medicines->hasPages())
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 border-t border-slate-200 bg-white">
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-slate-500">
-                    Show
-                    <select id="perPageSelect" onchange="changePerPage(this.value)" class="mx-1 px-2 py-1 border border-slate-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        @php $perPage = $medicines->perPage(); @endphp
-                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
-                    </select>
-                    entries
-                </span>
-                <span class="text-sm text-slate-500">
-                    Showing {{ $medicines->firstItem() }} to {{ $medicines->lastItem() }} of {{ $medicines->total() }}
-                </span>
-            </div>
-
-            <nav class="flex items-center gap-1">
-                @if($medicines->previousPageUrl())
-                <a href="{{ $medicines->previousPageUrl() }}" class="px-3 py-1.5 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
-                </a>
-                @else
-                <span class="px-3 py-1.5 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
-                </span>
-                @endif
-
-                @php
-                $currentPage = $medicines->currentPage();
-                $lastPage = $medicines->lastPage();
-                $startPage = max(1, $currentPage - 2);
-                $endPage = min($lastPage, $currentPage + 2);
-                if ($endPage - $startPage < 4) {
-                    if ($startPage == 1) {
-                        $endPage = min($lastPage, 5);
-                    } else {
-                        $startPage = max(1, $lastPage - 4);
-                    }
-                }
-                @endphp
-
-                @if($startPage > 1)
-                <a href="{{ $medicines->url(1) }}" class="px-3 py-1.5 text-sm border border-slate-200 rounded hover:bg-slate-100">1</a>
-                @if($startPage > 2)
-                <span class="px-3 py-1.5 text-sm text-slate-400">...</span>
-                @endif
-                @endif
-
-                @for($i = $startPage; $i <= $endPage; $i++)
-                @if($i == $currentPage)
-                <span class="px-3 py-1.5 text-sm bg-emerald-500 text-white border border-emerald-500 rounded">{{ $i }}</span>
-                @else
-                <a href="{{ $medicines->url($i) }}" class="px-3 py-1.5 text-sm border border-slate-200 rounded hover:bg-slate-100">{{ $i }}</a>
-                @endif
-                @endfor
-
-                @if($endPage < $lastPage)
-                @if($endPage < $lastPage - 1)
-                <span class="px-3 py-1.5 text-sm text-slate-400">...</span>
-                @endif
-                <a href="{{ $medicines->url($lastPage) }}" class="px-3 py-1.5 text-sm border border-slate-200 rounded hover:bg-slate-100">{{ $lastPage }}</a>
-                @endif
-
-                @if($medicines->nextPageUrl())
-                <a href="{{ $medicines->nextPageUrl() }}" class="px-3 py-1.5 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
-                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-                @else
-                <span class="px-3 py-1.5 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
-                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </span>
-                @endif
-            </nav>
+        <div class="px-4 py-3 border-t border-gray-200">
+            {{ $medicines->links('components.pagination') }}
         </div>
         @endif
-    </div>
+    </x-card>
 
     <!-- Import Modal -->
-    <div id="importModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold mb-4">Import Medicines</h3>
-            <form method="POST" action="/medicines/import" enctype="multipart/form-data">
+    <div id="importModal" class="hidden modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold">Import Medicines</h3>
+                <button onclick="document.getElementById('importModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form action="{{ route('medicines.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4 p-6">
                 @csrf
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Select File (CSV or XLSX)</label>
-                    <input type="file" name="file" accept=".csv,.xlsx,.xls" class="w-full px-3 py-2 border border-slate-200 rounded-lg" required>
-                    <p class="text-xs text-slate-500 mt-1">Format: brand_name, generic_name, dosage_type, strength, company_name, package_mark</p>
+                <div>
+                    <label class="form-label">Select File (CSV or XLSX)</label>
+                    <input type="file" name="file" accept=".csv,.xlsx,.xls" class="form-input" required>
+                    <p class="form-help">Format: brand_name, generic_name, dosage_type, strength, company_name, package_mark</p>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600">Import</button>
+                    <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Import</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Export Modal -->
-    <div id="exportModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold mb-4">Export Medicines</h3>
-            <form method="GET" action="/medicines/export-view">
-                <div class="mb-4">
-                    <p class="text-sm text-slate-600 mb-2">Current filters will be applied:</p>
-                    <p class="text-sm text-slate-500">Search: <span class="font-medium">{{ $search ?? 'None' }}</span></p>
-                    <p class="text-sm text-slate-500">Total: <span class="font-medium">{{ $medicines->total() }} medicines</span></p>
+    <div id="exportModal" class="hidden modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold">Export Medicines</h3>
+                <button onclick="document.getElementById('exportModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form action="{{ route('medicines.export') }}" method="GET" class="space-y-4 p-6">
+                <div>
+                    <p class="text-sm text-gray-600 mb-2">Current filters will be applied:</p>
+                    <p class="text-sm text-gray-500">Search: <span class="font-medium">{{ $search ?? 'None' }}</span></p>
+                    <p class="text-sm text-gray-500">Total: <span class="font-medium">{{ $medicines->total() }} medicines</span></p>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('exportModal').classList.add('hidden')" class="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4 4l-4 4m0 0l-4-4m4 4V4"/></svg> Download CSV
+                    <button type="button" onclick="document.getElementById('exportModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                        Download CSV
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-let searchTimeout;
-
-function searchMedicine(query) {
-    clearTimeout(searchTimeout);
-
-    const results = document.getElementById('searchResults');
-    const form = document.querySelector('form[action="/medicines"]');
-
-    if (query.length < 2) {
-        results.classList.add('hidden');
-        return;
-    }
-
-    searchTimeout = setTimeout(() => {
-        fetch('/medicines/autocomplete?term=' + encodeURIComponent(query))
-            .then(res => res.json())
-            .then(data => {
-                if (data.data && data.data.length > 0) {
-                    let html = '';
-                    data.data.forEach(medicine => {
-                        const displayName = medicine.brand_name || '';
-                        const displayGeneric = medicine.generic_name || '';
-                        const displayDosage = medicine.dosage_type || '';
-                        const displayCompany = medicine.company_name || '';
-                        const medicineId = medicine.id || '';
-                        html += `<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectMedicine(${medicineId}, '${displayName.replace(/'/g, "\\'")}')">
-                            <div class="font-medium text-sm">${displayName}</div>
-                            <div class="text-xs text-slate-500">${displayGeneric} ${displayDosage} ${displayCompany}</div>
-                        </div>`;
-                    });
-                    html += `<div class="border-t border-slate-200 px-4 py-2 hover:bg-slate-100 cursor-pointer text-sm text-emerald-600 font-medium" onclick="showAllResults('${query.replace(/'/g, "\\'")}')">
-                        Show all results for "${query}"
-                    </div>`;
-                    results.innerHTML = html;
-                    results.classList.remove('hidden');
-                } else {
-                    results.innerHTML = '<div class="px-4 py-2 text-xs text-slate-500">No results found</div>';
-                    results.classList.remove('hidden');
-                }
-            })
-            .catch(err => console.error('Search error:', err));
-    }, 300);
-}
-
-function selectMedicine(id, name) {
-    document.getElementById('searchResults').classList.add('hidden');
-    document.getElementById('medicineSearch').value = name;
-    window.location.href = '/medicines/' + id;
-}
-
-function showAllResults(query) {
-    document.getElementById('searchResults').classList.add('hidden');
-    document.getElementById('medicineSearch').value = query;
-    document.querySelector('form[action="/medicines"]').submit();
-}
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && document.activeElement.id === 'medicineSearch') {
-        const query = document.getElementById('medicineSearch').value.trim();
-        if (query.length >= 2) {
-            showAllResults(query);
-        }
-    }
-});
-
-function changePerPage(value) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', value);
-    url.searchParams.set('page', 1);
-    window.location.href = url.toString();
-}
-
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#medicineSearch') && !e.target.closest('#searchResults')) {
-        const results = document.getElementById('searchResults');
-        if (results) results.classList.add('hidden');
-    }
-});
-</script>
-@endpush
 @endsection

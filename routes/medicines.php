@@ -19,6 +19,7 @@ Route::get('/medicines/{id}/edit', [MedicineController::class, 'edit'])->name('m
 Route::post('/medicines/import', [MedicineController::class, 'import'])->name('medicines.import');
 Route::get('/medicines/export', [MedicineController::class, 'export'])->name('medicines.export');
 Route::get('/medicines/export-failed', [MedicineController::class, 'exportFailed'])->name('medicines.export-failed');
+Route::get('/medicines/template', [MedicineController::class, 'template'])->name('medicines.template');
 
 // Home and Dashboard routes
 Route::get('/', function () {

@@ -1,46 +1,19 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
 ];
-?>
+@endphp
 <div>
-    @if(session('success'))
-    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg flex items-center justify-between">
-        <span>{{ session('success') }}</span>
-    </div>
-    @endif
-
-    @if(session('warning'))
-    <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg">
-        <div class="flex items-center justify-between">
-            <span>{{ session('warning') }}</span>
-            <div class="flex items-center gap-2">
-                @if(session('duplicate_rows'))
-                <a href="/lab_tests/download-duplicates" class="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">Duplicates</a>
-                @endif
-                @if(session('failed_rows'))
-                <a href="/lab_tests/download-failed" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
-                @endif
-            </div>
-        </div>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-        {{ session('error') }}
-    </div>
-    @endif
-
+    <!-- Page Header -->
     <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">Lab Tests</h1>
-            <p class="text-slate-500">Manage your laboratory tests</p>
+            <h3 class="page-title">Lab Tests</h3>
+            <p class="page-description">Manage your laboratory tests</p>
         </div>
-        <a href="/lab_tests/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg">
+        <a href="{{ route('lab_tests.create') }}" class="btn-primary inline-flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
@@ -48,84 +21,101 @@ $breadcrumbs = [
         </a>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div class="p-4 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <form method="GET" action="/lab_tests" class="flex items-center gap-2 flex-1">
+    @if(session('success'))
+        <x-alert variant="success" :dismissible="true">
+            {{ session('success') }}
+        </x-alert>
+    @endif
+
+    <x-card>
+        <!-- Filter/Search Header -->
+        <div class="p-4 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <form method="GET" action="{{ route('lab_tests.index') }}" class="flex items-center gap-2 flex-1">
                 <div class="relative flex-1 max-w-md">
-                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" name="search" id="searchInput" value="{{ $search ?? '' }}" autocomplete="off" placeholder="Search by test name, code or department..." class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" onkeyup="searchTest(this.value)">
-                    <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"></div>
+                    <input type="text" name="search" id="searchInput" value="{{ $search ?? '' }}"
+                           class="search-input" placeholder="Search by test name, code or department...">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
                 </div>
-                <button type="submit" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">Search</button>
+                <button type="submit" class="btn-secondary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Search
+                </button>
                 @if($search)
-                <a href="/lab_tests" class="px-3 py-2 text-slate-500 hover:text-slate-700">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                <a href="{{ route('lab_tests.index') }}" class="px-3 py-2 text-gray-500 hover:text-gray-700">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear
                 </a>
                 @endif
             </form>
 
             <div class="flex items-center gap-2">
-                <a href="/lab_tests/template" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Download Template">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg> Template
+                <a href="{{ route('lab_tests.template') }}" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Download Template">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                    Template
                 </a>
-                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Export CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4 4l-4 4m0 0l-4-4m4 4V4"/></svg> Export
+                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Export CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4 4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export
                 </button>
-                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm" title="Import CSV">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Import
+                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm" title="Import CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                    Import
                 </button>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-slate-50 border-b border-slate-200">
+        <!-- Table -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase w-16">SL</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
-                            <a href="{{ route('lab_tests.index', ['sort' => 'department', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-emerald-600">
+                        <th>SL</th>
+                        <th>
+                            <a href="{{ route('lab_tests.index', ['sort' => 'department', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
                                 Department
                                 @if(request('sort') == 'department')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
                                 @endif
                             </a>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sample Type</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Panel</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
-                            <a href="{{ route('lab_tests.index', ['sort' => 'test', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-emerald-600">
+                        <th>Sample Type</th>
+                        <th>Panel</th>
+                        <th>
+                            <a href="{{ route('lab_tests.index', ['sort' => 'test', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
                                 Test
                                 @if(request('sort') == 'test')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
                                 @endif
                             </a>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
-                            <a href="{{ route('lab_tests.index', ['sort' => 'code', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-emerald-600">
+                        <th>
+                            <a href="{{ route('lab_tests.index', ['sort' => 'code', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
                                 Code
                                 @if(request('sort') == 'code')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
                                 @endif
                             </a>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Unit</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Result Type</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Normal Range</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase w-24">Actions</th>
+                        <th>Unit</th>
+                        <th>Result Type</th>
+                        <th>Normal Range</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="testTableBody" class="divide-y divide-slate-200">
+                <tbody class="divide-y divide-gray-200">
                     @forelse($tests as $index => $test)
-                    <tr class="hover:bg-slate-50">
-                        <td class="px-4 py-4 text-sm">{{ $tests->firstItem() + $index }}</td>
-                        <td class="px-4 py-4 text-sm font-medium text-slate-900">{{ $test->department }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600">{{ $test->sample_type }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600">{{ $test->panel }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-900">{{ $test->test }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600 font-mono">{{ $test->code }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600">{{ $test->unit }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600">{{ $test->result_type }}</td>
-                        <td class="px-4 py-4 text-sm text-slate-600">
+                    <tr>
+                        <td class="text-gray-600">{{ $tests->firstItem() + $index }}</td>
+                        <td class="font-medium text-gray-900">{{ $test->department }}</td>
+                        <td class="text-gray-600">{{ $test->sample_type }}</td>
+                        <td class="text-gray-600">{{ $test->panel }}</td>
+                        <td class="font-medium text-gray-900">{{ $test->test }}</td>
+                        <td class="text-gray-600 font-mono">{{ $test->code }}</td>
+                        <td class="text-gray-600">{{ $test->unit }}</td>
+                        <td class="text-gray-600">{{ $test->result_type }}</td>
+                        <td class="text-gray-600">
                             @if($test->normal_range)
                                 {{ $test->normal_range }}
                             @elseif($test->normal_range_lower && $test->normal_range_upper)
@@ -138,12 +128,12 @@ $breadcrumbs = [
                                 -
                             @endif
                         </td>
-                        <td class="px-4 py-4">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="/lab_tests/{{ $test->id }}/edit" class="p-3 text-emerald-600 hover:bg-emerald-50 rounded" title="Edit">
+                        <td>
+                            <div class="flex items-center justify-end gap-1">
+                                <a href="{{ route('lab_tests.edit', $test->id) }}" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </a>
-                                <button type="button" onclick="deleteTest({{ $test->id }})" class="p-3 text-red-500 hover:bg-red-50 rounded" title="Delete">
+                                <button type="button" onclick="deleteTest({{ $test->id }})" class="p-2 text-danger hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </div>
@@ -151,26 +141,24 @@ $breadcrumbs = [
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="px-4 py-12 text-center">
-                            <div class="flex flex-col items-center gap-4">
-                                <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-                                </svg>
-                                <div>
-                                    <p class="text-lg font-medium text-slate-500">No tests found</p>
-                                    <p class="text-sm text-slate-400 mt-1">Add your first test or import from Excel to get started</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <a href="/lab_tests/create" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-lg">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                        Add Test
-                                    </a>
-                                    <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                        Import
-                                    </button>
-                                </div>
-                            </div>
+                        <td colspan="10" class="px-4 py-12">
+                            <x-empty-state
+                                title="No tests found"
+                                description="Add your first test or import from Excel to get started"
+                            >
+                                <x-slot:action>
+                                    <div class="flex gap-2">
+                                        <a href="{{ route('lab_tests.create') }}" class="btn-primary inline-flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                            Add Test
+                                        </a>
+                                        <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="btn-secondary inline-flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                                            Import
+                                        </button>
+                                    </div>
+                                </x-slot:action>
+                            </x-empty-state>
                         </td>
                     </tr>
                     @endforelse
@@ -179,203 +167,73 @@ $breadcrumbs = [
         </div>
 
         @if($tests->hasPages())
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 border-t border-slate-200 bg-white">
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-slate-500">
-                    Show
-                    <select onchange="changePerPage(this.value)" class="mx-1 px-2 py-1 border border-slate-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        @php $perPage = $tests->perPage(); @endphp
-                        <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
-                    </select>
-                    entries
-                </span>
-                <span class="text-sm text-slate-500">
-                    Showing {{ $tests->firstItem() }} to {{ $tests->lastItem() }} of {{ $tests->total() }}
-                </span>
-            </div>
-
-            <nav class="flex items-center gap-1">
-                @if($tests->previousPageUrl())
-                <a href="{{ $tests->previousPageUrl() }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
-                </a>
-                @else
-                <span class="px-3 py-2 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Previous
-                </span>
-                @endif
-
-                @for($i = max(1, $tests->currentPage() - 2); $i <= min($tests->lastPage(), $tests->currentPage() + 2); $i++)
-                @if($i == $tests->currentPage())
-                <span class="px-3 py-2 text-sm bg-emerald-500 text-white border border-emerald-500 rounded">{{ $i }}</span>
-                @else
-                <a href="{{ $tests->url($i) }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100">{{ $i }}</a>
-                @endif
-                @endfor
-
-                @if($tests->nextPageUrl())
-                <a href="{{ $tests->nextPageUrl() }}" class="px-3 py-2 text-sm border border-slate-200 rounded hover:bg-slate-100 flex items-center gap-1">
-                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-                @else
-                <span class="px-3 py-2 text-sm border border-slate-200 rounded text-slate-300 cursor-not-allowed flex items-center gap-1">
-                    Next <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </span>
-                @endif
-            </nav>
+        <div class="px-4 py-3 border-t border-gray-200">
+            {{ $tests->links('components.pagination') }}
         </div>
         @endif
-    </div>
-</div>
+    </x-card>
 
-<!-- Import Modal -->
-<div id="importModal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-        <h3 class="text-lg font-semibold mb-4">Import Tests from Excel</h3>
-        <p class="text-sm text-slate-500 mb-4">Upload an Excel file (.xlsx, .xls, .csv) with columns: department, sample_type, panel, test, code, unit, result_type, normal_range</p>
-        <form action="/lab_tests/import" method="POST" enctype="multipart/form-data" class="space-y-4">
-            @csrf
-            <div>
-                <input type="file" name="file" accept=".xlsx,.xls,.csv" class="w-full border border-slate-200 rounded-lg p-2" required>
+    <!-- Import Modal -->
+    <div id="importModal" class="hidden modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold">Import Tests from Excel</h3>
+                <button onclick="document.getElementById('importModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
-            <div class="flex gap-2 justify-end">
-                <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600">Import</button>
-            </div>
-        </form>
+            <form action="{{ route('lab_tests.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4 p-6">
+                @csrf
+                <p class="text-sm text-gray-500 mb-4">Upload an Excel file (.xlsx, .xls, .csv) with columns: department, sample_type, panel, test, code, unit, result_type, normal_range</p>
+                <div>
+                    <input type="file" name="file" accept=".xlsx,.xls,.csv" class="form-input" required>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Export Modal -->
-<div id="exportModal" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-        <h3 class="text-lg font-semibold mb-4">Export Tests</h3>
-        <form action="/lab_tests/export" method="GET" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-slate-700 mb-2">Search (optional)</label>
-                <input type="text" name="search" value="{{ $search ?? '' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg">
+    <!-- Export Modal -->
+    <div id="exportModal" class="hidden modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold">Export Tests</h3>
+                <button onclick="document.getElementById('exportModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
-            <div class="flex gap-2 justify-end">
-                <button type="button" onclick="document.getElementById('exportModal').classList.add('hidden')" class="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600">Export</button>
-            </div>
-        </form>
+            <form action="{{ route('lab_tests.export') }}" method="GET" class="space-y-4 p-6">
+                <div>
+                    <label class="form-label">Search (optional)</label>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" class="form-input">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="document.getElementById('exportModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg>
+                        Export
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-@if(session('warning') && str_contains(session('warning'), 'failed'))
-<div class="fixed bottom-4 right-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-lg z-50">
-    <div class="flex items-center gap-3">
-        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        <span class="text-yellow-800">Some tests failed to import.</span>
-        <a href="/lab_tests/export-failed" class="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600">Download Failed</a>
-    </div>
-</div>
-@endif
 
 @push('scripts')
 <script>
-let searchTimeout;
-
-function searchTest(query) {
-    clearTimeout(searchTimeout);
-
-    const results = document.getElementById('searchDropdown');
-
-    if (query.length < 2) {
-        results.classList.add('hidden');
-        return;
-    }
-
-    searchTimeout = setTimeout(() => {
-        fetch('/lab_tests/autocomplete?term=' + encodeURIComponent(query))
-            .then(res => res.json())
-            .then(data => {
-                if (data.data && data.data.length > 0) {
-                    let html = '';
-                    data.data.forEach(test => {
-                        const testName = test.test || '';
-                        const department = test.department || '';
-                        const code = test.code || '';
-                        html += `<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectTest(${test.id}, '${testName.replace(/'/g, "\\'")}')">
-                            <div class="font-medium text-sm">${testName}</div>
-                            <div class="text-xs text-slate-500">${department} - ${code}</div>
-                        </div>`;
-                    });
-                    html += `<div class="border-t border-slate-200 px-4 py-2 hover:bg-slate-100 cursor-pointer text-sm text-emerald-600 font-medium" onclick="showAllTestResults('${query.replace(/'/g, "\\'")}')">
-                        Show all results for "${query}"
-                    </div>`;
-                    results.innerHTML = html;
-                    results.classList.remove('hidden');
-                } else {
-                    results.innerHTML = '<div class="px-4 py-2 text-xs text-slate-500">No results found</div>';
-                    results.classList.remove('hidden');
-                }
-            })
-            .catch(err => console.error('Search error:', err));
-    }, 300);
-}
-
-function selectTest(id, name) {
-    document.getElementById('searchDropdown').classList.add('hidden');
-    document.getElementById('searchInput').value = name;
-    window.location.href = '/lab_tests/' + id;
-}
-
-function showAllTestResults(query) {
-    document.getElementById('searchDropdown').classList.add('hidden');
-    document.getElementById('searchInput').value = query;
-    document.querySelector('form[action="/lab_tests"]').submit();
-}
-
 function deleteTest(id) {
     if (confirm('Delete this test?')) {
-        fetch('/lab_tests/' + id, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Error deleting test');
-            }
-        });
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/lab_tests/' + id;
+        form.innerHTML = '@csrf<input type="hidden" name="_method" value="DELETE">';
+        document.body.appendChild(form);
+        form.submit();
     }
 }
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && document.activeElement.id === 'searchInput') {
-        const query = document.getElementById('searchInput').value.trim();
-        if (query.length >= 2) {
-            showAllTestResults(query);
-        }
-    }
-});
-
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#searchInput') && !e.target.closest('#searchDropdown')) {
-        const results = document.getElementById('searchDropdown');
-        if (results) results.classList.add('hidden');
-    }
-});
-
-function changePerPage(value) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', value);
-    url.searchParams.set('page', 1);
-    window.location.href = url.toString();
-}
-
-setTimeout(() => {
-    document.querySelectorAll('[id^="toast-"]').forEach(toast => toast.remove());
-}, 5000);
 </script>
 @endpush
 @endsection
