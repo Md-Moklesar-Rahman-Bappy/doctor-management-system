@@ -1,13 +1,5 @@
-import './bootstrap';
-import Alpine from 'alpinejs';
-import focus from '@alpinejs/focus';
-import Swal from 'sweetalert2';
-
-window.Alpine = Alpine;
-Alpine.plugin(focus);
-Alpine.start();
-
-window.Swal = Swal;
+// Alpine.js is loaded via CDN
+// SweetAlert2 is loaded via CDN
 
 // Global toast notification function
 window.showToast = (message, type = 'success') => {
@@ -50,4 +42,21 @@ window.confirmDelete = (url, name = 'item') => {
             form.submit();
         }
     });
+};
+
+// AJAX search function
+window.ajaxSearch = (url, query, targetId, callback) => {
+    if (query.length < 2) {
+        document.getElementById(targetId).innerHTML = '';
+        return;
+    }
+
+    fetch(`${url}?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (callback) {
+                callback(data);
+            }
+        })
+        .catch(error => console.error('Search error:', error));
 };
