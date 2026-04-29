@@ -150,12 +150,12 @@
 
             <main class="p-4 lg:p-8">
                 @if(session('success'))
-                    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg">
+                    <div id="toast-success" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg hidden">
                         {{ session('success') }}
                     </div>
                 @endif
                 @if(session('error'))
-                    <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    <div id="toast-error" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg hidden">
                         {{ session('error') }}
                     </div>
                 @endif
@@ -174,23 +174,55 @@
     </div>
     @endauth
 
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuToggle = document.getElementById('menu-toggle');
+        <script>
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const menuToggle = document.getElementById('menu-toggle');
 
-        if(menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('-translate-x-full');
-                overlay.classList.toggle('hidden');
-            });
+            if(menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('-translate-x-full');
+                    overlay.classList.toggle('hidden');
+                });
 
-            overlay.addEventListener('click', () => {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            });
-        }
-    </script>
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                });
+            }
+
+            // Convert session messages to SweetAlert2 toasts
+            function showToast(message, type = 'success') {
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                    
+                    Toast.fire({ icon: type, title: message });
+                }
+            }
+
+            // Check for session messages
+            const successToast = document.getElementById('toast-success');
+            if (successToast) {
+                showToast(successToast.textContent.trim(), 'success');
+                successToast.remove();
+            }
+
+            const errorToast = document.getElementById('toast-error');
+            if (errorToast) {
+                showToast(errorToast.textContent.trim(), 'error');
+                errorToast.remove();
+            }
+        </script>
     @stack('scripts')
 </body>
 </html>

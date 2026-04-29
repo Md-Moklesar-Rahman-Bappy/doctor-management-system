@@ -62,42 +62,100 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-            <div class="px-6 py-4 border-b border-slate-200">
-                <h5 class="font-semibold text-slate-800">Quick Actions</h5>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">Prescriptions Trend (Last 7 Days)</h5>
+                <canvas id="prescriptionsChart" height="200"></canvas>
             </div>
-            <div class="p-6 space-y-3">
-                <a href="/doctors/create" class="block w-full px-4 py-3 bg-blue-600 text-white text-center font-medium rounded-lg hover:bg-blue-700 transition">Add New Doctor</a>
-                <a href="/patients/create" class="block w-full px-4 py-3 bg-emerald-600 text-white text-center font-medium rounded-lg hover:bg-emerald-700 transition">Add New Patient</a>
-                <a href="/prescriptions/create" class="block w-full px-4 py-3 bg-sky-600 text-white text-center font-medium rounded-lg hover:bg-sky-700 transition">Create Prescription</a>
-                <a href="/lab-test-reports/create" class="block w-full px-4 py-3 bg-amber-600 text-white text-center font-medium rounded-lg hover:bg-amber-700 transition">Add Lab Report</a>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">Patients by Gender</h5>
+                <canvas id="genderChart" height="200"></canvas>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200">
-            <div class="px-6 py-4 border-b border-slate-200">
-                <h5 class="font-semibold text-slate-800">System Info</h5>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">Quick Actions</h5>
+                <div class="space-y-3">
+                    <a href="/doctors/create" class="block w-full px-4 py-3 bg-blue-600 text-white text-center font-medium rounded-lg hover:bg-blue-700 transition">Add New Doctor</a>
+                    <a href="/patients/create" class="block w-full px-4 py-3 bg-emerald-600 text-white text-center font-medium rounded-lg hover:bg-emerald-700 transition">Add New Patient</a>
+                    <a href="/prescriptions/create" class="block w-full px-4 py-3 bg-sky-600 text-white text-center font-medium rounded-lg hover:bg-sky-700 transition">Create Prescription</a>
+                    <a href="/lab-test-reports/create" class="block w-full px-4 py-3 bg-amber-600 text-white text-center font-medium rounded-lg hover:bg-amber-700 transition">Add Lab Report</a>
+                </div>
             </div>
-            <div class="p-6 space-y-4">
-                <div class="flex justify-between">
-                    <span class="text-slate-600">Role-based Access</span>
-                    <span class="text-emerald-600 font-medium">Active</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-600">Email Verification</span>
-                    <span class="text-emerald-600 font-medium">Enabled</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-600">AJAX Search</span>
-                    <span class="text-emerald-600 font-medium">Enabled</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-600">JSON Storage</span>
-                    <span class="text-slate-600 font-medium">Prescriptions</span>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">System Info</h5>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-slate-600">Role-based Access</span>
+                        <span class="text-emerald-600 font-medium">Active</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-600">Email Verification</span>
+                        <span class="text-emerald-600 font-medium">Enabled</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-600">AJAX Search</span>
+                        <span class="text-emerald-600 font-medium">Enabled</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-600">JSON Storage</span>
+                        <span class="text-slate-600 font-medium">Prescriptions</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/api/dashboard-chart-data')
+    .then(res => res.json())
+    .then(data => {
+        // Prescriptions Chart
+        const ctx1 = document.getElementById('prescriptionsChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: data.prescriptions.labels,
+                datasets: [{
+                    label: 'Prescriptions',
+                    data: data.prescriptions.data,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Gender Chart
+        const ctx2 = document.getElementById('genderChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Male', 'Female', 'Other'],
+                datasets: [{
+                    data: [data.gender.male, data.gender.female, data.gender.other],
+                    backgroundColor: ['rgb(59, 130, 246)', 'rgb(244, 114, 182)', 'rgb(168, 85, 247)']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    })
+    .catch(err => console.error('Chart data error:', err));
+</script>
+@endpush
 @endsection

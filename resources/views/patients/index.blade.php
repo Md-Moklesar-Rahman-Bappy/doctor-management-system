@@ -105,7 +105,21 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">No patients found</td>
+                        <td colspan="6" class="px-4 py-12 text-center">
+                            <div class="flex flex-col items-center gap-4">
+                                <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <div>
+                                    <p class="text-lg font-medium text-slate-500">No patients found</p>
+                                    <p class="text-sm text-slate-400 mt-1">Add your first patient to get started</p>
+                                </div>
+                                <a href="{{ route('patients.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Add Patient
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -117,4 +131,26 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+let patientSearchTimeout;
+const patientSearchInput = document.querySelector('input[name="search"]');
+if (patientSearchInput) {
+    patientSearchInput.addEventListener('input', function() {
+        clearTimeout(patientSearchTimeout);
+        const searchTerm = this.value;
+        
+        patientSearchTimeout = setTimeout(() => {
+            if (searchTerm.length < 2) {
+                window.location.href = '{{ route('patients.index') }}';
+                return;
+            }
+            window.location.href = '{{ route('patients.index') }}?search=' + encodeURIComponent(searchTerm);
+        }, 500);
+    });
+}
+</script>
+@endpush
+@endsection
 @endsection
