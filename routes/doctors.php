@@ -12,3 +12,4 @@ Route::get('/doctors/{id}/edit', [DoctorController::class, 'edit'])->name('docto
 Route::put('/doctors/{id}', [DoctorController::class, 'update'])->name('doctors.update');
 Route::delete('/doctors/{id}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
 Route::get('/doctors/search', [DoctorController::class, 'search'])->name('doctors.search');
+Route::get('/doctors/autocomplete', [DoctorController::class, 'autocomplete'])->name('doctors.autocomplete');

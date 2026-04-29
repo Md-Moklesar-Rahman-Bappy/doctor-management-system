@@ -17,13 +17,14 @@
 
     <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div class="p-4 border-b border-slate-200">
-            <form method="GET" action="/lab-test-reports" class="flex items-center gap-2">
+            <form method="GET" action="/lab-test-reports" class="flex items-center gap-2" id="search-form">
                 <div class="relative flex-1 max-w-md">
-                    <input type="text" name="search" class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                           placeholder="Search by test name or patient unique ID..." value="{{ $search }}">
+                    <input type="text" name="search" id="search-input" class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                           placeholder="Search by test name or patient unique ID..." value="{{ $search }}" autocomplete="off">
                     <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
+                    <div id="autocomplete-dropdown" class="hidden absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"></div>
                 </div>
                 <button type="submit" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">
                     <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -42,10 +43,31 @@
             <table class="w-full">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">ID</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="/lab-test-reports?sort=id&direction={{ request('direction') == 'asc' ? 'desc' : 'asc' }}&search={{ $search }}" class="hover:text-emerald-600">
+                                ID
+                                @if(request('sort') == 'id')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Patient</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Test Name</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="/lab-test-reports?sort=test_name&direction={{ request('direction') == 'asc' ? 'desc' : 'asc' }}&search={{ $search }}" class="hover:text-emerald-600">
+                                Test Name
+                                @if(request('sort') == 'test_name')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="/lab-test-reports?sort=created_at&direction={{ request('direction') == 'asc' ? 'desc' : 'asc' }}&search={{ $search }}" class="hover:text-emerald-600">
+                                Date
+                                @if(request('sort') == 'created_at')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Has Image</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
                     </tr>
@@ -88,7 +110,21 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">No lab test reports found</td>
+                        <td colspan="6" class="px-4 py-12 text-center">
+                            <div class="flex flex-col items-center gap-4">
+                                <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div>
+                                    <p class="text-lg font-medium text-slate-500">No lab test reports found</p>
+                                    <p class="text-sm text-slate-400 mt-1">Add your first report to get started</p>
+                                </div>
+                                <a href="/lab-test-reports/create" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Add Report
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -100,4 +136,47 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const dropdown = document.getElementById('autocomplete-dropdown');
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            dropdown.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch('/patients/autocomplete?term=' + encodeURIComponent(term))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        dropdown.innerHTML = data.map(item =>
+                            `<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="window.location='/lab-test-reports?search=${encodeURIComponent(item.unique_id)}'">
+                                <span class="font-medium">${item.unique_id}</span> - ${item.patient_name}
+                            </div>`
+                        ).join('');
+                        dropdown.classList.remove('hidden');
+                    } else {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== searchInput) {
+            dropdown.classList.add('hidden');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

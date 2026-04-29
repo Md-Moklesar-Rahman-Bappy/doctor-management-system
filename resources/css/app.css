@@ -17,3 +17,68 @@
 .nav-item.active {
     @apply bg-emerald-50 text-emerald-700 hover:bg-emerald-100;
 }
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .main-content, .main-content * {
+        visibility: visible;
+    }
+
+    .main-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    nav, .nav-item, button, .p-3, .flex.gap-2, #action-buttons, #print-options,
+    a[href]:not([href="#"]):not([href^="javascript"])::after,
+    form[action*="delete"], .px-4.py-3.border-t,
+    [class*="hover:bg"] {
+        display: none !important;
+    }
+
+    .bg-white {
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .text-slate-500 {
+        color: #64748b !important;
+    }
+
+    .text-slate-900 {
+        color: #0f172a !important;
+    }
+
+    h3, h5 {
+        color: #0f172a !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    th, td {
+        border: 1px solid #e2e8f0 !important;
+        padding: 8px !important;
+    }
+
+    th {
+        background-color: #f8fafc !important;
+    }
+
+    .inline-flex, .rounded-full {
+        background-color: #f1f5f9 !important;
+        color: #334155 !important;
+    }
+
+    @page {
+        margin: 1.5cm;
+        size: A4;
+    }
+}

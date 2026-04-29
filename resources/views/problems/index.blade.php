@@ -47,8 +47,22 @@ $breadcrumbs = [
             <table class="w-full">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">SL</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="{{ route('problems.index', ['sort' => 'id', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-emerald-600">
+                                SL
+                                @if(request('sort') == 'id')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="{{ route('problems.index', ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-emerald-600">
+                                Name
+                                @if(request('sort') == 'name')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Description</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
                     </tr>
@@ -78,11 +92,20 @@ $breadcrumbs = [
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-slate-500">
-                            No diagnoses found
-                            @if(auth()->user()->role === 'superadmin')
-                            <br><a href="/problems/create" class="text-emerald-600 hover:underline">Add the first diagnosis</a>
-                            @endif
+                        <td colspan="4" class="px-4 py-12 text-center">
+                            <div class="flex flex-col items-center gap-4">
+                                <svg class="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <div>
+                                    <p class="text-lg font-medium text-slate-500">No diagnoses found</p>
+                                    <p class="text-sm text-slate-400 mt-1">Add your first diagnosis to get started</p>
+                                </div>
+                                <a href="/problems/create" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Add Diagnosis
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
