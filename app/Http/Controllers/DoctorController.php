@@ -20,6 +20,8 @@ class DoctorController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = Doctor::query();
 
@@ -29,9 +31,9 @@ class DoctorController extends Controller
                 ->orWhere('phone', 'like', "%{$search}%");
         }
 
-        $doctors = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $doctors = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
-        return view('doctors.index', compact('doctors', 'search'));
+        return view('doctors.index', compact('doctors', 'search', 'sortBy', 'direction'));
     }
 
     public function create(): View

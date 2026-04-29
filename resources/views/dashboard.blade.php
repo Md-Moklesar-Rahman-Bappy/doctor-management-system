@@ -64,18 +64,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <h5 class="font-semibold text-slate-800 mb-4">Prescriptions Trend (Last 7 Days)</h5>
-                <canvas id="prescriptionsChart" height="200"></canvas>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <h5 class="font-semibold text-slate-800 mb-4">Patients by Gender</h5>
-                <canvas id="genderChart" height="200"></canvas>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h5 class="font-semibold text-slate-800 mb-4">Quick Actions</h5>
                 <div class="space-y-3">
                     <a href="/doctors/create" class="block w-full px-4 py-3 bg-blue-600 text-white text-center font-medium rounded-lg hover:bg-blue-700 transition">Add New Doctor</a>
@@ -84,7 +72,7 @@
                     <a href="/lab-test-reports/create" class="block w-full px-4 py-3 bg-amber-600 text-white text-center font-medium rounded-lg hover:bg-amber-700 transition">Add Lab Report</a>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h5 class="font-semibold text-slate-800 mb-4">System Info</h5>
                 <div class="space-y-4">
@@ -105,6 +93,18 @@
                         <span class="text-slate-600 font-medium">Prescriptions</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">Prescriptions Trend (Last 7 Days)</h5>
+                <canvas id="prescriptionsChart" height="200"></canvas>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h5 class="font-semibold text-slate-800 mb-4">Patients by Gender</h5>
+                <canvas id="genderChart" height="200"></canvas>
             </div>
         </div>
     </div>

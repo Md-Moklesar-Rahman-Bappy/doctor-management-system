@@ -22,6 +22,8 @@ class LabTestReportController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = LabTestReport::with('patient');
 
@@ -33,9 +35,9 @@ class LabTestReportController extends Controller
                 });
         }
 
-        $reports = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $reports = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
-        return view('lab_test_reports.index', compact('reports', 'search'));
+        return view('lab_test_reports.index', compact('reports', 'search', 'sortBy', 'direction'));
     }
 
     public function create(Request $request): View

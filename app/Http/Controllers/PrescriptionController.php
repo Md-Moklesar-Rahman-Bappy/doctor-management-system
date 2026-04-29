@@ -27,6 +27,8 @@ class PrescriptionController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = Prescription::with(['patient', 'doctor']);
 
@@ -37,9 +39,9 @@ class PrescriptionController extends Controller
             });
         }
 
-        $prescriptions = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $prescriptions = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
-        return view('prescriptions.index', compact('prescriptions', 'search'));
+        return view('prescriptions.index', compact('prescriptions', 'search', 'sortBy', 'direction'));
     }
 
     public function create(Request $request): View|RedirectResponse

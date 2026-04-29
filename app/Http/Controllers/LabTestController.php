@@ -29,6 +29,8 @@ class LabTestController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = LabTest::query();
 
@@ -40,9 +42,9 @@ class LabTestController extends Controller
             });
         }
 
-        $tests = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $tests = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
-        return view('lab_tests.index', compact('tests', 'search'));
+        return view('lab_tests.index', compact('tests', 'search', 'sortBy', 'direction'));
     }
 
     public function create(): View

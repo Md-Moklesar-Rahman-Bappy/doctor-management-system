@@ -153,4 +153,3 @@ if (patientSearchInput) {
 </script>
 @endpush
 @endsection
-@endsection

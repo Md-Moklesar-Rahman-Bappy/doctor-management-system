@@ -181,9 +181,10 @@ $breadcrumbs = [
             <!-- Action Buttons -->
             <div class="flex gap-3" id="action-buttons">
                 <a href="/prescriptions" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50 font-medium">Cancel</a>
-                <button type="submit" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
-                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0a1 1 0 011-1h2a1 1 0 011 1v3M4 7h16"/></svg>
-                    Generate Prescription
+                <button type="submit" id="submit-btn" class="px-6 py-2.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-medium">
+                    <svg id="btn-icon" class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0a1 1 0 011-1h2a1 1 0 011 1v3M4 7h16"/></svg>
+                    <span id="btn-text">Generate Prescription</span>
+                    <i class="fas fa-spinner fa-spin hidden ml-2" id="btn-spinner"></i>
                 </button>
             </div>
         </form>
@@ -338,6 +339,16 @@ document.getElementById('prescription-form').addEventListener('submit', function
         }
     });
 
+    // Show loading state
+    const submitBtn = document.getElementById('submit-btn');
+    const btnIcon = document.getElementById('btn-icon');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+    submitBtn.disabled = true;
+    btnIcon.classList.add('hidden');
+    btnText.textContent = 'Generating...';
+    btnSpinner.classList.remove('hidden');
+
     // Build form data
     const formData = new FormData(this);
     formData.set('medicines', JSON.stringify(medicines));
@@ -357,6 +368,10 @@ document.getElementById('prescription-form').addEventListener('submit', function
             window.scrollTo({ top: document.getElementById('print-options').offsetTop, behavior: 'smooth' });
         } else {
             alert('Error creating prescription: ' + (data.message || 'Unknown error'));
+            submitBtn.disabled = false;
+            btnIcon.classList.remove('hidden');
+            btnText.textContent = 'Generate Prescription';
+            btnSpinner.classList.add('hidden');
         }
     })
     .catch(err => {

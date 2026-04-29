@@ -14,6 +14,8 @@ class ProblemController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = Problem::query();
 
@@ -24,11 +26,11 @@ class ProblemController extends Controller
             });
         }
 
-        $problems = $query->orderBy('id', 'desc')
+        $problems = $query->orderBy($sortBy, $direction)
             ->paginate($perPage)
             ->appends($request->except('page'));
 
-        return view('problems.index', compact('problems', 'search'));
+        return view('problems.index', compact('problems', 'search', 'sortBy', 'direction'));
     }
 
     public function create(): View
