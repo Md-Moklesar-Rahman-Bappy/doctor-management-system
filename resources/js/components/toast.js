@@ -9,8 +9,14 @@ export function showToast(message, type = 'info', duration = 5000) {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type} flex items-center`;
+
+    let iconColor = 'blue-light';
+    if (type === 'error') iconColor = 'error';
+    else if (type === 'success') iconColor = 'success';
+    else if (type === 'warning') iconColor = 'warning';
+
     toast.innerHTML = `
-        <svg class="toast-icon text-${type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'blue-light'}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="toast-icon text-${iconColor}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             ${getToastIcon(type)}
         </svg>
         <span class="text-sm font-medium flex-1">${message}</span>
@@ -55,5 +61,6 @@ function getToastIcon(type) {
 
 // Expose globally for easy access
 window.showToast = showToast;
+window.showToastFromModule = showToast;
 
 export default { showToast };

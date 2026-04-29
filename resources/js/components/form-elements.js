@@ -66,4 +66,20 @@ export function initFormElements() {
 // Auto-initialize on DOM load
 document.addEventListener('DOMContentLoaded', initFormElements);
 
+// Expose globally
+window.initFormElements = initFormElements;
+window.confirmDeleteFromModule = (url, name) => {
+    if (confirm(`Delete ${name}? This action cannot be undone.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.innerHTML = `
+            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content || ''}">
+            <input type="hidden" name="_method" value="DELETE">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+};
+
 export default { initToggleSwitches, initCustomCheckboxes, initFormElements };

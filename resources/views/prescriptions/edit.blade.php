@@ -10,14 +10,14 @@ $breadcrumbs = [
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('prescriptions.index') }}" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+            <a href="{{ route('prescriptions.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
-            <h1 class="text-2xl font-bold text-slate-900">Edit Prescription</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Edit Prescription</h1>
         </div>
-        <p class="text-slate-500">Update the prescription details</p>
+        <p class="text-gray-500">Update the prescription details</p>
     </div>
 
     <div class="max-w-4xl">
@@ -28,102 +28,102 @@ $breadcrumbs = [
             <x-card>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Doctor</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
                         <input type="text" value="{{ $prescription->doctor->name ?? 'N/A' }}"
-                               class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600" readonly>
+                                class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600" readonly>
                         <input type="hidden" name="doctor_id" value="{{ $prescription->doctor_id }}">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Patient</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
                         <input type="text" value="{{ $prescription->patient->unique_id }} - {{ $prescription->patient->patient_name }}"
-                               class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600" readonly>
+                                class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600" readonly>
                         <input type="hidden" name="patient_id" value="{{ $prescription->patient_id }}">
                     </div>
                 </div>
 
-                <div class="mt-4 p-4 bg-slate-50 rounded-lg">
-                    <h6 class="font-semibold text-slate-700 mb-2">Patient Information</h6>
+                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <h6 class="font-semibold text-gray-700 mb-2">Patient Information</h6>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
-                            <span class="text-xs text-slate-500">Unique ID</span>
-                            <p class="font-medium text-slate-900">{{ $prescription->patient->unique_id }}</p>
+                            <span class="text-xs text-gray-500">Unique ID</span>
+                            <p class="font-medium text-gray-900">{{ $prescription->patient->unique_id }}</p>
                         </div>
                         <div>
-                            <span class="text-xs text-slate-500">Name</span>
-                            <p class="font-medium text-slate-900">{{ $prescription->patient->patient_name }}</p>
+                            <span class="text-xs text-gray-500">Name</span>
+                            <p class="font-medium text-gray-900">{{ $prescription->patient->patient_name }}</p>
                         </div>
                         <div>
-                            <span class="text-xs text-slate-500">Age</span>
-                            <p class="font-medium text-slate-900">{{ $prescription->patient->age }}</p>
+                            <span class="text-xs text-gray-500">Age</span>
+                            <p class="font-medium text-gray-900">{{ $prescription->patient->age }}</p>
                         </div>
                         <div>
-                            <span class="text-xs text-slate-500">Sex</span>
-                            <p class="font-medium text-slate-900">{{ $prescription->patient->sex }}</p>
+                            <span class="text-xs text-gray-500">Sex</span>
+                            <p class="font-medium text-gray-900">{{ $prescription->patient->sex }}</p>
                         </div>
                     </div>
                 </div>
             </x-card>
 
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Problems</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Problems</h5>
                 <div id="problems-container">
                     @if($prescription->problem)
                         @foreach(json_decode($prescription->problem, true) as $problem)
                             <div class="flex items-center gap-2 mb-2">
-                                <input type="text" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg bg-slate-50" value="{{ $problem }}" readonly>
-                                <button type="button" class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeProblem(this)">
+                                <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" value="{{ $problem }}" readonly>
+                                <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeProblem(this)">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
                         @endforeach
                     @endif
                     <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg problem-search" placeholder="Type to search problems...">
-                        <button type="button" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 text-sm font-medium" onclick="addProblem(this)">Add</button>
+                        <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg problem-search" placeholder="Type to search problems...">
+                        <button type="button" class="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 text-sm font-medium" onclick="addProblem(this)">Add</button>
                     </div>
                 </div>
                 <input type="hidden" name="problem[]" id="problems-json" value="{{ $prescription->problem }}">
             </x-card>
 
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Tests</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Tests</h5>
                 <div id="tests-container">
                     @if($prescription->tests)
                         @foreach(json_decode($prescription->tests, true) as $test)
                             <div class="flex items-center gap-2 mb-2">
-                                <input type="text" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg bg-slate-50" value="{{ $test }}" readonly>
-                                <button type="button" class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeTest(this)">
+                                <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" value="{{ $test }}" readonly>
+                                <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeTest(this)">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
                         @endforeach
                     @endif
                     <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 px-3 py-2 border border-slate-200 rounded-lg test-search" placeholder="Type to search lab tests...">
-                        <button type="button" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 text-sm font-medium" onclick="addTest(this)">Add</button>
+                        <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg test-search" placeholder="Type to search lab tests...">
+                        <button type="button" class="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 text-sm font-medium" onclick="addTest(this)">Add</button>
                     </div>
                 </div>
                 <input type="hidden" name="tests[]" id="tests-json" value="{{ $prescription->tests }}">
             </x-card>
 
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Medicines</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Medicines</h5>
                 <div id="medicines-container">
                     @if($prescription->medicines)
                         @foreach(json_decode($prescription->medicines, true) as $index => $medicine)
                             <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
                                 <div class="col-span-5">
-                                    <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[{{ $index }}][name]" value="{{ $medicine['name'] ?? '' }}" placeholder="Medicine name">
+                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][name]" value="{{ $medicine['name'] ?? '' }}" placeholder="Medicine name">
                                 </div>
                                 <div class="col-span-3">
-                                    <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[{{ $index }}][dosage]" value="{{ $medicine['dosage'] ?? '' }}" placeholder="Dosage (e.g. 500mg)">
+                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][dosage]" value="{{ $medicine['dosage'] ?? '' }}" placeholder="Dosage (e.g. 500mg)">
                                 </div>
                                 <div class="col-span-3">
-                                    <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[{{ $index }}][frequency]" value="{{ $medicine['frequency'] ?? '' }}" placeholder="Frequency (e.g. 3x/day)">
+                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][dosage]" value="{{ $medicine['frequency'] ?? '' }}" placeholder="Frequency (e.g. 3x/day)">
                                 </div>
                                 <div class="col-span-1">
-                                    <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
+                                    <button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
                                 </div>
@@ -131,7 +131,7 @@ $breadcrumbs = [
                         @endforeach
                     @endif
                 </div>
-                <button type="button" class="mt-3 px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600" onclick="addMedicine()">
+                 <button type="button" class="mt-3 px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addMedicine()">
                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Add Medicine
                 </button>

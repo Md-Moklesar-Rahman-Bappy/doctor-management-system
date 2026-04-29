@@ -10,14 +10,14 @@ $breadcrumbs = [
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('prescriptions.index') }}" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+            <a href="{{ route('prescriptions.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
-            <h1 class="text-2xl font-bold text-slate-900">Create Prescription</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Create Prescription</h1>
         </div>
-        <p class="text-slate-500">Search or create patient, then add problems, tests, and medicines</p>
+        <p class="text-gray-500">Search or create patient, then add problems, tests, and medicines</p>
     </div>
 
     <div class="max-w-5xl">
@@ -27,14 +27,14 @@ $breadcrumbs = [
             <!-- Doctor Info -->
             <x-card>
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-brand-500 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </div>
                     <div>
-                        <div class="font-semibold text-slate-900">{{ $doctor->name ?? 'No doctor profile' }}</div>
-                        <div class="text-sm text-slate-500">{{ auth()->user()->email }}</div>
+                        <div class="font-semibold text-gray-900">{{ $doctor->name ?? 'No doctor profile' }}</div>
+                        <div class="text-sm text-gray-500">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
                 <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
@@ -42,25 +42,25 @@ $breadcrumbs = [
 
             <!-- Patient Search & Info -->
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Patient Information</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Patient Information</h5>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Search Patient by ID *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Patient by ID *</label>
                     <div class="relative">
                         <input type="text" id="patient-search" class="form-input pl-10"
                                placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
-                        <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
+                        <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
                     </div>
                     <input type="hidden" name="patient_id" id="patient-id" value="{{ $selectedPatientId ?? '' }}">
                 </div>
 
                 <div class="mb-4">
                     <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="new-patient-toggle" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
-                        <span class="ml-2 text-sm text-slate-600">Create new patient</span>
+                        <input type="checkbox" id="new-patient-toggle" class="rounded border-gray-300 text-brand-500 focus:ring-brand-500">
+                        <span class="ml-2 text-sm text-gray-600">Create new patient</span>
                     </label>
                 </div>
 
@@ -95,8 +95,8 @@ $breadcrumbs = [
 
                 <!-- New Patient Form -->
                 <div id="new-patient-form" class="hidden">
-                    <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                        <h6 class="font-semibold text-slate-700 mb-3">New Patient Details</h6>
+                    <div class="p-4 bg-success-50 rounded-lg border border-success-200">
+                        <h6 class="font-semibold text-gray-700 mb-3">New Patient Details</h6>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <x-input name="new_patient_name" label="Patient Name" id="new-patient-name" placeholder="Enter patient name" />
                             <x-input name="new_patient_age" label="Age" type="number" id="new-patient-age" placeholder="Age" min="0" max="150" />
@@ -109,7 +109,7 @@ $breadcrumbs = [
 
             <!-- Problems -->
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Problems</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Problems</h5>
                 <div id="problems-container">
                     <div class="flex items-center gap-2 mb-2">
                         <input type="text" class="flex-1 form-input problem-search" placeholder="Type to search problems...">
@@ -122,7 +122,7 @@ $breadcrumbs = [
 
             <!-- Tests -->
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Tests</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Tests</h5>
                 <div id="tests-container">
                     <div class="flex items-center gap-2 mb-2">
                         <input type="text" class="flex-1 form-input test-search" placeholder="Type to search lab tests...">
@@ -135,7 +135,7 @@ $breadcrumbs = [
 
             <!-- Medicines -->
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Medicines</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Medicines</h5>
                 <div id="medicines-container">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 medicine-row items-center">
                         <div class="md:col-span-5">
@@ -148,7 +148,7 @@ $breadcrumbs = [
                             <input type="text" class="w-full form-input" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">
                         </div>
                         <div class="md:col-span-1">
-                            <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
+                            <button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
@@ -174,7 +174,7 @@ $breadcrumbs = [
         <!-- Print/Download Options -->
         <div id="print-options" class="hidden mt-6">
             <x-card>
-                <h5 class="text-lg font-semibold text-slate-900 mb-4">Prescription Created Successfully!</h5>
+                <h5 class="text-lg font-semibold text-gray-900 mb-4">Prescription Created Successfully!</h5>
                 <div class="flex gap-3">
                     <button onclick="window.print()" class="btn-primary">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4a2 2 0 012-2zm8 0V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v6"/></svg>

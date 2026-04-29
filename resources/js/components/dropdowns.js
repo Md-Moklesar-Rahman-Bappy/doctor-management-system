@@ -3,7 +3,7 @@
  * Handles dropdown toggle with icons and divider support
  */
 export function initDropdowns() {
-    const dropdownTriggers = document.querySelectorAll('[x-data="{ open: false }']);
+    const dropdownTriggers = document.querySelectorAll('[x-data*="open"]');
 
     dropdownTriggers.forEach(dropdown => {
         const trigger = dropdown.querySelector('[x-on\\:click*="open"]');

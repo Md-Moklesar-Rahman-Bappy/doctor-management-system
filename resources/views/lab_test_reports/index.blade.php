@@ -9,8 +9,8 @@ $breadcrumbs = [
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-secondary-900">Lab Reports</h1>
-            <p class="text-secondary-500">Manage patient lab test reports</p>
+            <h1 class="text-2xl font-bold text-gray-900">Lab Reports</h1>
+            <p class="text-gray-500">Manage patient lab test reports</p>
         </div>
         <a href="{{ route('lab_test_reports.create') }}" class="btn-primary inline-flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,11 +33,11 @@ $breadcrumbs = [
     @endif
 
     <x-card>
-        <div class="p-4 border-b border-secondary-200">
+        <div class="p-4 border-b border-gray-200">
             <form method="GET" action="{{ route('lab_test_reports.index') }}" class="flex items-center gap-2">
                 <div class="relative flex-1 max-w-md">
-                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search by patient ID or name..." class="w-full pl-10 pr-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search by patient ID or name..." class="search-input">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </div>
@@ -46,13 +46,13 @@ $breadcrumbs = [
                     Search
                 </button>
                 @if($search)
-                <a href="{{ route('lab_test_reports.index') }}" class="px-3 py-2 text-secondary-500 hover:text-secondary-700">
+                <a href="{{ route('lab_test_reports.index') }}" class="px-3 py-2 text-gray-500 hover:text-gray-700">
                     <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
                 </a>
                 @endif
             </form>
         </div>
-        <a href="/lab-test-reports/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg">
+        <a href="{{ route('lab_test_reports.create') }}" class="btn-warning inline-flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
