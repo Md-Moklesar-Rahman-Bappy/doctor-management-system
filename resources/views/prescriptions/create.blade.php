@@ -1,6 +1,12 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<?php
+$breadcrumbs = [
+    ['label' => 'Prescriptions', 'url' => route('prescriptions.index')],
+    ['label' => 'Create Prescription'],
+];
+?>
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
@@ -149,17 +155,17 @@
             <div class="bg-white rounded-xl border border-slate-200 p-6">
                 <h5 class="text-lg font-semibold text-slate-900 mb-4">Medicines</h5>
                 <div id="medicines-container">
-                    <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
-                        <div class="col-span-5">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 medicine-row items-center">
+                        <div class="md:col-span-5">
                             <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][name]" placeholder="Medicine name">
                         </div>
-                        <div class="col-span-3">
+                        <div class="md:col-span-3">
                             <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">
                         </div>
-                        <div class="col-span-3">
+                        <div class="md:col-span-3">
                             <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">
                         </div>
-                        <div class="col-span-1">
+                        <div class="md:col-span-1">
                             <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
@@ -281,17 +287,17 @@ document.addEventListener('click', function(e) {
 // Medicine functions
 function addMedicine() {
     const container = document.getElementById('medicines-container');
-    const html = '<div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
-        '<div class="col-span-5">' +
+    const html = '<div class="grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
+        '<div class="md:col-span-5">' +
             '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][name]" placeholder="Medicine name">' +
         '</div>' +
-        '<div class="col-span-3">' +
+        '<div class="md:col-span-3">' +
             '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][dosage]" placeholder="Dosage (e.g. 500mg)">' +
         '</div>' +
-        '<div class="col-span-3">' +
+        '<div class="md:col-span-3">' +
             '<input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[' + medicineIndex + '][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
         '</div>' +
-        '<div class="col-span-1">' +
+        '<div class="md:col-span-1">' +
             '<button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">' +
                 '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
             '</button>' +

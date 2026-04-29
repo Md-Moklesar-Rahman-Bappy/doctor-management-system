@@ -91,8 +91,22 @@ $breadcrumbs = [
             <thead class="bg-slate-50 border-b border-slate-200">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">SL</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Brand Name</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Generic Name</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                        <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
+                            Brand Name
+                            @if(request('sort') == 'brand_name')
+                                <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                        <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
+                            Generic Name
+                            @if(request('sort') == 'generic_name')
+                                <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                            @endif
+                        </a>
+                    </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Dosage Type</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Strength</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Company</th>

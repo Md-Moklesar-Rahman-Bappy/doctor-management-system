@@ -30,6 +30,8 @@ class MedicineController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = Medicine::query();
 
@@ -40,6 +42,8 @@ class MedicineController extends Controller
                     ->orWhere('company_name', 'like', "%{$search}%");
             });
         }
+
+        $query->orderBy($sortBy, $direction);
 
         $medicines = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
 

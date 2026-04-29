@@ -20,6 +20,8 @@ class PatientController extends Controller
     {
         $search = $request->input('search', '');
         $perPage = $request->input('per_page', 25);
+        $sortBy = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'desc');
 
         $query = Patient::query();
 
@@ -28,7 +30,7 @@ class PatientController extends Controller
                 ->orWhere('patient_name', 'like', "%{$search}%");
         }
 
-        $patients = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $patients = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
         return view('patients.index', compact('patients', 'search'));
     }

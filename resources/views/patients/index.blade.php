@@ -42,9 +42,30 @@
             <table class="w-full">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Unique ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Name</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Age</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="{{ route('patients.index', ['sort' => 'unique_id', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
+                                Unique ID
+                                @if(request('sort') == 'unique_id')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="{{ route('patients.index', ['sort' => 'patient_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
+                                Name
+                                @if(request('sort') == 'patient_name')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <a href="{{ route('patients.index', ['sort' => 'age', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="hover:text-emerald-600">
+                                Age
+                                @if(request('sort') == 'age')
+                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sex</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Date</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
