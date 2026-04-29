@@ -16,7 +16,7 @@ class UpdateLabTestRequest extends FormRequest
 
     public function rules(): array
     {
-        $testId = $this->route('lab_test');
+        $testId = $this->route('id');
 
         return [
             'department' => 'required|string|max:255',

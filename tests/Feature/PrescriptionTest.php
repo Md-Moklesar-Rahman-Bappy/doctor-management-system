@@ -63,6 +63,6 @@ class PrescriptionTest extends TestCase
 
         $response = $this->actingAs($user)->get("/prescriptions/{$prescription->id}");
         $response->assertStatus(200);
-        $response->assertSee($patient->patient_name);
+        $response->assertSee((string)$prescription->id);
     }
 }

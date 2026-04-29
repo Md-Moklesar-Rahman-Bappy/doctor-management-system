@@ -15,40 +15,21 @@ $breadcrumbs = [
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
-            <h3 class="text-2xl font-bold text-slate-900">Edit Doctor</h3>
+            <h1 class="text-2xl font-bold text-slate-900">Edit Doctor</h1>
         </div>
         <p class="text-slate-500">Update doctor details below</p>
     </div>
 
     <div class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-xl border border-slate-200 p-6">
-            <form method="POST" action="/doctors/{{ $doctor->id }}" class="space-y-4">
+        <x-card>
+            <form method="POST" action="{{ route('doctors.update', $doctor->id) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
 
-                <div>
-                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Name *</label>
-                    <input type="text" id="name" name="name" value="{{ $doctor->name }}" required
-                           class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email *</label>
-                    <input type="email" id="email" name="email" value="{{ $doctor->email }}" required
-                           class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone *</label>
-                    <input type="text" id="phone" name="phone" value="{{ $doctor->phone }}" required
-                           class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label for="address" class="block text-sm font-medium text-slate-700 mb-1">Address *</label>
-                    <textarea id="address" name="address" required
-                              class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">{{ $doctor->address }}</textarea>
-                </div>
+                <x-input name="name" label="Name" :value="old('name', $doctor->name)" required />
+                <x-input name="email" label="Email" type="email" :value="old('email', $doctor->email)" required />
+                <x-input name="phone" label="Phone" :value="old('phone', $doctor->phone)" required />
+                <x-textarea name="address" label="Address" :value="old('address', $doctor->address)" rows="3" required />
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">Degrees</label>
@@ -80,15 +61,15 @@ $breadcrumbs = [
                 </div>
                 @endif
 
-                <div class="flex gap-3 pt-4">
-                    <a href="{{ route('doctors.index') }}" class="px-6 py-2.5 border border-slate-200 rounded-lg hover:bg-slate-50">Cancel</a>
-                    <button type="submit" class="px-6 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium">
-                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
+                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+                    <a href="{{ route('doctors.index') }}" class="btn-secondary">Cancel</a>
+                    <x-button type="submit">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
                         Update Doctor
-                    </button>
+                    </x-button>
                 </div>
             </form>
-        </div>
+        </x-card>
     </div>
 </div>
 

@@ -54,8 +54,11 @@ class PatientController extends Controller
     {
         $patient = Patient::with('prescriptions', 'labTestReports')->findOrFail($id);
 
-        // Authorization check - patients can view their own profile, doctors can view their patients
-        if ($patient->user_id !== auth()->id()) {
+        // Authorization check - doctors can view any patient, patients can view their own profile
+        $user = auth()->user();
+        $doctor = \App\Models\Doctor::where('user_id', $user->id)->first();
+
+        if ($patient->user_id !== $user->id && !$doctor) {
             abort(403, 'Unauthorized action.');
         }
 

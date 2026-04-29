@@ -1,26 +1,32 @@
-<nav class="flex mb-4" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <li class="inline-flex items-center">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-emerald-600">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
-                Dashboard
-            </a>
-        </li>
-        @foreach($breadcrumbs as $breadcrumb)
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                    </svg>
-                    @if(isset($breadcrumb['url']))
-                        <a href="{{ $breadcrumb['url'] }}" class="ml-1 text-sm font-medium text-slate-700 hover:text-emerald-600 md:ml-2">{{ $breadcrumb['label'] }}</a>
-                    @else
-                        <span class="ml-1 text-sm font-medium text-slate-500 md:ml-2">{{ $breadcrumb['label'] }}</span>
-                    @endif
-                </div>
+@if(isset($breadcrumbs) && count($breadcrumbs) > 0)
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-1.5">
+        @foreach($breadcrumbs as $index => $crumb)
+            <li class="flex items-center gap-1.5">
+                @if(isset($crumb['url']) && !$loop->last)
+                    <a href="{{ $crumb['url'] }}" class="flex items-center gap-1.5 text-gray-500 hover:text-brand-500 transition-colors">
+                        @if(isset($crumb['icon']))
+                            <span class="breadcrumb-icon">{!! $crumb['icon'] !!}</span>
+                        @endif
+                        <span>{{ $crumb['label'] }}</span>
+                    </a>
+                @else
+                    <span class="flex items-center gap-1.5 {{ $loop->last ? 'breadcrumb-active' : 'text-gray-500' }}">
+                        @if(isset($crumb['icon']))
+                            <span class="breadcrumb-icon">{!! $crumb['icon'] !!}</span>
+                        @endif
+                        <span>{{ $crumb['label'] }}</span>
+                    </span>
+                @endif
             </li>
+            @if(!$loop->last)
+                <li class="flex items-center">
+                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </li>
+            @endif
         @endforeach
     </ol>
 </nav>
+@endif
