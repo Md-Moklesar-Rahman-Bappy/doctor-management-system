@@ -111,4 +111,15 @@ class DoctorController extends Controller
 
         return response()->json(['success' => true, 'data' => $doctors]);
     }
+
+    public function autocomplete(Request $request)
+    {
+        $term = $request->input('term', '');
+        $doctors = Doctor::where('name', 'like', "%{$term}%")
+            ->orWhere('email', 'like', "%{$term}%")
+            ->limit(10)
+            ->get(['id', 'name', 'email']);
+
+        return response()->json($doctors);
+    }
 }
