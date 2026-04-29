@@ -1,6 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<?php
+$breadcrumbs = [
+    ['label' => 'Lab Test Reports', 'url' => route('lab_test_reports.index')],
+];
+?>
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

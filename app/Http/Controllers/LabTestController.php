@@ -202,4 +202,46 @@ class LabTestController extends Controller
 
         return view('lab_tests.show', compact('test'));
     }
+
+    public function downloadDuplicates()
+    {
+        if (!session('duplicate_rows')) {
+            return redirect()->route('lab_tests.index')->with('error', 'No duplicate data found.');
+        }
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="lab_test_duplicates.csv"',
+        ];
+
+        return response()->stream(function () {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['department', 'sample_type', 'panel', 'test', 'code', 'unit', 'result_type', 'normal_range']);
+            foreach (session('duplicate_rows') as $row) {
+                fputcsv($handle, $row);
+            }
+            fclose($handle);
+        }, 200, $headers);
+    }
+
+    public function downloadFailed()
+    {
+        if (!session('failed_rows')) {
+            return redirect()->route('lab_tests.index')->with('error', 'No failed data found.');
+        }
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="lab_test_failed.csv"',
+        ];
+
+        return response()->stream(function () {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['department', 'sample_type', 'panel', 'test', 'code', 'unit', 'result_type', 'normal_range']);
+            foreach (session('failed_rows') as $row) {
+                fputcsv($handle, $row);
+            }
+            fclose($handle);
+        }, 200, $headers);
+    }
 }

@@ -11,6 +11,8 @@ Route::post('/lab_tests/import', [LabTestController::class, 'import'])->name('la
 Route::get('/lab_tests/template', [LabTestController::class, 'template'])->name('lab_tests.template');
 Route::get('/lab_tests/export', [LabTestController::class, 'export'])->name('lab_tests.export');
 Route::get('/lab_tests/autocomplete', [LabTestController::class, 'autocomplete'])->name('lab_tests.autocomplete');
+Route::get('/lab_tests/download-duplicates', [LabTestController::class, 'downloadDuplicates'])->name('lab_tests.download-duplicates');
+Route::get('/lab_tests/download-failed', [LabTestController::class, 'downloadFailed'])->name('lab_tests.download-failed');
 Route::get('/lab_tests/{id}', [LabTestController::class, 'show'])->name('lab_tests.show');
 Route::get('/lab_tests/{id}/edit', [LabTestController::class, 'edit'])->name('lab_tests.edit');
 Route::put('/lab_tests/{id}', [LabTestController::class, 'update'])->name('lab_tests.update');

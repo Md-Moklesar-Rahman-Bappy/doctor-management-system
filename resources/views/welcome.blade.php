@@ -1,6 +1,11 @@
 @extends('layouts.dashboard')
 
 @section('content')
+<?php
+$breadcrumbs = [
+    ['label' => 'Home'],
+];
+?>
 <div class="min-h-screen flex items-center">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative">
         <div class="absolute inset-0 overflow-hidden">

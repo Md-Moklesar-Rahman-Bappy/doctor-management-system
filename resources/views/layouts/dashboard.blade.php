@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Medical Management System">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Doctor - Medical Management System')</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,20 +17,39 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
                     }
                 }
             }
         }
     </script>
-    <style>
-        body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
-        .nav-item {
-            display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem;
-            color: #475569; transition: all 0.15s;
-        }
-        .nav-item:hover { background: #f1f5f9; color: #0f172a; }
-        .nav-item.active { background: #ecfdf5; color: #047857; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @stack('styles')
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
@@ -127,22 +147,22 @@
                 </button>
 
                 <div class="flex items-center gap-4 ml-auto">
-                    <button class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg relative">
+                    <button class="p-2 text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100 rounded-lg relative">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
                     </button>
 
-                    <div class="h-8 w-px bg-slate-200"></div>
+                    <div class="h-8 w-px bg-secondary-200"></div>
 
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center">
-                            <span class="text-emerald-600 font-semibold text-sm">DR</span>
+                        <div class="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center">
+                            <span class="text-primary-600 font-semibold text-sm">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}</span>
                         </div>
                         <div class="hidden sm:block">
-                            <div class="text-sm font-medium">Dr. Roberts</div>
-                            <div class="text-xs text-slate-500">Administrator</div>
+                            <div class="text-sm font-medium text-secondary-900">{{ auth()->user()->name ?? 'User' }}</div>
+                            <div class="text-xs text-secondary-500">{{ auth()->user()->role ?? 'User' }}</div>
                         </div>
                     </div>
                 </div>
@@ -150,14 +170,22 @@
 
             <main class="p-4 lg:p-8">
                 @if(session('success'))
-                    <div id="toast-success" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg hidden">
-                        {{ session('success') }}
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            if (typeof showToast !== 'undefined') {
+                                showToast('{{ session('success') }}', 'success');
+                            }
+                        });
+                    </script>
                 @endif
                 @if(session('error'))
-                    <div id="toast-error" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg hidden">
-                        {{ session('error') }}
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            if (typeof showToast !== 'undefined') {
+                                showToast('{{ session('error') }}', 'error');
+                            }
+                        });
+                    </script>
                 @endif
                 @if(isset($breadcrumbs))
                     @include('components.breadcrumb')
@@ -175,6 +203,7 @@
     @endauth
 
         <script>
+            // Sidebar toggle
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const menuToggle = document.getElementById('menu-toggle');
@@ -191,37 +220,7 @@
                 });
             }
 
-            // Convert session messages to SweetAlert2 toasts
-            function showToast(message, type = 'success') {
-                if (typeof Swal !== 'undefined') {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                        }
-                    });
-                    
-                    Toast.fire({ icon: type, title: message });
-                }
-            }
-
-            // Check for session messages
-            const successToast = document.getElementById('toast-success');
-            if (successToast) {
-                showToast(successToast.textContent.trim(), 'success');
-                successToast.remove();
-            }
-
-            const errorToast = document.getElementById('toast-error');
-            if (errorToast) {
-                showToast(errorToast.textContent.trim(), 'error');
-                errorToast.remove();
-            }
+            // Alpine.js will handle the toast notifications via showToast() from app.js
         </script>
     @stack('scripts')
 </body>
