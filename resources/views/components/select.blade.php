@@ -23,7 +23,7 @@
         name="{{ $name }}"
         id="{{ $name }}"
         {{ $required ? 'required' : '' }}
-        class="block w-full rounded-lg border-secondary-300 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm {{ $error ? 'border-danger focus:ring-danger focus:border-danger' : '' }}"
+        class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm {{ $error ? 'border-error focus:ring-error focus:border-error' : '' }}"
     >
         <option value="">{{ $placeholder }}</option>
         @foreach($options as $value => $label)

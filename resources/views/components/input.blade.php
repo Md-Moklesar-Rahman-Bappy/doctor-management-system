@@ -36,7 +36,7 @@
             placeholder="{{ $placeholder }}"
             {{ $required ? 'required' : '' }}
             {{ $disabled ? 'disabled' : '' }}
-            class="block w-full rounded-lg border-secondary-300 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm {{ $icon ? 'pl-10' : '' }} {{ $error ? 'border-danger focus:ring-danger focus:border-danger' : '' }} disabled:bg-secondary-50 disabled:text-secondary-500"
+            class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm {{ $icon ? 'pl-10' : '' }} {{ $error ? 'border-error focus:ring-error focus:border-error' : '' }} disabled:bg-gray-50 disabled:text-gray-500"
         >
 
         @if($error)

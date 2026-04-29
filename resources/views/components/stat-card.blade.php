@@ -9,19 +9,19 @@
 
 @php
     $colorClasses = [
-        'primary' => 'bg-primary-100 text-primary-600',
-        'blue' => 'bg-blue-100 text-blue-600',
-        'emerald' => 'bg-emerald-100 text-emerald-600',
-        'sky' => 'bg-sky-100 text-sky-600',
-        'amber' => 'bg-amber-100 text-amber-600',
-        'red' => 'bg-red-100 text-red-600',
-    ][$color] ?? 'bg-primary-100 text-primary-600';
+        'primary' => 'bg-brand-100 text-brand-600',
+        'blue' => 'bg-blue-light-100 text-blue-light-600',
+        'emerald' => 'bg-success-100 text-success-600',
+        'sky' => 'bg-blue-light-100 text-blue-light-600',
+        'amber' => 'bg-warning-100 text-warning-600',
+        'red' => 'bg-error-100 text-error-600',
+    ][$color] ?? 'bg-brand-100 text-brand-600';
 
     $trendClasses = [
-        'up' => 'text-green-600',
-        'down' => 'text-red-600',
-        'neutral' => 'text-slate-500',
-    ][$trend] ?? 'text-slate-500';
+        'up' => 'text-success-600',
+        'down' => 'text-error-600',
+        'neutral' => 'text-gray-500',
+    ][$trend] ?? 'text-gray-500';
 @endphp
 
 <div class="bg-white rounded-xl shadow-sm border border-secondary-200 p-6 card-hover">

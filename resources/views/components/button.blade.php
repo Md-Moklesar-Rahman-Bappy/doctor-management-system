@@ -13,13 +13,13 @@
     $baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
     $variants = [
-        'primary' => 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm',
-        'secondary' => 'bg-white text-secondary-700 border border-secondary-300 hover:bg-secondary-50 focus:ring-secondary-500 shadow-sm',
-        'danger' => 'bg-danger text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
-        'success' => 'bg-success text-white hover:bg-green-700 focus:ring-green-500 shadow-sm',
-        'warning' => 'bg-warning text-white hover:bg-yellow-600 focus:ring-yellow-500 shadow-sm',
-        'ghost' => 'text-secondary-700 hover:bg-secondary-100 focus:ring-secondary-500',
-        'link' => 'text-primary-600 hover:text-primary-700 underline-offset-4 hover:underline focus:ring-primary-500',
+        'primary' => 'bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500 shadow-sm',
+        'secondary' => 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500 shadow-sm',
+        'danger' => 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500 shadow-sm',
+        'success' => 'bg-success-500 text-white hover:bg-success-600 focus:ring-success-500 shadow-sm',
+        'warning' => 'bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500 shadow-sm',
+        'ghost' => 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+        'link' => 'text-brand-600 hover:text-brand-700 underline-offset-4 hover:underline focus:ring-brand-500',
     ];
 
     $sizes = [

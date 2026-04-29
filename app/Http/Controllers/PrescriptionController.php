@@ -104,7 +104,6 @@ class PrescriptionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $user = auth()->user();
         $doctor = $user->doctor;
         $problems = Problem::orderBy('name')->paginate(50);
         $labTests = LabTest::orderBy('test')->paginate(50);

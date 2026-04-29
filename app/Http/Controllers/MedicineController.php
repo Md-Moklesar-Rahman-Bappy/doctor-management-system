@@ -43,9 +43,7 @@ class MedicineController extends Controller
             });
         }
 
-        $query->orderBy($sortBy, $direction);
-
-        $medicines = $query->orderBy('id', 'desc')->paginate($perPage)->appends($request->except('page'));
+        $medicines = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
         return view('medicines.index', compact('medicines', 'search'));
     }

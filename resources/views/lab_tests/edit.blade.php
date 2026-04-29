@@ -10,14 +10,14 @@ $breadcrumbs = [
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('lab_tests.index') }}" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+            <a href="{{ route('lab_tests.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
             </a>
-            <h1 class="text-2xl font-bold text-slate-900">Edit Lab Test</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Edit Lab Test</h1>
         </div>
-        <p class="text-slate-500">Update the test details below</p>
+        <p class="text-gray-500">Update the test details below</p>
     </div>
 
     <div class="max-w-3xl">
@@ -49,7 +49,7 @@ $breadcrumbs = [
                     <x-input name="normal_range" label="Normal Range" :value="old('normal_range', $test->normal_range)" placeholder="e.g., 7-56 or Normal" />
                 </div>
 
-                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
                     <a href="{{ route('lab_tests.index') }}" class="btn-secondary">Cancel</a>
                     <x-button type="submit">Update Test</x-button>
                 </div>

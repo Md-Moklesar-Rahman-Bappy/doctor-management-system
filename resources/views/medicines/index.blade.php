@@ -33,7 +33,7 @@ $breadcrumbs = [
                 <span>{{ session('warning') }}</span>
                 <div class="flex items-center gap-2">
                     @if(session('failed_rows'))
-                    <a href="{{ route('medicines.export-failed') }}" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
+                    <a href="{{ route('medicines.export-failed') }}" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-error-600">Failed</a>
                     @endif
                 </div>
             </div>
@@ -86,7 +86,7 @@ $breadcrumbs = [
                     <tr>
                         <th>SL</th>
                         <th>
-                            <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                            <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-brand-600 flex items-center gap-1">
                                 Brand Name
                                 @if(request('sort') == 'brand_name')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
@@ -94,7 +94,7 @@ $breadcrumbs = [
                             </a>
                         </th>
                         <th>
-                            <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                            <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-brand-600 flex items-center gap-1">
                                 Generic Name
                                 @if(request('sort') == 'generic_name')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>

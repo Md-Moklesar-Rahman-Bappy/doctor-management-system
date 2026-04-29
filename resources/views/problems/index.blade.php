@@ -51,7 +51,7 @@ $breadcrumbs = [
                 <thead>
                     <tr>
                         <th>
-                            <a href="{{ route('problems.index', ['sort' => 'id', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                            <a href="{{ route('problems.index', ['sort' => 'id', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-brand-600 flex items-center gap-1">
                                 SL
                                 @if(request('sort') == 'id')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
@@ -59,7 +59,7 @@ $breadcrumbs = [
                             </a>
                         </th>
                         <th>
-                            <a href="{{ route('problems.index', ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-primary-600 flex items-center gap-1">
+                            <a href="{{ route('problems.index', ['sort' => 'name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="hover:text-brand-600 flex items-center gap-1">
                                 Name
                                 @if(request('sort') == 'name')
                                     <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>

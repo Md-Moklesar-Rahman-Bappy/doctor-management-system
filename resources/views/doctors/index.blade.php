@@ -59,7 +59,7 @@ $breadcrumbs = [
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @foreach($doctors as $doctor)
+                    @forelse($doctors as $doctor)
                     <tr>
                         <td class="text-gray-600">{{ $doctor->id }}</td>
                         <td>
@@ -113,7 +113,7 @@ $breadcrumbs = [
                             </x-empty-state>
                         </td>
                     </tr>
-                    @endforeach
+                    @endforelse
                 </tbody>
             </table>
         </div>

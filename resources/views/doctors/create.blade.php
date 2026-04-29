@@ -77,7 +77,7 @@ function addDegree() {
     const html = `
         <div class="flex items-center gap-2 mb-2 degree-row">
             <input type="text" name="degrees[]" class="flex-1 form-input" placeholder="e.g. MBBS">
-            <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeDegree(this)">
+            <button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeDegree(this)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>

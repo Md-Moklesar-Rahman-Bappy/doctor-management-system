@@ -20,15 +20,3 @@ Route::post('/medicines/import', [MedicineController::class, 'import'])->name('m
 Route::get('/medicines/export', [MedicineController::class, 'export'])->name('medicines.export');
 Route::get('/medicines/export-failed', [MedicineController::class, 'exportFailed'])->name('medicines.export-failed');
 Route::get('/medicines/template', [MedicineController::class, 'template'])->name('medicines.template');
-
-// Home and Dashboard routes
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth');
-
-// Auth routes
-require __DIR__.'/auth.php';

@@ -145,7 +145,7 @@
         width: 100%;
     }
 
-    nav, button, .p-3, .flex.gap-2, #action-buttons, #print-options,
+    nav, button, .p-3, .flex.gap-2, #action-buttons,
     a[href]:not([href="#"]):not([href^="javascript"])::after,
     form[action*="delete"], .px-4.py-3.border-t {
         display: none !important;

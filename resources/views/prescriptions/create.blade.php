@@ -49,7 +49,7 @@ $breadcrumbs = [
                     <div class="relative">
                         <input type="text" id="patient-search" class="form-input pl-10"
                                placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
-                        <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 absolute left-3 top-1/2 -trangray-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                         <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
@@ -66,23 +66,23 @@ $breadcrumbs = [
 
                 <!-- Existing Patient Info -->
                 <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'hidden' }}">
-                    <div class="p-4 bg-slate-50 rounded-lg">
+                    <div class="p-4 bg-gray-50 rounded-lg">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>
-                                <label class="block text-xs text-slate-500 mb-1">Unique ID</label>
-                                <p class="font-medium text-slate-900" id="info-unique-id">-</p>
+                                <label class="block text-xs text-gray-500 mb-1">Unique ID</label>
+                                <p class="font-medium text-gray-900" id="info-unique-id">-</p>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-500 mb-1">Patient Name</label>
-                                <input type="text" id="info-name" class="form-input bg-slate-100" readonly>
+                                <label class="block text-xs text-gray-500 mb-1">Patient Name</label>
+                                <input type="text" id="info-name" class="form-input bg-gray-100" readonly>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-500 mb-1">Age</label>
-                                <input type="text" id="info-age" class="form-input bg-slate-100" readonly>
+                                <label class="block text-xs text-gray-500 mb-1">Age</label>
+                                <input type="text" id="info-age" class="form-input bg-gray-100" readonly>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-500 mb-1">Sex</label>
-                                <input type="text" id="info-sex" class="form-input bg-slate-100" readonly>
+                                <label class="block text-xs text-gray-500 mb-1">Sex</label>
+                                <input type="text" id="info-sex" class="form-input bg-gray-100" readonly>
                             </div>
                         </div>
                         <div>
@@ -154,7 +154,7 @@ $breadcrumbs = [
                         </div>
                     </div>
                 </div>
-                <button type="button" class="mt-3 px-4 py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-600" onclick="addMedicine()">
+                <button type="button" class="mt-3 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addMedicine()">
                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Add Medicine
                 </button>
@@ -217,14 +217,14 @@ document.getElementById('patient-search').addEventListener('input', function() {
                 if (data.success && data.data.length > 0) {
                     dropdown.innerHTML = data.data.map(p => {
                         const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
-                        return '<div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
+                        return '<div class="px-4 py-2 hover:bg-gray-50 cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
                             '<span class="font-medium">' + p.unique_id + '</span> - ' + p.patient_name +
-                            '<span class="text-sm text-slate-500 ml-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                            '<span class="text-sm text-gray-500 ml-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
                             '</div>';
                     }).join('');
                     dropdown.classList.remove('hidden');
                 } else {
-                    dropdown.innerHTML = '<div class="px-4 py-2 text-slate-500">No patients found</div>';
+                    dropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">No patients found</div>';
                     dropdown.classList.remove('hidden');
                 }
             });
@@ -283,7 +283,7 @@ function addMedicine() {
             '<input type="text" class="w-full form-input" name="medicines[' + medicineIndex + '][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
         '</div>' +
         '<div class="md:col-span-1">' +
-            '<button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">' +
+            '<button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">' +
                 '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
             '</button>' +
         '</div>' +
@@ -385,7 +385,7 @@ function resetForm() {
             '<input type="text" class="w-full form-input" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
         '</div>' +
         '<div class="col-span-1">' +
-            '<button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">' +
+            '<button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">' +
                 '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
             '</button>' +
         '</div>' +

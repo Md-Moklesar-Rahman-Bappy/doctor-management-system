@@ -50,7 +50,7 @@ $breadcrumbs = [
                     <x-input name="normal_range" label="Normal Range" :value="old('normal_range')" placeholder="e.g., 7-56 or Normal" />
                 </div>
 
-                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
                     <a href="{{ route('lab_tests.index') }}" class="btn-secondary">Cancel</a>
                     <x-button type="submit">Save Test</x-button>
                 </div>
