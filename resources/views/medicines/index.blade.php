@@ -1,16 +1,91 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Medicines', 'url' => route('medicines.index')],
 ];
-?>
+@endphp
 <div>
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900">Medicines</h1>
-            <p class="text-slate-500">Manage medicine inventory</p>
+            <h1 class="text-2xl font-bold text-secondary-900">Medicines</h1>
+            <p class="text-secondary-500">Manage medicine inventory</p>
+        </div>
+        <a href="{{ route('medicines.create') }}" class="btn-primary inline-flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Medicine
+        </a>
+    </div>
+
+    @if(session('success'))
+    <x-alert variant="success" :dismissible="true">
+        {{ session('success') }}
+    </x-alert>
+    @endif
+
+    @if(session('warning'))
+    <x-alert variant="warning" :dismissible="true">
+        <div class="flex items-center justify-between w-full">
+            <span>{{ session('warning') }}</span>
+            <div class="flex items-center gap-2">
+                @if(session('duplicate_rows'))
+                <a href="/medicines/download-duplicates" class="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">Duplicates</a>
+                @endif
+                @if(session('failed_rows'))
+                <a href="/medicines/download-failed" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">Failed</a>
+                @endif
+            </div>
+        </div>
+    </x-alert>
+    @endif
+
+    @if(session('error'))
+    <x-alert variant="danger" :dismissible="true">
+        {{ session('error') }}
+    </x-alert>
+    @endif
+
+    <x-card>
+        <div class="p-4 border-b border-secondary-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <form method="GET" action="{{ route('medicines.index') }}" class="flex items-center gap-2 flex-1">
+                <div class="relative flex-1 max-w-md">
+                    <input type="text"
+                           name="search"
+                           id="medicineSearch"
+                           value="{{ $search ?? '' }}"
+                           placeholder="Search brand or generic name..."
+                           class="w-full pl-10 pr-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                           autocomplete="off">
+                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-secondary-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"></div>
+                </div>
+                <button type="submit" class="btn-secondary">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Search
+                </button>
+                @if($search)
+                <a href="{{ route('medicines.index') }}" class="px-3 py-2 text-secondary-500 hover:text-secondary-700">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                </a>
+                @endif
+            </form>
+
+            <div class="flex items-center gap-2">
+                <a href="{{ route('medicines.template') }}" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Download Template">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Template
+                </a>
+                <button onclick="document.getElementById('exportModal').classList.remove('hidden')" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Export CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Export
+                </button>
+                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="px-3 py-2 text-secondary-600 hover:bg-secondary-100 rounded-lg text-sm" title="Import CSV">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"/></svg> Import
+                </button>
+            </div>
         </div>
         <a href="/medicines/create" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

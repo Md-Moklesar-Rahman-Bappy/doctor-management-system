@@ -33,7 +33,7 @@
                         },
                         secondary: {
                             50: '#f8fafc',
-                                            100: '#f1f5f9',
+                            100: '#f1f5f9',
                             200: '#e2e8f0',
                             300: '#cbd5e1',
                             400: '#94a3b8',
@@ -48,22 +48,21 @@
             }
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @stack('styles')
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body class="bg-secondary-50 text-secondary-900 antialiased">
     @auth
     <div class="flex min-h-screen">
-        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 lg:translate-x-0" id="sidebar">
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-secondary-200 transform transition-transform duration-300 lg:translate-x-0" id="sidebar">
             <div class="flex flex-col h-full">
-                <div class="flex items-center gap-3 px-6 h-16 border-b border-slate-200">
-                    <div class="w-9 h-9 bg-emerald-500 rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-3 px-6 h-16 border-b border-secondary-200">
+                    <div class="w-9 h-9 bg-primary-500 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
                     </div>
-                    <span class="text-lg font-bold">Doctor</span>
+                    <span class="text-lg font-bold text-secondary-900">Doctor</span>
                 </div>
 
                 <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
@@ -124,36 +123,29 @@
                     </a>
                 </nav>
 
-                <div class="px-4 py-4 border-t border-slate-200">
-                    <a href="#" class="nav-item text-red-600 hover:bg-red-50" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        <span>Logout</span>
-                    </a>
-                    <form id="logout-form" action="/logout" method="POST" style="display: none;">
+                <div class="px-4 py-4 border-t border-secondary-200">
+                    <form id="logout-form" action="/logout" method="POST" class="inline">
                         @csrf
+                        <button type="submit" class="nav-item text-red-600 hover:bg-red-50 w-full text-left">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span>Logout</span>
+                        </button>
                     </form>
                 </div>
             </div>
         </aside>
 
         <div class="flex-1 lg:ml-64">
-            <header class="sticky top-0 z-40 h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8">
-                <button class="lg:hidden p-2 -ml-2 text-slate-500 hover:text-slate-700" id="menu-toggle">
+            <header class="sticky top-0 z-40 h-16 bg-white border-b border-secondary-200 flex items-center justify-between px-4 lg:px-8">
+                <button class="lg:hidden p-2 -ml-2 text-secondary-500 hover:text-secondary-700" id="menu-toggle">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
 
                 <div class="flex items-center gap-4 ml-auto">
-                    <button class="p-2 text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100 rounded-lg relative">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
-                    </button>
-
                     <div class="h-8 w-px bg-secondary-200"></div>
 
                     <div class="flex items-center gap-3">
@@ -170,23 +162,37 @@
 
             <main class="p-4 lg:p-8">
                 @if(session('success'))
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            if (typeof showToast !== 'undefined') {
-                                showToast('{{ session('success') }}', 'success');
-                            }
-                        });
-                    </script>
+                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-sm font-medium text-emerald-800">{{ session('success') }}</span>
+                        </div>
+                        <button @click="show = false" class="text-emerald-600 hover:text-emerald-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 @endif
+
                 @if(session('error'))
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            if (typeof showToast !== 'undefined') {
-                                showToast('{{ session('error') }}', 'error');
-                            }
-                        });
-                    </script>
+                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-sm font-medium text-red-800">{{ session('error') }}</span>
+                        </div>
+                        <button @click="show = false" class="text-red-600 hover:text-red-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 @endif
+
                 @if(isset($breadcrumbs))
                     @include('components.breadcrumb')
                 @endif
@@ -195,33 +201,30 @@
         </div>
     </div>
 
-    <div class="fixed inset-0 z-40 bg-slate-900/50 hidden" id="sidebar-overlay"></div>
+    <div class="fixed inset-0 z-40 bg-secondary-900/50 hidden" id="sidebar-overlay"></div>
     @else
-    <div class="min-h-screen flex items-center justify-center">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-100">
         @yield('content')
     </div>
     @endauth
 
-        <script>
-            // Sidebar toggle
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const menuToggle = document.getElementById('menu-toggle');
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuToggle = document.getElementById('menu-toggle');
 
-            if(menuToggle) {
-                menuToggle.addEventListener('click', () => {
-                    sidebar.classList.toggle('-translate-x-full');
-                    overlay.classList.toggle('hidden');
-                });
+        if(menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
 
-                overlay.addEventListener('click', () => {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden');
-                });
-            }
-
-            // Alpine.js will handle the toast notifications via showToast() from app.js
-        </script>
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

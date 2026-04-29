@@ -13,12 +13,16 @@ class Doctor extends Model
 
     protected $casts = [
         'degrees' => 'json',
-        'email_verified' => 'boolean',
     ];
 
     public function prescriptions()
     {
         return $this->hasMany(Prescription::class, 'doctor_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeSearch($query, $searchTerm)

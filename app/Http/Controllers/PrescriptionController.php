@@ -79,9 +79,13 @@ class PrescriptionController extends Controller
     public function show($id): View
     {
         $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
+        $user = auth()->user();
 
-        // Authorization check
-        if ($prescription->user_id !== auth()->id()) {
+        // Authorization check - user must be the doctor or the patient's owner
+        $isDoctor = $prescription->doctor && $prescription->doctor->user_id === $user->id;
+        $isPatientOwner = $prescription->patient && $prescription->patient->user_id === $user->id;
+
+        if (!$isDoctor && !$isPatientOwner && !$user->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -91,9 +95,12 @@ class PrescriptionController extends Controller
     public function edit($id): View
     {
         $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
+        $user = auth()->user();
 
-        // Authorization check
-        if ($prescription->user_id !== auth()->id()) {
+        // Authorization check - user must be the doctor or admin
+        $isDoctor = $prescription->doctor && $prescription->doctor->user_id === $user->id;
+
+        if (!$isDoctor && !$user->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -108,9 +115,12 @@ class PrescriptionController extends Controller
     public function update(UpdatePrescriptionRequest $request, $id): RedirectResponse
     {
         $prescription = Prescription::findOrFail($id);
+        $user = auth()->user();
 
-        // Authorization check
-        if ($prescription->user_id !== auth()->id()) {
+        // Authorization check - user must be the doctor or admin
+        $isDoctor = $prescription->doctor && $prescription->doctor->user_id === $user->id;
+
+        if (!$isDoctor && !$user->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -122,9 +132,12 @@ class PrescriptionController extends Controller
     public function destroy($id): RedirectResponse
     {
         $prescription = Prescription::findOrFail($id);
+        $user = auth()->user();
 
-        // Authorization check
-        if ($prescription->user_id !== auth()->id()) {
+        // Authorization check - user must be the doctor or admin
+        $isDoctor = $prescription->doctor && $prescription->doctor->user_id === $user->id;
+
+        if (!$isDoctor && !$user->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
 

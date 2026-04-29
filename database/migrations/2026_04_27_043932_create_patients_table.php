@@ -11,10 +11,11 @@ class CreatePatientsTable extends Migration
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('gender');
-            $table->date('date_of_birth');
-            $table->string('blood_group')->nullable();
-            $table->text('medical_history')->nullable();
+            $table->string('unique_id')->unique();
+            $table->string('patient_name');
+            $table->integer('age');
+            $table->enum('sex', ['male', 'female', 'other']);
+            $table->date('date');
             $table->timestamps();
         });
     }

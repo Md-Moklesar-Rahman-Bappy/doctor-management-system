@@ -12,9 +12,9 @@ class CreatePrescriptionsTable extends Migration
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
-            $table->date('prescription_date');
-            $table->date('valid_until');
-            $table->text('notes')->nullable();
+            $table->json('problem')->nullable();
+            $table->json('tests')->nullable();
+            $table->json('medicines')->nullable();
             $table->timestamps();
         });
     }

@@ -19,8 +19,8 @@ class StorePatientRequest extends FormRequest
         return [
             'patient_name' => 'required|string|max:255',
             'age' => 'required|integer|min:0|max:150',
-            'sex' => 'required|in:male,female',
-            'date' => 'required|date',
+            'sex' => 'required|in:male,female,other',
+            'date' => 'required|date|before_or_equal:today',
         ];
     }
 
@@ -28,14 +28,16 @@ class StorePatientRequest extends FormRequest
     {
         return [
             'patient_name.required' => 'Patient name is required.',
+            'patient_name.max' => 'Patient name cannot exceed 255 characters.',
             'age.required' => 'Age is required.',
             'age.integer' => 'Age must be a number.',
             'age.min' => 'Age cannot be negative.',
             'age.max' => 'Age cannot exceed 150.',
             'sex.required' => 'Sex is required.',
-            'sex.in' => 'Sex must be either male or female.',
+            'sex.in' => 'Sex must be male, female, or other.',
             'date.required' => 'Date is required.',
             'date.date' => 'Please enter a valid date.',
+            'date.before_or_equal' => 'Date cannot be in the future.',
         ];
     }
 }

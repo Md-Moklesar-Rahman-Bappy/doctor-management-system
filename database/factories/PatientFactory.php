@@ -5,33 +5,28 @@ namespace Database\Factories;
 use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Patient>
+ */
 class PatientFactory extends Factory
 {
     protected $model = Patient::class;
 
-    public function definition()
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
     {
+        $gender = fake()->randomElement(['Male', 'Female', 'Other']);
         return [
-            'user_id' => 1, // Will be set in actual usage
-            'gender' => $this->faker->randomElement(['Male', 'Female', 'Other']),
-            'date_of_birth' => $this->faker->date,
-            'blood_group' => $this->faker->randomElement(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-            'medical_history' => $this->faker->sentence,
+            'patient_name' => fake()->name(),
+            'age' => fake()->numberBetween(1, 100),
+            'sex' => strtolower($gender),
+            'date' => fake()->date(),
+            'unique_id' => 'P' . fake()->unique()->numberBetween(1000, 9999),
+            'user_id' => 1, // Will be overridden in tests
         ];
-    }
-}
-
-class PatientSeeder
-{
-    public static function run()
-    {
-        $patients = [
-            ['user_id' => 1, 'gender' => 'Male', 'date_of_birth' => '1980-01-01', 'blood_group' => 'A+', 'medical_history' => 'None'],
-            ['user_id' => 2, 'gender' => 'Female', 'date_of_birth' => '1990-05-15', 'blood_group' => 'B-', 'medical_history' => 'Hypertension'],
-        ];
-
-        foreach ($patients as $patientData) {
-            Patient::firstOrCreate($patientData);
-        }
     }
 }
