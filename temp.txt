@@ -1,1 +1,1 @@
-        return response()->json(['success' => true, 'data' => $prescriptions]);
+return response()->json(['success' => true, 'data' => $prescriptions]);
