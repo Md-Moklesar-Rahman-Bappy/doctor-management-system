@@ -7,188 +7,220 @@ $breadcrumbs = [
     ['label' => 'Create Prescription'],
 ];
 @endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('prescriptions.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('prescriptions.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Create Prescription</h1>
+            <h1 class="fw-bold text-dark mb-0">Create Prescription</h1>
         </div>
-        <p class="text-gray-500">Search or create patient, then add problems, tests, and medicines</p>
+        <p class="text-muted">Search or create patient, then add problems, tests, and medicines</p>
     </div>
 
-    <div class="max-w-5xl">
-        <form method="POST" action="{{ route('prescriptions.store') }}" id="prescription-form" class="space-y-6">
-            @csrf
+    <div class="row justify-content-center">
+        <div class="col-lg-10" data-aos="fade-up">
+            <form method="POST" action="{{ route('prescriptions.store') }}" id="prescription-form" class="d-flex flex-column gap-4">
+                @csrf
 
-            <!-- Doctor Info -->
-            <x-card>
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-brand-500 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="font-semibold text-gray-900">{{ $doctor->name ?? 'No doctor profile' }}</div>
-                        <div class="text-sm text-gray-500">{{ auth()->user()->email }}</div>
-                    </div>
-                </div>
-                <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
-            </x-card>
-
-            <!-- Patient Search & Info -->
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Patient Information</h5>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Patient by ID *</label>
-                    <div class="relative">
-                        <input type="text" id="patient-search" class="form-input pl-10"
-                               placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
-                        <svg class="w-5 h-5 absolute left-3 top-1/2 -trangray-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        <div id="patient-dropdown" class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto"></div>
-                    </div>
-                    <input type="hidden" name="patient_id" id="patient-id" value="{{ $selectedPatientId ?? '' }}">
-                </div>
-
-                <div class="mb-4">
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="new-patient-toggle" class="rounded border-gray-300 text-brand-500 focus:ring-brand-500">
-                        <span class="ml-2 text-sm text-gray-600">Create new patient</span>
-                    </label>
-                </div>
-
-                <!-- Existing Patient Info -->
-                <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'hidden' }}">
-                    <div class="p-4 bg-gray-50 rounded-lg">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1">Unique ID</label>
-                                <p class="font-medium text-gray-900" id="info-unique-id">-</p>
+                <!-- Doctor Info -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary" style="width: 48px; height: 48px;">
+                                <i class="fas fa-user-md text-white"></i>
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-500 mb-1">Patient Name</label>
-                                <input type="text" id="info-name" class="form-input bg-gray-100" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1">Age</label>
-                                <input type="text" id="info-age" class="form-input bg-gray-100" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1">Sex</label>
-                                <input type="text" id="info-sex" class="form-input bg-gray-100" readonly>
+                                <div class="fw-semibold">{{ $doctor->name ?? 'No doctor profile' }}</div>
+                                <div class="small text-muted">{{ auth()->user()->email }}</div>
                             </div>
                         </div>
-                        <div>
-                            <label class="form-label">Prescription Date *</label>
-                            <input type="date" name="prescription_date" id="prescription-date" class="form-input"
-                                   value="{{ date('Y-m-d') }}" required>
+                        <input type="hidden" name="doctor_id" value="{{ $doctor->id ?? '' }}">
+                    </div>
+                </div>
+
+                <!-- Patient Search & Info -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Search Patient by ID *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" id="patient-search" class="form-control border-start-0"
+                                       placeholder="Type patient unique ID (e.g. PAT-12345678)..." autocomplete="off">
+                            </div>
+                            <input type="hidden" name="patient_id" id="patient-id" value="{{ $selectedPatientId ?? '' }}">
+                            <div id="patient-dropdown" class="position-absolute w-100 bg-white border rounded shadow-lg mt-1 d-none" style="z-index: 1000; max-height: 200px; overflow-y: auto;"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" id="new-patient-toggle" class="form-check-input">
+                                <label class="form-check-label small" for="new-patient-toggle">Create new patient</label>
+                            </div>
+                        </div>
+
+                        <!-- Existing Patient Info -->
+                        <div id="existing-patient-info" class="{{ $selectedPatientId ? '' : 'd-none' }}">
+                            <div class="bg-light rounded p-3">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-3">
+                                        <label class="small text-muted">Unique ID</label>
+                                        <p class="fw-medium mb-0" id="info-unique-id">-</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="small text-muted">Patient Name</label>
+                                        <input type="text" id="info-name" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="small text-muted">Age</label>
+                                        <input type="text" id="info-age" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="small text-muted">Sex</label>
+                                        <input type="text" id="info-sex" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-medium">Prescription Date *</label>
+                                    <input type="date" name="prescription_date" id="prescription-date" class="form-control"
+                                           value="{{ date('Y-m-d') }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Patient Form -->
+                        <div id="new-patient-form" class="d-none">
+                            <div class="border rounded p-3 bg-success-subtle border-success">
+                                <h6 class="fw-semibold mb-3">New Patient Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium">Patient Name</label>
+                                        <input type="text" name="new_patient_name" id="new-patient-name" class="form-control" placeholder="Enter patient name">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-medium">Age</label>
+                                        <input type="number" name="new_patient_age" id="new-patient-age" class="form-control" placeholder="Age" min="0" max="150">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-medium">Sex</label>
+                                        <select name="new_patient_sex" id="new-patient-sex" class="form-select">
+                                            <option value="">Select Sex</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-medium">Date</label>
+                                        <input type="date" name="new_patient_date" id="new-patient-date" class="form-control" value="{{ date('Y-m-d') }}">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- New Patient Form -->
-                <div id="new-patient-form" class="hidden">
-                    <div class="p-4 bg-success-50 rounded-lg border border-success-200">
-                        <h6 class="font-semibold text-gray-700 mb-3">New Patient Details</h6>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-input name="new_patient_name" label="Patient Name" id="new-patient-name" placeholder="Enter patient name" />
-                            <x-input name="new_patient_age" label="Age" type="number" id="new-patient-age" placeholder="Age" min="0" max="150" />
-                            <x-select name="new_patient_sex" label="Sex" id="new-patient-sex" :options="['male' => 'Male', 'female' => 'Female']" placeholder="Select Sex" />
-                            <x-input name="new_patient_date" label="Date" type="date" id="new-patient-date" :value="date('Y-m-d')" />
+                <!-- Problems -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Problems</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="problems-container">
+                            <div class="d-flex gap-2 mb-2">
+                                <input type="text" class="form-control problem-search flex-1" placeholder="Type to search problems...">
+                                <button type="button" class="btn btn-primary" onclick="addProblem(this)">Add</button>
+                            </div>
+                            <div id="selected-problems"></div>
                         </div>
+                        <input type="hidden" name="problem[]" id="problems-json">
                     </div>
                 </div>
-            </x-card>
 
-            <!-- Problems -->
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Problems</h5>
-                <div id="problems-container">
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 form-input problem-search" placeholder="Type to search problems...">
-                        <button type="button" class="btn-primary text-sm px-4 py-2.5" onclick="addProblem(this)">Add</button>
+                <!-- Tests -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Tests</h5>
                     </div>
-                    <div id="selected-problems"></div>
-                </div>
-                <input type="hidden" name="problem[]" id="problems-json">
-            </x-card>
-
-            <!-- Tests -->
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Tests</h5>
-                <div id="tests-container">
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 form-input test-search" placeholder="Type to search lab tests...">
-                        <button type="button" class="btn-primary text-sm px-4 py-2.5" onclick="addTest(this)">Add</button>
+                    <div class="card-body">
+                        <div id="tests-container">
+                            <div class="d-flex gap-2 mb-2">
+                                <input type="text" class="form-control test-search flex-1" placeholder="Type to search lab tests...">
+                                <button type="button" class="btn btn-primary" onclick="addTest(this)">Add</button>
+                            </div>
+                            <div id="selected-tests"></div>
+                        </div>
+                        <input type="hidden" name="tests[]" id="tests-json">
                     </div>
-                    <div id="selected-tests"></div>
                 </div>
-                <input type="hidden" name="tests[]" id="tests-json">
-            </x-card>
 
-            <!-- Medicines -->
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Medicines</h5>
-                <div id="medicines-container">
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 medicine-row items-center">
-                        <div class="md:col-span-5">
-                            <input type="text" class="w-full form-input" name="medicines[0][name]" placeholder="Medicine name">
+                <!-- Medicines -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Medicines</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="medicines-container">
+                            <div class="row g-2 mb-2 medicine-row align-items-center">
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="medicines[0][name]" placeholder="Medicine name">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMedicine(this)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="md:col-span-3">
-                            <input type="text" class="w-full form-input" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">
-                        </div>
-                        <div class="md:col-span-3">
-                            <input type="text" class="w-full form-input" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">
-                        </div>
-                        <div class="md:col-span-1">
-                            <button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addMedicine()">
+                            <i class="fas fa-plus me-1"></i> Add Medicine
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3" id="action-buttons">
+                    <a href="{{ route('prescriptions.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" id="submit-btn" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>
+                        <span id="btn-text">Generate Prescription</span>
+                        <span id="btn-spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Print/Download Options -->
+            <div id="print-options" class="d-none mt-4">
+                <div class="card shadow-sm border-success">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="fw-semibold">Prescription Created Successfully!</h5>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button onclick="window.print()" class="btn btn-primary">
+                                <i class="fas fa-print me-1"></i> Print Prescription
+                            </button>
+                            <a href="#" id="download-pdf" class="btn btn-secondary">
+                                <i class="fas fa-download me-1"></i> Download PDF
+                            </a>
+                            <button onclick="resetForm()" class="btn btn-outline-secondary">
+                                Create New Prescription
                             </button>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="mt-3 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addMedicine()">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Add Medicine
-                </button>
-            </x-card>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-3" id="action-buttons">
-                <a href="{{ route('prescriptions.index') }}" class="btn-secondary">Cancel</a>
-                <button type="submit" id="submit-btn" class="btn-primary">
-                    <svg id="btn-icon" class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
-                    <span id="btn-text">Generate Prescription</span>
-                    <i class="fas fa-spinner fa-spin hidden ml-2" id="btn-spinner"></i>
-                </button>
             </div>
-        </form>
-
-        <!-- Print/Download Options -->
-        <div id="print-options" class="hidden mt-6">
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Prescription Created Successfully!</h5>
-                <div class="flex gap-3">
-                    <button onclick="window.print()" class="btn-primary">
-                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2-4h6a2 2 0 012 2v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4a2 2 0 012-2zm8 0V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v6"/></svg>
-                        Print Prescription
-                    </button>
-                    <a href="#" id="download-pdf" class="btn-secondary">
-                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Download PDF
-                    </a>
-                    <button onclick="resetForm()" class="btn-secondary">
-                        Create New Prescription
-                    </button>
-                </div>
-            </x-card>
         </div>
     </div>
 </div>
@@ -206,7 +238,7 @@ document.getElementById('patient-search').addEventListener('input', function() {
     const dropdown = document.getElementById('patient-dropdown');
 
     if (searchTerm.length < 2) {
-        dropdown.classList.add('hidden');
+        dropdown.classList.add('d-none');
         return;
     }
 
@@ -217,15 +249,15 @@ document.getElementById('patient-search').addEventListener('input', function() {
                 if (data.success && data.data.length > 0) {
                     dropdown.innerHTML = data.data.map(p => {
                         const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
-                        return '<div class="px-4 py-2 hover:bg-gray-50 cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
-                            '<span class="font-medium">' + p.unique_id + '</span> - ' + p.patient_name +
-                            '<span class="text-sm text-gray-500 ml-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
+                            '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                            '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
                             '</div>';
                     }).join('');
-                    dropdown.classList.remove('hidden');
+                    dropdown.classList.remove('d-none');
                 } else {
-                    dropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">No patients found</div>';
-                    dropdown.classList.remove('hidden');
+                    dropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                    dropdown.classList.remove('d-none');
                 }
             });
     }, 300);
@@ -235,56 +267,54 @@ function selectPatient(encodedData) {
     const p = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
     document.getElementById('patient-id').value = p.id;
     document.getElementById('patient-search').value = p.unique_id + ' - ' + p.patient_name;
-    document.getElementById('patient-dropdown').classList.add('hidden');
+    document.getElementById('patient-dropdown').classList.add('d-none');
 
-    // Autofill patient info
     document.getElementById('info-unique-id').textContent = p.unique_id;
     document.getElementById('info-name').value = p.patient_name;
     document.getElementById('info-age').value = p.age;
     document.getElementById('info-sex').value = p.sex;
     document.getElementById('prescription-date').value = p.date || '{{ date("Y-m-d") }}';
-    document.getElementById('existing-patient-info').classList.remove('hidden');
+    document.getElementById('existing-patient-info').classList.remove('d-none');
 
-    // Hide new patient form
     document.getElementById('new-patient-toggle').checked = false;
-    document.getElementById('new-patient-form').classList.add('hidden');
+    document.getElementById('new-patient-form').classList.add('d-none');
 }
 
 // New patient toggle
 document.getElementById('new-patient-toggle').addEventListener('change', function() {
     if (this.checked) {
-        document.getElementById('new-patient-form').classList.remove('hidden');
-        document.getElementById('existing-patient-info').classList.add('hidden');
+        document.getElementById('new-patient-form').classList.remove('d-none');
+        document.getElementById('existing-patient-info').classList.add('d-none');
         document.getElementById('patient-id').value = '';
         document.getElementById('patient-search').value = '';
     } else {
-        document.getElementById('new-patient-form').classList.add('hidden');
+        document.getElementById('new-patient-form').classList.add('d-none');
     }
 });
 
 // Close dropdown on click outside
 document.addEventListener('click', function(e) {
     if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
-        document.getElementById('patient-dropdown').classList.add('hidden');
+        document.getElementById('patient-dropdown').classList.add('d-none');
     }
 });
 
 // Medicine functions
 function addMedicine() {
     const container = document.getElementById('medicines-container');
-    const html = '<div class="grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
-        '<div class="md:col-span-5">' +
-            '<input type="text" class="w-full form-input" name="medicines[' + medicineIndex + '][name]" placeholder="Medicine name">' +
+    const html = '<div class="row g-2 mb-2 medicine-row align-items-center">' +
+        '<div class="col-md-5">' +
+            '<input type="text" class="form-control" name="medicines[' + medicineIndex + '][name]" placeholder="Medicine name">' +
         '</div>' +
-        '<div class="md:col-span-3">' +
-            '<input type="text" class="w-full form-input" name="medicines[' + medicineIndex + '][dosage]" placeholder="Dosage (e.g. 500mg)">' +
+        '<div class="col-md-3">' +
+            '<input type="text" class="form-control" name="medicines[' + medicineIndex + '][dosage]" placeholder="Dosage (e.g. 500mg)">' +
         '</div>' +
-        '<div class="md:col-span-3">' +
-            '<input type="text" class="w-full form-input" name="medicines[' + medicineIndex + '][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
+        '<div class="col-md-3">' +
+            '<input type="text" class="form-control" name="medicines[' + medicineIndex + '][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
         '</div>' +
-        '<div class="md:col-span-1">' +
-            '<button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">' +
-                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+        '<div class="col-md-1">' +
+            '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMedicine(this)">' +
+                '<i class="fas fa-trash"></i>' +
             '</button>' +
         '</div>' +
     '</div>';
@@ -304,11 +334,10 @@ document.getElementById('prescription-form').addEventListener('submit', function
     const newPatientName = document.getElementById('new-patient-name').value;
 
     if (!patientId && !newPatientName) {
-        alert('Please select a patient or create a new patient');
+        Swal.fire('Error', 'Please select a patient or create a new patient', 'error');
         return;
     }
 
-    // Collect medicines
     const medicines = [];
     document.querySelectorAll('.medicine-row').forEach(row => {
         const nameInput = row.querySelector('input[name*="[name]"]');
@@ -323,21 +352,16 @@ document.getElementById('prescription-form').addEventListener('submit', function
         }
     });
 
-    // Show loading state
     const submitBtn = document.getElementById('submit-btn');
-    const btnIcon = document.getElementById('btn-icon');
     const btnText = document.getElementById('btn-text');
     const btnSpinner = document.getElementById('btn-spinner');
     submitBtn.disabled = true;
-    btnIcon.classList.add('hidden');
     btnText.textContent = 'Generating...';
-    btnSpinner.classList.remove('hidden');
+    btnSpinner.classList.remove('d-none');
 
-    // Build form data
     const formData = new FormData(this);
     formData.set('medicines', JSON.stringify(medicines));
 
-    // Submit via fetch
     fetch('{{ route("prescriptions.store") }}', {
         method: 'POST',
         body: formData
@@ -346,55 +370,52 @@ document.getElementById('prescription-form').addEventListener('submit', function
     .then(data => {
         if (data.success) {
             createdPrescriptionId = data.prescription_id;
-            document.getElementById('download-pdf').href = '{{ url("/prescriptions") }}/' + createdPrescriptionId;
-            document.getElementById('action-buttons').classList.add('hidden');
-            document.getElementById('print-options').classList.remove('hidden');
+            document.getElementById('download-pdf').href = '/prescriptions/' + createdPrescriptionId;
+            document.getElementById('action-buttons').classList.add('d-none');
+            document.getElementById('print-options').classList.remove('d-none');
             window.scrollTo({ top: document.getElementById('print-options').offsetTop, behavior: 'smooth' });
         } else {
-            alert('Error creating prescription: ' + (data.message || 'Unknown error'));
+            Swal.fire('Error', 'Error creating prescription: ' + (data.message || 'Unknown error'), 'error');
             submitBtn.disabled = false;
-            btnIcon.classList.remove('hidden');
             btnText.textContent = 'Generate Prescription';
-            btnSpinner.classList.add('hidden');
+            btnSpinner.classList.add('d-none');
         }
     })
     .catch(err => {
         console.error(err);
-        alert('Error creating prescription');
+        Swal.fire('Error', 'Error creating prescription', 'error');
     });
 });
 
 function resetForm() {
-    // Reset form
     document.getElementById('prescription-form').reset();
     document.getElementById('patient-id').value = '';
     document.getElementById('patient-search').value = '';
-    document.getElementById('existing-patient-info').classList.add('hidden');
-    document.getElementById('new-patient-form').classList.add('hidden');
+    document.getElementById('existing-patient-info').classList.add('d-none');
+    document.getElementById('new-patient-form').classList.add('d-none');
     document.getElementById('new-patient-toggle').checked = false;
     document.getElementById('selected-problems').innerHTML = '';
     document.getElementById('selected-tests').innerHTML = '';
-    document.getElementById('medicines-container').innerHTML = '<div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">' +
-        '<div class="col-span-5">' +
-            '<input type="text" class="w-full form-input" name="medicines[0][name]" placeholder="Medicine name">' +
+    document.getElementById('medicines-container').innerHTML = '<div class="row g-2 mb-2 medicine-row align-items-center">' +
+        '<div class="col-md-5">' +
+            '<input type="text" class="form-control" name="medicines[0][name]" placeholder="Medicine name">' +
         '</div>' +
-        '<div class="col-span-3">' +
-            '<input type="text" class="w-full form-input" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">' +
+        '<div class="col-md-3">' +
+            '<input type="text" class="form-control" name="medicines[0][dosage]" placeholder="Dosage (e.g. 500mg)">' +
         '</div>' +
-        '<div class="col-span-3">' +
-            '<input type="text" class="w-full form-input" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
+        '<div class="col-md-3">' +
+            '<input type="text" class="form-control" name="medicines[0][frequency]" placeholder="Frequency (e.g. 3x/day)">' +
         '</div>' +
-        '<div class="col-span-1">' +
-            '<button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">' +
-                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+        '<div class="col-md-1">' +
+            '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMedicine(this)">' +
+                '<i class="fas fa-trash"></i>' +
             '</button>' +
         '</div>' +
     '</div>';
     medicineIndex = 1;
 
-    // Show form, hide print options
-    document.getElementById('action-buttons').classList.remove('hidden');
-    document.getElementById('print-options').classList.add('hidden');
+    document.getElementById('action-buttons').classList.remove('d-none');
+    document.getElementById('print-options').classList.add('d-none');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }

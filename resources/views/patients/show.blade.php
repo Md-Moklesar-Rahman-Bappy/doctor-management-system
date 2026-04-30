@@ -1,136 +1,119 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Patients', 'url' => route('patients.index')],
-    ['label' => 'Patient Details'],
+    ['label' => $patient->patient_name ?? 'Patient Details'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="/patients" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h3 class="text-2xl font-bold text-gray-900">Patient Details</h3>
+            <h3 class="fw-bold text-dark mb-0">{{ $patient->patient_name }}</h3>
         </div>
+        <p class="text-muted">Patient details and medical history</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Patient Information</h5>
-                </div>
-                <div class="p-6 space-y-3">
-                    <p class="text-sm"><strong class="text-gray-700">Unique ID:</strong> <span class="text-gray-600">{{ $patient->unique_id }}</span></p>
-                    <p class="text-sm"><strong class="text-gray-700">Name:</strong> <span class="text-gray-600">{{ $patient->patient_name }}</span></p>
-                    <p class="text-sm"><strong class="text-gray-700">Age:</strong> <span class="text-gray-600">{{ $patient->age }}</span></p>
-                    <p class="text-sm"><strong class="text-gray-700">Sex:</strong> <span class="text-gray-600">{{ ucfirst($patient->sex) }}</span></p>
-                    <p class="text-sm"><strong class="text-gray-700">Date:</strong> <span class="text-gray-600">{{ $patient->date }}</span></p>
-                </div>
-                <div class="px-6 py-4 border-t border-gray-200">
-                    <a href="/patients/{{ $patient->id }}/edit" class="inline-flex items-center gap-2 px-4 py-2 bg-warning-500 hover:bg-warning-600 text-white text-sm font-medium rounded-lg">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        Edit
-                    </a>
+    <div class="row g-4">
+        <!-- Patient Info Card -->
+        <div class="col-lg-4" data-aos="fade-right">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <span class="fw-bold text-primary" style="font-size: 1.5rem;">{{ strtoupper(substr($patient->patient_name, 0, 2)) }}</span>
+                    </div>
+                    <h5 class="fw-bold">{{ $patient->patient_name }}</h5>
+                    <p class="text-muted small mb-2">{{ $patient->unique_id }}</p>
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge bg-info-subtle text-info-emphasis">{{ ucfirst($patient->sex) }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis">Age: {{ $patient->age }}</span>
+                    </div>
+                    <div class="border-top pt-3">
+                        <div class="row g-2 text-start small">
+                            <div class="col-6">
+                                <span class="text-muted">Date Registered</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="fw-medium">{{ $patient->date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-outline-secondary flex-1">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <a href="{{ route('prescriptions.create') }}?patient_id={{ $patient->id }}" class="btn btn-sm btn-primary flex-1">
+                            <i class="fas fa-file-prescription me-1"></i> New Prescription
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Prescription History</h5>
+        <!-- Prescriptions -->
+        <div class="col-lg-8" data-aos="fade-left">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-semibold mb-0">Prescriptions</h5>
+                    <span class="badge bg-primary-subtle text-primary-emphasis">{{ $prescriptions->count() }} Total</span>
                 </div>
-                <div class="p-6">
-                    @if($patient->prescriptions->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Doctor</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Problems</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach($patient->prescriptions as $prescription)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm text-gray-600">{{ $prescription->created_at->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-600">{{ $prescription->doctor->name ?? 'N/A' }}</td>
-                                    <td class="px-4 py-3">
-                                        @if($prescription->problem)
-                                            <div class="flex flex-wrap gap-1">
-                                                @foreach(json_decode($prescription->problem, true) as $problem)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-light-100 text-blue-light-700">{{ $problem }}</span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <a href="/prescriptions/{{ $prescription->id }}" class="p-2 text-blue-light-600 hover:bg-blue-light-50 rounded-lg" title="View">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057 1.274 8.057 0 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-body p-0">
+                    @if($prescriptions->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($prescriptions as $prescription)
+                                <a href="{{ route('prescriptions.show', $prescription->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-medium">Prescription #{{ $prescription->id }}</div>
+                                        <div class="small text-muted">{{ $prescription->created_at->format('M d, Y') }}</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-muted small"></i>
+                                </a>
+                            @endforeach
+                        </div>
                     @else
-                    <p class="text-gray-500 text-sm">No prescriptions found.</p>
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-prescription text-muted mb-3" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="text-muted mb-0">No prescriptions yet</p>
+                        </div>
                     @endif
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Lab Test Reports</h5>
+            <!-- Lab Reports -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-semibold mb-0">Lab Reports</h5>
+                    <span class="badge bg-warning-subtle text-warning-emphasis">{{ $labReports->count() }} Total</span>
                 </div>
-                <div class="p-6">
-                    @if($patient->labTestReports->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Test Name</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @foreach($patient->labTestReports as $report)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $report->test_name }}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-600">{{ $report->created_at->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-3">
-                                        <a href="/lab-test-reports/{{ $report->id }}" class="p-2 text-blue-light-600 hover:bg-blue-light-50 rounded-lg" title="View">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057 1.274 8.057 0 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                        </a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-body p-0">
+                    @if($labReports->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($labReports as $report)
+                                <a href="{{ route('lab_test_reports.show', $report->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-medium">{{ $report->test_name }}</div>
+                                        <div class="small text-muted">{{ $report->created_at->format('M d, Y') }}</div>
+                                    </div>
+                                    @if($report->report_image)
+                                        <span class="badge bg-success-subtle text-success-emphasis">Has Image</span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
                     @else
-                    <p class="text-gray-500 text-sm">No lab reports found.</p>
+                        <div class="text-center py-5">
+                            <i class="fas fa-vial text-muted mb-3" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="text-muted mb-0">No lab reports yet</p>
+                        </div>
                     @endif
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="mt-6">
-        <a href="/patients" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Back to List
-        </a>
     </div>
 </div>
 @endsection

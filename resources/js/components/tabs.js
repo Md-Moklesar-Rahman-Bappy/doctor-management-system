@@ -1,34 +1,13 @@
 /**
- * Tabs Component - TailAdmin Style
- * Handles tab switching with underline style and icon support
+ * Bootstrap 5 Tabs
+ * Uses native Bootstrap 5 tab component
  */
+
 export function initTabs() {
-    const tabContainers = document.querySelectorAll('[x-data*="activeTab"]');
-
-    tabContainers.forEach(container => {
-        const tabButtons = container.querySelectorAll('[x-on\\:click*="activeTab"]');
-        const tabPanels = container.querySelectorAll('[x-show]');
-
-        tabButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                // Update active states
-                tabButtons.forEach(btn => {
-                    btn.classList.remove('tab-underline-active');
-                    btn.classList.add('tab-underline');
-                });
-                button.classList.add('tab-underline-active');
-                button.classList.remove('tab-underline');
-
-                // Show/hide panels
-                tabPanels.forEach((panel, panelIndex) => {
-                    if (panelIndex === index) {
-                        panel.style.display = 'block';
-                    } else {
-                        panel.style.display = 'none';
-                    }
-                });
-            });
-        });
+    // Initialize all tabs using Bootstrap's native JS
+    const tabElements = [].slice.call(document.querySelectorAll('#myTab button, [data-bs-toggle="tab"]'));
+    tabElements.map(function (tabEl) {
+        return new bootstrap.Tab(tabEl);
     });
 }
 

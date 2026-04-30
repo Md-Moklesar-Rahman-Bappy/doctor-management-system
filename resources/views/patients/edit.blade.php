@@ -1,56 +1,91 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Patients', 'url' => route('patients.index')],
     ['label' => 'Edit Patient'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('patients.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Edit Patient</h1>
+            <h3 class="fw-bold text-dark mb-0">Edit Patient</h3>
         </div>
-        <p class="text-gray-500">Update patient details below</p>
+        <p class="text-muted">Update patient details</p>
     </div>
 
-    <div class="max-w-2xl mx-auto">
-        <x-card>
-            <form method="POST" action="{{ route('patients.update', $patient->id) }}" class="space-y-6">
-                @csrf
-                @method('PUT')
+    <div class="row justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('patients.update', $patient->id) }}" class="d-flex flex-column gap-3">
+                        @csrf
+                        @method('PUT')
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Unique ID</label>
-                    <input type="text" value="{{ $patient->unique_id }}" disabled
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500">
+                        <div>
+                            <label for="patient_name" class="form-label fw-medium">Patient Name *</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="patient_name" name="patient_name" value="{{ old('patient_name', $patient->patient_name) }}" required
+                                       class="form-control ps-4">
+                                <div class="icon"><i class="fas fa-user"></i></div>
+                            </div>
+                            @error('patient_name')
+                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="unique_id" class="form-label fw-medium">Unique ID</label>
+                                <input type="text" id="unique_id" value="{{ $patient->unique_id }}" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="age" class="form-label fw-medium">Age *</label>
+                                <input type="number" id="age" name="age" min="0" max="150" value="{{ old('age', $patient->age) }}" required
+                                       class="form-control">
+                                @error('age')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="sex" class="form-label fw-medium">Sex *</label>
+                                <select id="sex" name="sex" required class="form-select">
+                                    <option value="male" {{ $patient->sex == 'male' ? 'selected' : '' }}>Male</option>
+                                    <option value="female" {{ $patient->sex == 'female' ? 'selected' : '' }}>Female</option>
+                                </select>
+                                @error('sex')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="date" class="form-label fw-medium">Date *</label>
+                            <input type="date" id="date" name="date" value="{{ old('date', $patient->date) }}" required
+                                   class="form-control">
+                            @error('date')
+                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex gap-3 pt-3 border-top">
+                            <a href="{{ route('patients.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Patient
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <x-input name="patient_name" label="Patient Name" :value="old('patient_name', $patient->patient_name)" required />
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <x-input name="age" label="Age" type="number" :value="old('age', $patient->age)" min="0" max="150" required />
-
-                    <x-select name="sex" label="Sex" :options="['male' => 'Male', 'female' => 'Female']" :value="old('sex', $patient->sex)" placeholder="Select" required />
-
-                    <x-input name="date" label="Date" type="date" :value="old('date', $patient->date)" required />
-                </div>
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
-                    <a href="{{ route('patients.index') }}" class="btn-secondary">Cancel</a>
-                    <x-button type="submit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
-                        Update Patient
-                    </x-button>
-                </div>
-            </form>
-        </x-card>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

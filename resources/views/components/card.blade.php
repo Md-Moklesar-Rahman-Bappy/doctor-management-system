@@ -1,20 +1,19 @@
 @props([
     'title' => null,
     'subtitle' => null,
-    'padding' => true,
     'shadow' => 'md',
     'hover' => false,
     'header' => null,
     'footer' => null
 ])
 
-<div class="bg-white rounded-xl border border-secondary-200 shadow-{{ $shadow }} {{ $hover ? 'card-hover' : '' }}">
+<div class="card {{ $shadow === 'md' ? 'shadow-sm' : ($shadow === 'lg' ? 'shadow' : '') }} {{ $hover ? 'card-hover' : '' }}">
     @if($title || $header)
-        <div class="px-6 py-4 border-b border-secondary-200">
+        <div class="card-header bg-white border-bottom">
             @if($title)
-                <h3 class="text-lg font-semibold text-secondary-900">{{ $title }}</h3>
+                <h5 class="card-title fw-semibold mb-0">{{ $title }}</h5>
                 @if($subtitle)
-                    <p class="mt-1 text-sm text-secondary-500">{{ $subtitle }}</p>
+                    <p class="card-text text-muted small mt-1 mb-0">{{ $subtitle }}</p>
                 @endif
             @endif
             @if($header)
@@ -23,12 +22,12 @@
         </div>
     @endif
 
-    <div class="{{ $padding ? 'p-6' : '' }}">
+    <div class="card-body">
         {{ $slot }}
     </div>
 
     @if($footer)
-        <div class="px-6 py-4 border-t border-secondary-200">
+        <div class="card-footer bg-white border-top">
             {{ $footer }}
         </div>
     @endif

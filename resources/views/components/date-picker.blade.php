@@ -1,27 +1,34 @@
-@props(['id' => '', 'name' => '', 'label' => '', 'value' => ''])
+@props([
+    'name',
+    'label' => null,
+    'value' => null,
+    'required' => false,
+    'error' => null
+])
 
-<div>
+<div class="mb-3">
     @if($label)
-        <label for="{{ $id }}" class="form-label flex items-center gap-2">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
+        <label for="{{ $name }}" class="form-label fw-medium">
             {{ $label }}
+            @if($required)
+                <span class="text-danger">*</span>
+            @endif
         </label>
     @endif
 
-    <div class="relative">
+    <div class="input-icon-wrapper">
         <input
             type="date"
-            id="{{ $id }}"
             name="{{ $name }}"
-            value="{{ $value }}"
-            class="date-picker"
+            id="{{ $name }}"
+            value="{{ old($name, $value) }}"
+            {{ $required ? 'required' : '' }}
+            class="form-control {{ $error ? 'is-invalid' : '' }}"
         >
-        <div class="date-picker-icon">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-        </div>
+        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+
+        @if($error)
+            <div class="invalid-feedback">{{ $error }}</div>
+        @endif
     </div>
 </div>

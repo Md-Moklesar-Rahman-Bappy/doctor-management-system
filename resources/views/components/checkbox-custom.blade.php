@@ -1,16 +1,22 @@
-@props(['id' => '', 'name' => '', 'checked' => false, 'label' => '', 'value' => '1'])
+@props([
+    'name',
+    'label' => null,
+    'checked' => false,
+    'value' => 1
+])
 
-<label class="list-item cursor-pointer">
+<div class="form-check mb-3">
     <input
         type="checkbox"
-        id="{{ $id }}"
         name="{{ $name }}"
+        id="{{ $name }}"
         value="{{ $value }}"
         {{ $checked ? 'checked' : '' }}
-        class="checkbox-custom"
+        class="form-check-input"
     >
     @if($label)
-        <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
+        <label class="form-check-label" for="{{ $name }}">
+            {{ $label }}
+        </label>
     @endif
-    {{ $slot }}
-</label>
+</div>

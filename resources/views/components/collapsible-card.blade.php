@@ -1,23 +1,27 @@
 @props([
     'title' => null,
-    'footer' => null,
+    'id' => 'collapse-' . uniqid(),
+    'show' => false
 ])
 
-<div x-data="{ open: true }" class="bg-white rounded-xl shadow-sm border border-secondary-200">
-    <div class="px-6 py-4 border-b border-secondary-200 flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-secondary-900">{{ $title }}</h3>
-        <button @click="open = !open" class="p-1 hover:bg-secondary-100 rounded-lg transition-colors">
-            <svg class="w-5 h-5 text-secondary-500 transform transition-transform duration-200" :class="{ 'rotate-180': !open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </button>
+<div class="card shadow-sm">
+    <div class="card-header bg-white" id="{{ $id }}Header">
+        <h6 class="mb-0">
+            <button class="btn btn-link text-decoration-none p-0 {{ $show ? '' : 'collapsed' }}"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#{{ $id }}"
+                    aria-expanded="{{ $show ? 'true' : 'false' }}"
+                    aria-controls="{{ $id }}">
+                <i class="fas fa-chevron-{{ $show ? 'down' : 'right' }} me-2 small"></i>
+                {{ $title }}
+            </button>
+        </h6>
     </div>
-    <div x-show="open" x-transition class="p-6">
-        {{ $slot }}
-    </div>
-    @if($footer)
-        <div class="px-6 py-4 border-t border-secondary-200 bg-secondary-50" x-show="open">
-            {{ $footer }}
+
+    <div id="{{ $id }}" class="collapse {{ $show ? 'show' : '' }}" aria-labelledby="{{ $id }}Header">
+        <div class="card-body">
+            {{ $slot }}
         </div>
-    @endif
+    </div>
 </div>

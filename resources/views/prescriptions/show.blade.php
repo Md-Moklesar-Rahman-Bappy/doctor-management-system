@@ -1,108 +1,141 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Prescriptions', 'url' => route('prescriptions.index')],
-    ['label' => 'Prescription Details'],
+    ['label' => 'Prescription #' . ($prescription->id ?? '')],
 ];
-?>
-<div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="/prescriptions" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <h3 class="text-2xl font-bold text-gray-900">Prescription Details</h3>
-        </div>
-    </div>
+@endphp
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-xl border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h5 class="font-semibold text-gray-900 mb-0">Prescription Info</h5>
+<div class="main-content">
+    <!-- Printable Area -->
+    <div id="print-area">
+        <div class="d-flex justify-content-between align-items-start mb-4" data-aos="fade-down">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Prescription #{{ $prescription->id }}</h2>
+                <p class="text-muted mb-0">Created: {{ $prescription->created_at->format('F d, Y') }}</p>
             </div>
-            <div class="p-6 space-y-3">
-                <p class="text-sm"><strong class="text-gray-700">ID:</strong> <span class="text-gray-600">{{ $prescription->id }}</span></p>
-                <p class="text-sm"><strong class="text-gray-700">Date:</strong> <span class="text-gray-600">{{ $prescription->created_at->format('Y-m-d H:i') }}</span></p>
-                <p class="text-sm"><strong class="text-gray-700">Patient:</strong> 
-                    <a href="/patients/{{ $prescription->patient->id }}" class="text-brand-600 hover:text-brand-700">
-                        {{ $prescription->patient->unique_id }} - {{ $prescription->patient->patient_name }}
-                    </a>
-                </p>
-                <p class="text-sm"><strong class="text-gray-700">Doctor:</strong> <span class="text-gray-600">{{ $prescription->doctor->name ?? 'N/A' }}</span></p>
+            <div class="d-flex gap-2 no-print">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+                <a href="{{ route('prescriptions.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
             </div>
         </div>
 
-        <div class="space-y-6">
-            @if($prescription->problem)
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Problems</h5>
-                </div>
-                <div class="p-6">
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(json_decode($prescription->problem, true) as $problem)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-light-100 text-blue-light-700">{{ $problem }}</span>
-                        @endforeach
+        <div class="card shadow-sm" data-aos="fade-up">
+            <!-- Header -->
+            <div class="card-header bg-white border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="fw-bold text-primary mb-0">
+                            <i class="fas fa-hospital me-2"></i>Medical Center
+                        </h4>
+                        <p class="small text-muted mb-0">123 Health Street, Medical District</p>
+                        <p class="small text-muted">Phone: (555) 123-4567 | Email: info@medicalcenter.com</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="d-inline-block p-3 bg-light rounded">
+                            <div class="fw-semibold">{{ $prescription->doctor->name ?? 'N/A' }}</div>
+                            <div class="small text-muted">
+                                @if($prescription->doctor->degrees)
+                                    {{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            @endif
 
-            @if($prescription->tests)
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Tests</h5>
-                </div>
-                <div class="p-6">
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(json_decode($prescription->tests, true) as $test)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-700">{{ $test }}</span>
-                        @endforeach
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="row g-3 mb-4 p-3 bg-light rounded">
+                    <div class="col-md-3">
+                        <label class="small text-muted text-uppercase">Unique ID</label>
+                        <p class="fw-medium mb-0">{{ $prescription->patient->unique_id ?? 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-muted text-uppercase">Patient Name</label>
+                        <p class="fw-medium mb-0">{{ $prescription->patient->patient_name ?? 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-muted text-uppercase">Age</label>
+                        <p class="fw-medium mb-0">{{ $prescription->patient->age ?? 'N/A' }} years</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-muted text-uppercase">Sex</label>
+                        <p class="fw-medium mb-0">{{ ucfirst($prescription->patient->sex ?? 'N/A') }}</p>
                     </div>
                 </div>
-            </div>
-            @endif
 
-            @if($prescription->medicines)
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Medicines</h5>
-                </div>
-                <div class="p-6">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
+                <!-- Problems -->
+                @if($prescription->problems)
+                    <div class="mb-4">
+                        <h5 class="fw-semibold mb-3 border-bottom pb-2">
+                            <i class="fas fa-stethoscope text-primary me-2"></i>Diagnoses/Problems
+                        </h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach(json_decode($prescription->problems, true) ?? [] as $problem)
+                                <span class="badge bg-primary-subtle text-primary-emphasis p-2">{{ $problem }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Medicines -->
+                <div class="mb-4">
+                    <h5 class="fw-semibold mb-3 border-bottom pb-2">
+                        <i class="fas fa-pills text-primary me-2"></i>Prescribed Medicines
+                    </h5>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Medicine</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Dosage</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Frequency</th>
+                                <th>#</th>
+                                <th>Medicine Name</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach(json_decode($prescription->medicines, true) as $medicine)
-                            <tr>
-                                <td class="px-4 py-3 text-sm">{{ $medicine['name'] ?? 'N/A' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $medicine['dosage'] ?? 'N/A' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $medicine['frequency'] ?? 'N/A' }}</td>
-                            </tr>
+                        <tbody>
+                            @php
+                                $meds = json_decode($prescription->medicines, true) ?? [];
+                            @endphp
+                            @foreach($meds as $index => $med)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td class="fw-medium">{{ $med['name'] ?? 'N/A' }}</td>
+                                    <td>{{ $med['dosage'] ?? 'N/A' }}</td>
+                                    <td>{{ $med['frequency'] ?? 'N/A' }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-            </div>
-            @endif
-        </div>
-    </div>
 
-    <div class="mt-6 flex gap-3">
-        <a href="/prescriptions/{{ $prescription->id }}/edit" class="inline-flex items-center gap-2 px-4 py-2.5 bg-warning-500 hover:bg-warning-600 text-white font-medium rounded-lg">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            Edit
-        </a>
-        <a href="/prescriptions" class="px-6 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 font-medium">Back to List</a>
+                <!-- Tests -->
+                @if($prescription->tests)
+                    <div class="mb-4">
+                        <h5 class="fw-semibold mb-3 border-bottom pb-2">
+                            <i class="fas fa-flask text-primary me-2"></i>Recommended Tests
+                        </h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach(json_decode($prescription->tests, true) ?? [] as $test)
+                                <span class="badge bg-info-subtle text-info-emphasis p-2">{{ $test }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer bg-white border-top text-center">
+                <p class="small text-muted mb-0">This is a computer-generated prescription. Please consult your doctor for any clarifications.</p>
+                <p class="small text-muted mb-0">Generated on {{ now()->format('F d, Y h:i A') }}</p>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

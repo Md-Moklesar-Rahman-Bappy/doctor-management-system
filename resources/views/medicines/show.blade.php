@@ -1,59 +1,84 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Medicines', 'url' => route('medicines.index')],
-    ['label' => 'Medicine Details'],
+    ['label' => $medicine->brand_name ?? 'Medicine Details'],
 ];
-?>
+@endphp>
+
 <div>
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Medicine Details</h1>
-            <p class="text-gray-500">View medicine information</p>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('medicines.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </a>
+            <h3 class="fw-bold text-dark mb-0">{{ $medicine->brand_name }}</h3>
         </div>
-        <a href="/medicines" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to List
-        </a>
+        <p class="text-muted">Medicine details and information</p>
     </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Brand Name</label>
-                <p class="text-lg font-semibold text-gray-900">{{ $medicine->brand_name }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Generic Name</label>
-                <p class="text-lg text-gray-900">{{ $medicine->generic_name ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Dosage Type</label>
-                <p class="text-lg text-gray-900">{{ $medicine->dosage_type }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Strength</label>
-                <p class="text-lg text-gray-900">{{ $medicine->strength ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Company</label>
-                <p class="text-lg text-gray-900">{{ $medicine->company_name ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Package</label>
-                <p class="text-lg text-gray-900">{{ $medicine->package_mark ?? 'N/A' }}</p>
+    <div class="row g-4">
+        <div class="col-lg-4" data-aos="fade-right">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-pills fa-2x text-white"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ $medicine->brand_name }}</h5>
+                    <p class="text-muted small">{{ $medicine->generic_name }}</p>
+                    <span class="badge bg-success-subtle text-success-emphasis">{{ $medicine->dosage_type ?? 'N/A' }}</span>
+                </div>
             </div>
         </div>
 
-        <div class="mt-8 flex items-center gap-3">
-            <a href="/medicines/{{ $medicine->id }}/edit" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg">Edit</a>
-            <form method="POST" action="/medicines/{{ $medicine->id }}" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="px-4 py-2 bg-error-500 hover:bg-error-600 text-white rounded-lg" onclick="return confirm('Are you sure?')">Delete</button>
-            </form>
+        <div class="col-lg-8" data-aos="fade-left">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title fw-semibold mb-0">Medicine Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase">Brand Name</label>
+                            <p class="fw-medium">{{ $medicine->brand_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase">Generic Name</label>
+                            <p class="fw-medium">{{ $medicine->generic_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Dosage Type</label>
+                            <p class="fw-medium">{{ $medicine->dosage_type ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Strength</label>
+                            <p class="fw-medium">{{ $medicine->strength ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Package</label>
+                            <p class="fw-medium">{{ $medicine->package_mark ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase">Company</label>
+                            <p class="fw-medium">{{ $medicine->company_name ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top d-flex gap-2">
+                    <a href="{{ route('medicines.edit', $medicine->id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ route('medicines.destroy', $medicine->id) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

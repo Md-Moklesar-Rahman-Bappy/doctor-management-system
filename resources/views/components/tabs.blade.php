@@ -1,28 +1,37 @@
-@props(['tabs' => [], 'active' => 0, 'id' => 'tabs'])
+@props([
+    'id' => 'tabs-' . uniqid(),
+    'tabs' => [],
+    'active' => 0
+])
 
-<div x-data="{ activeTab: {{ $active }} }" class="w-full" id="{{ $id }}">
-    <!-- Tab Headers -->
-    <div class="border-b border-gray-200">
-        <nav class="flex -mb-px space-x-6" aria-label="Tabs">
-            @foreach($tabs as $index => $tab)
-                <button
-                    @click="activeTab = {{ $index }}"
-                    :class="activeTab === {{ $index }} ? 'tab-underline-active' : 'tab-underline'"
-                >
+<div class="mb-3">
+    <ul class="nav nav-tabs" id="{{ $id }}" role="tablist">
+        @foreach($tabs as $index => $tab)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {{ $index == $active ? 'active' : '' }}"
+                        id="{{ $id }}-tab-{{ $index }}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#{{ $id }}-panel-{{ $index }}"
+                        type="button"
+                        role="tab"
+                        aria-controls="{{ $id }}-panel-{{ $index }}"
+                        aria-selected="{{ $index == $active ? 'true' : 'false' }}">
                     @if(isset($tab['icon']))
-                        <span class="tab-underline-icon">{!! $tab['icon'] !!}</span>
+                        <i class="{{ $tab['icon'] }} me-2"></i>
                     @endif
-                    <span>{{ $tab['label'] }}</span>
-                    @if(isset($tab['badge']))
-                        <span class="tab-badge tab-badge-primary">{{ $tab['badge'] }}</span>
-                    @endif
+                    {{ $tab['label'] }}
                 </button>
-            @endforeach
-        </nav>
-    </div>
-
-    <!-- Tab Content -->
-    <div class="mt-4">
-        {{ $slot }}
+            </li>
+        @endforeach
+    </ul>
+    <div class="tab-content border border-top-0 rounded-bottom p-3" id="{{ $id }}Content">
+        @foreach($tabs as $index => $tab)
+            <div class="tab-pane fade {{ $index == $active ? 'show active' : '' }}"
+                 id="{{ $id }}-panel-{{ $index }}"
+                 role="tabpanel"
+                 aria-labelledby="{{ $id }}-tab-{{ $index }}">
+                {{ $tab['content'] ?? '' }}
+            </div>
+        @endforeach
     </div>
 </div>

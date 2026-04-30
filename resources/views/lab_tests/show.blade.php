@@ -1,67 +1,104 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
-    ['label' => 'Lab Test Details'],
+    ['label' => $test->test ?? 'Test Details'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Lab Test Details</h1>
-            <p class="text-gray-500">View laboratory test information</p>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('lab_tests.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </a>
+            <h3 class="fw-bold text-dark mb-0">{{ $test->test }}</h3>
         </div>
-        <a href="/lab_tests" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to List
-        </a>
+        <p class="text-muted">Test details and information</p>
     </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Department</label>
-                <p class="text-lg font-semibold text-gray-900">{{ $test->department }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Sample Type</label>
-                <p class="text-lg text-gray-900">{{ $test->sample_type }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Panel</label>
-                <p class="text-lg text-gray-900">{{ $test->panel ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Test</label>
-                <p class="text-lg text-gray-900">{{ $test->test }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Code</label>
-                <p class="text-lg text-gray-900 font-mono">{{ $test->code }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Unit</label>
-                <p class="text-lg text-gray-900">{{ $test->unit ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Result Type</label>
-                <p class="text-lg text-gray-900">{{ $test->result_type ?? 'N/A' }}</p>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-500 mb-1">Normal Range</label>
-                <p class="text-lg text-gray-900">{{ $test->normal_range ?? 'N/A' }}</p>
+    <div class="row g-4">
+        <div class="col-lg-4" data-aos="fade-right">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-flask fa-2x text-info"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ $test->test }}</h5>
+                    <p class="text-muted small">{{ $test->code }}</p>
+                    <span class="badge bg-primary-subtle text-primary-emphasis">{{ $test->department }}</span>
+                </div>
             </div>
         </div>
 
-        <div class="mt-8 flex items-center gap-3">
-            <a href="/lab_tests/{{ $test->id }}/edit" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg">Edit</a>
-            <form method="POST" action="/lab_tests/{{ $test->id }}" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="px-4 py-2 bg-error-500 hover:bg-error-600 text-white rounded-lg" onclick="return confirm('Are you sure?')">Delete</button>
-            </form>
+        <div class="col-lg-8" data-aos="fade-left">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title fw-semibold mb-0">Test Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase">Department</label>
+                            <p class="fw-medium">{{ $test->department }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase">Test Name</label>
+                            <p class="fw-medium">{{ $test->test }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Code</label>
+                            <p class="fw-medium font-monospace">{{ $test->code }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Sample Type</label>
+                            <p class="fw-medium">{{ $test->sample_type ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Panel</label>
+                            <p class="fw-medium">{{ $test->panel ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Unit</label>
+                            <p class="fw-medium">{{ $test->unit ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Result Type</label>
+                            <p class="fw-medium">{{ ucfirst($test->result_type ?? 'N/A') }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Normal Range</label>
+                            <p class="fw-medium">
+                                @if($test->normal_range)
+                                    {{ $test->normal_range }}
+                                @elseif($test->normal_range_lower && $test->normal_range_upper)
+                                    {{ $test->normal_range_lower }} - {{ $test->normal_range_upper }}
+                                @elseif($test->normal_range_lower)
+                                    > {{ $test->normal_range_lower }}
+                                @elseif($test->normal_range_upper)
+                                    < {{ $test->normal_range_upper }}
+                                @else
+                                    N/A
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top d-flex gap-2">
+                    <a href="{{ route('lab_tests.edit', $test->id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ route('lab_tests.destroy', $test->id) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

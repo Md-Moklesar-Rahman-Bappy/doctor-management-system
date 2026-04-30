@@ -6,49 +6,45 @@ $breadcrumbs = [
     ['label' => 'Doctors', 'url' => route('doctors.index')],
 ];
 @endphp
+
 <div>
     <!-- Page Header -->
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 gap-3" data-aos="fade-down">
         <div>
-            <h3 class="page-title">Doctors</h3>
-            <p class="page-description">Manage doctor records</p>
+            <h3 class="page-title mb-1">Doctors</h3>
+            <p class="page-description mb-0">Manage doctor records</p>
         </div>
-        <a href="{{ route('doctors.create') }}" class="btn-primary inline-flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Add Doctor
+        <a href="{{ route('doctors.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fas fa-user-md me-1"></i> Add Doctor
         </a>
     </div>
 
-    <x-card>
+    <div class="card shadow-sm" data-aos="fade-up">
         <!-- Filter/Search Header -->
-        <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <form method="GET" action="{{ route('doctors.index') }}" class="flex items-center gap-2 flex-1">
-                <div class="relative flex-1 max-w-md">
+        <div class="card-header bg-white border-bottom">
+            <form method="GET" action="{{ route('doctors.index') }}" class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="input-group flex-1" style="max-width: 400px;">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
                     <input type="text" name="search" value="{{ $search ?? '' }}"
-                           class="search-input" placeholder="Search by name, email, phone...">
-                    <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                           class="form-control border-start-0" placeholder="Search by name, email, phone...">
                 </div>
-                <button type="submit" class="btn-secondary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Search
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-search me-1"></i>Search
                 </button>
                 @if($search)
-                <a href="{{ route('doctors.index') }}" class="px-3 py-2 text-gray-500 hover:text-gray-700">
-                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    Clear
-                </a>
+                    <a href="{{ route('doctors.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </a>
                 @endif
             </form>
         </div>
 
         <!-- Table -->
-        <div class="table-container">
-            <table class="table">
-                <thead>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
@@ -58,56 +54,55 @@ $breadcrumbs = [
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody>
                     @forelse($doctors as $doctor)
                     <tr>
-                        <td class="text-gray-600">{{ $doctor->id }}</td>
+                        <td class="text-muted">{{ $doctor->id }}</td>
                         <td>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center">
-                                    <span class="text-brand-600 font-semibold text-sm">{{ strtoupper(substr($doctor->name, 0, 2)) }}</span>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <span class="fw-semibold text-primary small text-uppercase">{{ substr($doctor->name, 0, 2) }}</span>
                                 </div>
                                 <div>
-                                    <div class="font-medium text-gray-900">{{ $doctor->name }}</div>
+                                    <div class="fw-medium">{{ $doctor->name }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="text-gray-600">{{ $doctor->email }}</td>
-                        <td class="text-gray-600">{{ $doctor->phone }}</td>
+                        <td class="text-muted">{{ $doctor->email }}</td>
+                        <td class="text-muted">{{ $doctor->phone }}</td>
                         <td>
                             @if($doctor->degrees)
-                                <div class="flex flex-wrap gap-1">
+                                <div class="d-flex flex-wrap gap-1">
                                     @foreach(json_decode($doctor->degrees, true) as $degree)
-                                        <span class="badge-info-light">{{ $degree }}</span>
+                                        <span class="badge bg-info-subtle text-info-emphasis">{{ $degree }}</span>
                                     @endforeach
                                 </div>
                             @endif
                         </td>
                         <td>
-                            <div class="flex items-center gap-1">
-                                <a href="{{ route('doctors.show', $doctor->id) }}" class="p-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors" title="View">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057 1.274 8.057 0 12-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <div class="d-flex gap-1">
+                                <a href="{{ route('doctors.show', $doctor->id) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                    <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('doctors.edit', $doctor->id) }}" class="p-2 text-blue-light-600 hover:bg-blue-light-50 rounded-lg transition-colors" title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <a href="{{ route('doctors.edit', $doctor->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <button onclick="confirmDelete('/doctors/{{ $doctor->id }}', '{{ $doctor->name }}')" class="p-2 text-error-600 hover:bg-error-50 rounded-lg transition-colors" title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <button onclick="confirmDelete('/doctors/{{ $doctor->id }}', '{{ $doctor->name }}')" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-12">
+                        <td colspan="6" class="py-5">
                             <x-empty-state
                                 title="No doctors found"
                                 description="Add your first doctor to get started"
                             >
                                 <x-slot:action>
-                                    <a href="{{ route('doctors.create') }}" class="btn-primary inline-flex items-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                        Add Doctor
+                                    <a href="{{ route('doctors.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                        <i class="fas fa-user-md me-1"></i> Add Doctor
                                     </a>
                                 </x-slot:action>
                             </x-empty-state>
@@ -119,9 +114,9 @@ $breadcrumbs = [
         </div>
 
         @if($doctors->hasPages())
-        <div class="px-4 py-3 border-t border-gray-200">
-            {{ $doctors->links('components.pagination') }}
-        </div>
+            <div class="card-footer bg-white border-top">
+                {{ $doctors->links('components.pagination') }}
+            </div>
         @endif
     </x-card>
 </div>

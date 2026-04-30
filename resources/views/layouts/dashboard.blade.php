@@ -7,123 +7,137 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Doctor - Medical Management System')</title>
 
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- AOS - Animate On Scroll -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
     <!-- Navigation -->
-    <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/dashboard" class="text-xl font-bold text-primary-600">Doctor</a>
-                </div>
-                <div class="flex items-center gap-4">
-                    @auth
-                        <span class="text-sm text-gray-600">{{ auth()->user()->email }}</span>
-                        <form method="POST" action="/logout" class="inline">
-                            @csrf
-                            <button type="submit" class="text-sm text-gray-600 hover:text-gray-900">Logout</button>
-                        </form>
-                    @endauth
-                </div>
+    <nav class="navbar navbar-expand navbar-light bg-white border-bottom shadow-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-primary" href="/dashboard">
+                <i class="fas fa-user-md me-2"></i>Doctor
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                @auth
+                    <span class="text-muted small">{{ auth()->user()->email }}</span>
+                    <form method="POST" action="/logout" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-link text-muted text-decoration-none p-0">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </button>
+                    </form>
+                @endauth
             </div>
         </div>
     </nav>
 
-    <!-- Sidebar -->
-    <div class="flex pt-16">
-        <aside class="w-64 bg-white border-r border-gray-200 min-h-screen fixed left-0 top-16 overflow-y-auto">
-            <nav class="p-4 space-y-2">
-                <a href="/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('dashboard') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1 1v3a1 1 0 001 1h3m-6 0l6-6m-9 5h.01M12 12h.01"/></svg>
-                    Dashboard
+    <!-- Sidebar and Main Content -->
+    <div class="d-flex" style="margin-top: 64px;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="p-3">
+                <a href="/dashboard" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a href="/doctors" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('doctors*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Doctors
+                <a href="/doctors" class="nav-link {{ request()->is('doctors*') ? 'active' : '' }}">
+                    <i class="fas fa-user-md"></i> Doctors
                 </a>
-                <a href="/patients" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('patients*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.637M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Patients
+                <a href="/patients" class="nav-link {{ request()->is('patients*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i> Patients
                 </a>
-                <a href="/prescriptions" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('prescriptions*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    Prescriptions
+                <a href="/prescriptions" class="nav-link {{ request()->is('prescriptions*') ? 'active' : '' }}">
+                    <i class="fas fa-file-prescription"></i> Prescriptions
                 </a>
-                <a href="/medicines" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('medicines*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.429a2 2 0 00-1.398-2.903l-1.371-1.37a2 2 0 00-1.414-.465l-3.34 3.34a4 4 0 00-.465 1.414l-1.37 1.371a2 2 0 002.903 1.398l6.227 1.793a.5.5 0 00.383-.683l-1.535-5.357z"/></svg>
-                    Medicines
+                <a href="/medicines" class="nav-link {{ request()->is('medicines*') ? 'active' : '' }}">
+                    <i class="fas fa-pills"></i> Medicines
                 </a>
-                <a href="/lab-tests" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('lab-tests*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.429a2 2 0 00-1.398-2.903l-1.371-1.37a2 2 0 00-1.414-.465l-3.34 3.34a4 4 0 00-.465 1.414l-1.37 1.371a2 2 0 002.903 1.398l6.227 1.793a.5.5 0 00.383-.683l-1.535-5.357z"/></svg>
-                    Lab Tests
+                <a href="/lab-tests" class="nav-link {{ request()->is('lab-tests*') ? 'active' : '' }}">
+                    <i class="fas fa-flask"></i> Lab Tests
                 </a>
-                <a href="/lab-test-reports" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('lab-test-reports*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10V7a2 2 0 00-2-2h-6m-4 10V5a2 2 0 00-2-2h-2a2 2 0 00-2 2v12a2 2 0 002 2h10z"/></svg>
-                    Lab Reports
+                <a href="/lab-test-reports" class="nav-link {{ request()->is('lab-test-reports*') ? 'active' : '' }}">
+                    <i class="fas fa-vial"></i> Lab Reports
                 </a>
-                <a href="/problems" class="flex items-center gap-3 px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 {{ request()->is('problems*') ? 'bg-primary-50 text-primary-700' : '' }}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0h-3m-2-7a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V7z"/></svg>
-                    Problems
+                <a href="/problems" class="nav-link {{ request()->is('problems*') ? 'active' : '' }}">
+                    <i class="fas fa-stethoscope"></i> Diagnoses
                 </a>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="ml-64 flex-1 p-8">
+        <main class="main-content flex-grow-1 p-4 p-md-5">
             <!-- Breadcrumbs -->
             @if(isset($breadcrumbs))
-                <div class="mb-4">
-                    <nav class="flex" aria-label="Breadcrumb">
-                        <ol class="inline-flex items-center space-x-1">
-                            <li><a href="/dashboard" class="text-sm text-gray-500 hover:text-gray-700">Home</a></li>
-                            @foreach($breadcrumbs as $crumb)
-                                <li class="flex items-center">
-                                    <svg class="w-4 h-4 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    @if(isset($crumb['url']))
-                                        <a href="{{ $crumb['url'] }}" class="text-sm text-gray-500 hover:text-gray-700">{{ $crumb['label'] }}</a>
-                                    @else
-                                        <span class="text-sm text-gray-900">{{ $crumb['label'] }}</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ol>
-                    </nav>
-                </div>
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                        @foreach($breadcrumbs as $crumb)
+                            @if(isset($crumb['url']))
+                                <li class="breadcrumb-item"><a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a></li>
+                            @else
+                                <li class="breadcrumb-item active">{{ $crumb['label'] }}</li>
+                            @endif
+                        @endforeach
+                    </ol>
+                </nav>
             @endif
 
             <!-- Alerts -->
             @if(session('success'))
-                <x-alert variant="success" :dismissible="true">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
                     {{ session('success') }}
-                </x-alert>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
 
             @if(session('error'))
-                <x-alert variant="error" :dismissible="true">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
                     {{ session('error') }}
-                </x-alert>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
 
             @if($errors->any())
-                <x-alert variant="error" :dismissible="true">
-                    <ul class="list-disc list-inside">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <ul class="mb-0 ps-3">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                </x-alert>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             @endif
+
+            <!-- Toast Container -->
+            <div class="toast-container position-fixed top-0 end-0 p-3"></div>
 
             <!-- Page Content -->
             @yield('content')
         </main>
     </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+    <!-- AOS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
     @stack('scripts')
 </body>

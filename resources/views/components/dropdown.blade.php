@@ -1,37 +1,28 @@
-@props(['trigger' => '', 'align' => 'right', 'width' => '48'])
+@props([
+    'id' => 'dropdown-' . uniqid(),
+    'label' => null,
+    'icon' => null,
+    'items' => []
+])
 
-@php
-    $alignClass = match($align) {
-        'left' => 'left-0',
-        'center' => 'left-1/2 -translate-x-1/2',
-        default => 'right-0'
-    };
-
-    $widthClass = match($width) {
-        '48' => 'w-48',
-        '56' => 'w-56',
-        '64' => 'w-64',
-        default => 'w-48'
-    };
-@endphp
-
-<div x-data="{ open: false }" class="relative inline-block text-left">
-    <!-- Trigger -->
-    <div @click="open = !open" class="cursor-pointer">
-        {{ $trigger }}
-    </div>
-
-    <!-- Dropdown Menu -->
-    <div x-show="open"
-         @click.away="open = false"
-         x-transition:enter="transition ease-out duration-100"
-         x-transition:enter-start="transform opacity-0 scale-95"
-         x-transition:enter-end="transform opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-75"
-         x-transition:leave-start="transform opacity-100 scale-100"
-         x-transition:leave-end="transform opacity-0 scale-95"
-         class="absolute z-50 mt-2 {{ $alignClass }} {{ $widthClass }} bg-white rounded-lg shadow-lg border border-gray-200 py-1"
-         style="display: none;">
-        {{ $slot }}
-    </div>
+<div class="dropdown">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="{{ $id }}" data-bs-toggle="dropdown" aria-expanded="false">
+        @if($icon)<i class="{{ $icon }} me-2"></i>@endif
+        {{ $label }}
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="{{ $id }}">
+        @foreach($items as $item)
+            @if(isset($item['divider']) && $item['divider'])
+                <li><hr class="dropdown-divider"></li>
+            @else
+                <li>
+                    <a class="dropdown-item {{ isset($item['active']) && $item['active'] ? 'active' : '' }}"
+                       href="{{ $item['url'] ?? '#' }}">
+                        @if(isset($item['icon']))<i class="{{ $item['icon'] }} me-2"></i>@endif
+                        {{ $item['label'] }}
+                    </a>
+                </li>
+            @endif
+        @endforeach
+    </ul>
 </div>

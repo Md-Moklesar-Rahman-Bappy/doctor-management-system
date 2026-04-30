@@ -1,87 +1,105 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Lab Reports', 'url' => route('lab_test_reports.index')],
-    ['label' => 'Lab Report Details'],
+    ['label' => 'Report #' . ($report->id ?? '')],
 ];
-?>
+@endphp>
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="/lab-test-reports" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('lab_test_reports.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h3 class="text-2xl font-bold text-gray-900">Lab Test Report Details</h3>
+            <h1 class="fw-bold text-dark mb-0">Lab Report #{{ $report->id }}</h1>
         </div>
+        <p class="text-muted">Test report details</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Report Information</h5>
-                </div>
-                <div class="p-6 space-y-3">
-                    <p class="text-sm"><strong class="text-gray-700">Patient:</strong>
-                        <a href="/patients/{{ $report->patient->id }}" class="text-brand-600 hover:text-brand-700">
-                            {{ $report->patient->unique_id }} - {{ $report->patient->patient_name }}
-                        </a>
-                    </p>
-                    <p class="text-sm"><strong class="text-gray-700">Test Name:</strong> <span class="text-gray-600">{{ $report->test_name }}</span></p>
-                    <p class="text-sm"><strong class="text-gray-700">Date:</strong> <span class="text-gray-600">{{ $report->created_at->format('Y-m-d H:i') }}</span></p>
-                </div>
-                <div class="px-6 py-4 border-t border-gray-200">
-                    <a href="/lab-test-reports/{{ $report->id }}/edit" class="inline-flex items-center gap-2 px-4 py-2 bg-warning-500 hover:bg-warning-600 text-white text-sm font-medium rounded-lg">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        Edit
-                    </a>
+    <div class="row g-4">
+        <!-- Patient Info -->
+        <div class="col-lg-4" data-aos="fade-right">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <span class="fw-bold text-primary" style="font-size: 1.5rem;">{{ strtoupper(substr($report->patient->patient_name ?? 'P', 0, 2)) }}</span>
+                    </div>
+                    <h5 class="fw-bold">{{ $report->patient->patient_name ?? 'N/A' }}</h5>
+                    <p class="text-muted small">{{ $report->patient->unique_id ?? 'N/A' }}</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-info-subtle text-info-emphasis">{{ ucfirst($report->patient->sex ?? 'N/A') }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis">Age: {{ $report->patient->age ?? 'N/A' }}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-2 space-y-6">
-            @if($report->report_text)
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Report Text</h5>
+        <!-- Report Details -->
+        <div class="col-lg-8" data-aos="fade-left">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-semibold mb-0">Test: {{ $report->test_name }}</h5>
+                    <span class="badge {{ $report->status == 'normal' ? 'bg-success' : ($report->status == 'high' ? 'bg-danger' : 'bg-warning') }}">
+                        {{ ucfirst($report->status ?? 'normal') }}
+                    </span>
                 </div>
-                <div class="p-6">
-                    <p class="text-gray-600">{{ $report->report_text }}</p>
-                </div>
-            </div>
-            @endif
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Test Name</label>
+                            <p class="fw-medium">{{ $report->test_name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Result</label>
+                            <p class="fw-bold h4 {{ $report->status == 'normal' ? 'text-success' : ($report->status == 'high' ? 'text-danger' : 'text-warning') }}">
+                                {{ $report->result }}
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Normal Range</label>
+                            <p class="fw-medium">{{ $report->normal_range ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Unit</label>
+                            <p class="fw-medium">{{ $report->unit ?? 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase">Date</label>
+                            <p class="fw-medium">{{ $report->created_at->format('M d, Y') }}</p>
+                        </div>
+                    </div>
 
-            @if($report->report_image)
-            <div class="bg-white rounded-xl border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h5 class="font-semibold text-gray-900 mb-0">Images</h5>
-                </div>
-                <div class="p-6">
-                    @php
-                        $images = json_decode($report->report_image, true);
-                    @endphp
-                    @if(is_array($images))
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            @foreach($images as $image)
-                                <img src="/storage/{{ $image }}" class="w-full rounded-lg border border-gray-200">
-                            @endforeach
+                    @if($report->notes)
+                        <div class="border-top pt-3">
+                            <label class="small text-muted text-uppercase">Notes</label>
+                            <p class="mb-0">{{ $report->notes }}</p>
+                        </div>
+                    @endif
+
+                    @if($report->report_image)
+                        <div class="border-top pt-3 mt-3">
+                            <label class="small text-muted text-uppercase mb-2">Report Image</label>
+                            <img src="{{ asset('storage/' . $report->report_image) }}" alt="Report" class="img-fluid rounded">
                         </div>
                     @endif
                 </div>
+                <div class="card-footer bg-white border-top d-flex gap-2">
+                    <a href="{{ route('lab_test_reports.edit', $report->id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ route('lab_test_reports.destroy', $report->id) }}" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this report?')">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </form>
+                </div>
             </div>
-            @endif
         </div>
-    </div>
-
-    <div class="mt-6">
-        <a href="/lab-test-reports" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Back to List
-        </a>
     </div>
 </div>
 @endsection

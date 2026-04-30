@@ -1,61 +1,124 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
-    ['label' => 'Add New Lab Test'],
+    ['label' => 'Add New Test'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('lab_tests.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('lab_tests.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Add Lab Test</h1>
+            <h3 class="fw-bold text-dark mb-0">Add New Lab Test</h3>
         </div>
-        <p class="text-gray-500">Enter the test details below</p>
-    </div>
-        <p class="text-gray-500">Enter the test details below</p>
+        <p class="text-muted">Enter test details below</p>
     </div>
 
-    <div class="max-w-3xl">
-        <x-card>
-            <form action="{{ route('lab_tests.store') }}" method="POST" class="space-y-6">
-                @csrf
+    <div class="row justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('lab_tests.store') }}" class="d-flex flex-column gap-3">
+                        @csrf
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input name="department" label="Department" :value="old('department')" placeholder="e.g., Biochemistry" required />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="department" class="form-label fw-medium">Department *</label>
+                                <input type="text" id="department" name="department" value="{{ old('department') }}" required
+                                       class="form-control" placeholder="e.g. Pathology">
+                                @error('department')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                    <x-input name="sample_type" label="Sample Type" :value="old('sample_type')" placeholder="e.g., Blood, Urine" required />
+                            <div class="col-md-6">
+                                <label for="test" class="form-label fw-medium">Test Name *</label>
+                                <input type="text" id="test" name="test" value="{{ old('test') }}" required
+                                       class="form-control" placeholder="e.g. Blood Sugar">
+                                @error('test')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
-                    <x-input name="panel" label="Panel" :value="old('panel')" placeholder="e.g., Liver Function" required />
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="code" class="form-label fw-medium">Code *</label>
+                                <input type="text" id="code" name="code" value="{{ old('code') }}" required
+                                       class="form-control font-monospace" placeholder="e.g. BS001">
+                                @error('code')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                    <x-input name="test" label="Test Name" :value="old('test')" placeholder="e.g., ALT, AST" required />
+                            <div class="col-md-4">
+                                <label for="sample_type" class="form-label fw-medium">Sample Type</label>
+                                <input type="text" id="sample_type" name="sample_type" value="{{ old('sample_type') }}"
+                                       class="form-control" placeholder="e.g. Blood">
+                            </div>
 
-                    <x-input name="code" label="Code" :value="old('code')" placeholder="e.g., SGPT" />
+                            <div class="col-md-4">
+                                <label for="panel" class="form-label fw-medium">Panel</label>
+                                <input type="text" id="panel" name="panel" value="{{ old('panel') }}"
+                                       class="form-control" placeholder="e.g. Metabolic">
+                            </div>
+                        </div>
 
-                    <x-input name="unit" label="Unit" :value="old('unit')" placeholder="e.g., U/L, mg/dL" />
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="unit" class="form-label fw-medium">Unit</label>
+                                <input type="text" id="unit" name="unit" value="{{ old('unit') }}"
+                                       class="form-control" placeholder="e.g. mg/dL">
+                            </div>
 
-                    <x-select name="result_type" label="Result Type" :options="[
-                        'Numeric' => 'Numeric',
-                        'Text' => 'Text',
-                        'Qualitative' => 'Qualitative',
-                        'Range' => 'Range',
-                    ]" :value="old('result_type')" placeholder="Select type" required />
+                            <div class="col-md-4">
+                                <label for="result_type" class="form-label fw-medium">Result Type</label>
+                                <select id="result_type" name="result_type" class="form-select">
+                                    <option value="">Select Type</option>
+                                    <option value="numeric" {{ old('result_type') == 'numeric' ? 'selected' : '' }}>Numeric</option>
+                                    <option value="text" {{ old('result_type') == 'text' ? 'selected' : '' }}>Text</option>
+                                    <option value="boolean" {{ old('result_type') == 'boolean' ? 'selected' : '' }}>Boolean</option>
+                                </select>
+                            </div>
 
-                    <x-input name="normal_range" label="Normal Range" :value="old('normal_range')" placeholder="e.g., 7-56 or Normal" />
+                            <div class="col-md-4">
+                                <label for="normal_range" class="form-label fw-medium">Normal Range</label>
+                                <input type="text" id="normal_range" name="normal_range" value="{{ old('normal_range') }}"
+                                       class="form-control" placeholder="e.g. 70-110">
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="normal_range_lower" class="form-label fw-medium">Normal Range Lower</label>
+                                <input type="number" step="0.01" id="normal_range_lower" name="normal_range_lower" value="{{ old('normal_range_lower') }}"
+                                       class="form-control" placeholder="e.g. 70">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="normal_range_upper" class="form-label fw-medium">Normal Range Upper</label>
+                                <input type="number" step="0.01" id="normal_range_upper" name="normal_range_upper" value="{{ old('normal_range_upper') }}"
+                                       class="form-control" placeholder="e.g. 110">
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 pt-3 border-top">
+                            <a href="{{ route('lab_tests.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Test
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
-                    <a href="{{ route('lab_tests.index') }}" class="btn-secondary">Cancel</a>
-                    <x-button type="submit">Save Test</x-button>
-                </div>
-            </form>
-        </x-card>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

@@ -1,99 +1,134 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Lab Reports', 'url' => route('lab_test_reports.index')],
-    ['label' => 'Edit Lab Report'],
+    ['label' => 'Edit Report'],
 ];
-?>
+@endphp>
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('lab_test_reports.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('lab_test_reports.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Edit Lab Test Report</h1>
+            <h1 class="fw-bold text-dark mb-0">Edit Lab Report</h1>
         </div>
-        <p class="text-gray-500">Update the report details</p>
+        <p class="text-muted">Update lab test report</p>
     </div>
 
-    <div class="max-w-2xl mx-auto">
-        <x-card>
-            <form method="POST" action="{{ route('lab_test_reports.update', $report->id) }}" enctype="multipart/form-data" class="space-y-6">
+    <div class="row justify-content-center">
+        <div class="col-lg-10" data-aos="fade-up">
+            <form method="POST" action="{{ route('lab_test_reports.update', $report->id) }}" enctype="multipart/form-data" class="d-flex flex-column gap-4">
                 @csrf
                 @method('PUT')
 
-                <x-select name="patient_id" label="Patient" :options="$patients->pluck('patient_name', 'id')->toArray()" :value="old('patient_id', $report->patient_id)" placeholder="Select Patient" required />
-
-                <x-input name="test_name" label="Test Name" :value="old('test_name', $report->test_name)" required />
-
-                <x-textarea name="report_text" label="Report Text" :value="old('report_text', $report->report_text)" rows="4" />
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Add More Images</label>
-                    <div id="images-container">
-                        <div class="flex items-center gap-2 mb-2 image-row">
-                            <x-file-input name="report_images[]" accept="image/*" class="flex-1" />
-                            <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeImage(this)">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </button>
+                <!-- Patient Info (Read-only) -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="small text-muted text-uppercase">Unique ID</label>
+                                <p class="fw-medium">{{ $report->patient->unique_id ?? 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted text-uppercase">Patient Name</label>
+                                <p class="fw-medium">{{ $report->patient->patient_name ?? 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted text-uppercase">Age</label>
+                                <p class="fw-medium">{{ $report->patient->age ?? 'N/A' }} years</p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted text-uppercase">Sex</label>
+                                <p class="fw-medium">{{ ucfirst($report->patient->sex ?? 'N/A') }}</p>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" class="mt-2 px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addImage()">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        Add More Images
+                </div>
+
+                <!-- Test Details -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Test Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="test_name" class="form-label fw-medium">Test Name *</label>
+                                <input type="text" id="test_name" name="test_name" value="{{ old('test_name', $report->test_name) }}" required
+                                       class="form-control">
+                                @error('test_name')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="result" class="form-label fw-medium">Result *</label>
+                                <input type="text" id="result" name="result" value="{{ old('result', $report->result) }}" required
+                                       class="form-control">
+                                @error('result')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="normal_range" class="form-label fw-medium">Normal Range</label>
+                                <input type="text" id="normal_range" name="normal_range" value="{{ old('normal_range', $report->normal_range) }}"
+                                       class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="unit" class="form-label fw-medium">Unit</label>
+                                <input type="text" id="unit" name="unit" value="{{ old('unit', $report->unit) }}"
+                                       class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="status" class="form-label fw-medium">Status</label>
+                                <select id="status" name="status" class="form-select">
+                                    <option value="normal" {{ old('status', $report->status) == 'normal' ? 'selected' : '' }}>Normal</option>
+                                    <option value="high" {{ old('status', $report->status) == 'high' ? 'selected' : '' }}>High</option>
+                                    <option value="low" {{ old('status', $report->status) == 'low' ? 'selected' : '' }}>Low</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        @if($report->report_image)
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Current Image</label>
+                                <div>
+                                    <img src="{{ asset('storage/' . $report->report_image) }}" alt="Report" class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            </div>
+                        @endif
+
+                        <div>
+                            <label for="report_image" class="form-label fw-medium">Update Report Image</label>
+                            <input type="file" id="report_image" name="report_image" accept="image/*" class="form-control">
+                            <div class="form-text"><i class="fas fa-info-circle me-1"></i>Leave empty to keep current image</div>
+                        </div>
+
+                        <div>
+                            <label for="notes" class="form-label fw-medium">Notes</label>
+                            <textarea id="notes" name="notes" class="form-control" rows="3">{{ old('notes', $report->notes) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3">
+                    <a href="{{ route('lab_test_reports.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-1"></i> Update Report
                     </button>
                 </div>
-
-                @if($report->report_image)
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Images:</label>
-                    @php
-                        $images = json_decode($report->report_image, true);
-                    @endphp
-                    @if(is_array($images))
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($images as $image)
-                                <img src="/storage/{{ $image }}" class="h-24 w-auto rounded-lg border border-gray-200">
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-                @endif
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
-                    <a href="{{ route('lab_test_reports.index') }}" class="btn-secondary">Cancel</a>
-                    <x-button type="submit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1m-4 0h8"/></svg>
-                        Update Report
-                    </x-button>
-                </div>
             </form>
-        </x-card>
+        </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-function addImage() {
-    const container = document.getElementById('images-container');
-    const html = `
-        <div class="flex items-center gap-2 mb-2 image-row">
-            <input type="file" name="report_images[]" accept="image/*" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg">
-            <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeImage(this)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', html);
-}
-
-function removeImage(btn) {
-    btn.closest('.image-row')?.remove();
-}
-</script>
-@endpush
 @endsection

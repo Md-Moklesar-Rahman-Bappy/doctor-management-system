@@ -1,82 +1,84 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<div class="min-h-[calc(100vh-4rem)] flex items-center">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12 w-full">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div class="max-w-2xl">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 border border-primary-200 rounded-full mb-6">
-                    <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-                    <span class="text-primary-700 text-sm font-medium">Modern Healthcare Management</span>
+<div class="min-vh-100 d-flex align-items-center" data-aos="fade-up">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="d-flex align-items-center gap-2 bg-primary-subtle border border-primary-subtle rounded-pill px-4 py-2 mb-4 d-inline-flex">
+                    <span class="bg-primary rounded-circle d-inline-block" style="width: 8px; height: 8px; animation: pulse 2s infinite;"></span>
+                    <span class="text-primary fw-medium small">Modern Healthcare Management</span>
                 </div>
 
-                <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6 text-gray-900">
-                    Streamline Your
-                    <span class="text-primary-600">Medical Practice</span>
+                <h1 class="display-5 fw-bold mb-4" style="line-height: 1.2;">
+                    Streamline Your<br>
+                    <span class="text-primary">Medical Practice</span>
                 </h1>
 
-                <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                <p class="lead text-muted mb-4" style="line-height: 1.6;">
                     Manage patients, prescriptions, medicines, and medical records all in one place.
                     Modern, efficient, and built for today's healthcare professionals.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="/register" class="btn-primary text-center text-base px-8 py-3">
+                <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
+                    <a href="/register" class="btn btn-primary btn-lg px-5">
                         Get Started Free
                     </a>
-                    <a href="#features" class="btn-secondary text-center text-base px-8 py-3">
+                    <a href="#features" class="btn btn-outline-secondary btn-lg px-5">
                         Learn More
                     </a>
                 </div>
 
-                <div class="flex items-center gap-8 mt-10 pt-8 border-t border-gray-200">
+                <div class="d-flex gap-5 pt-4 border-top">
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">10K+</div>
-                        <div class="text-sm text-gray-500">Patients</div>
+                        <div class="h3 fw-bold text-dark">10K+</div>
+                        <div class="small text-muted">Patients</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">500+</div>
-                        <div class="text-sm text-gray-500">Doctors</div>
+                        <div class="h3 fw-bold text-dark">500+</div>
+                        <div class="small text-muted">Doctors</div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">99.9%</div>
-                        <div class="text-sm text-gray-500">Uptime</div>
+                        <div class="h3 fw-bold text-dark">99.9%</div>
+                        <div class="small text-muted">Uptime</div>
                     </div>
                 </div>
             </div>
 
-            <div class="hidden lg:block">
-                <div class="card">
+            <div class="col-lg-6 d-none d-lg-block" data-aos="fade-left">
+                <div class="card shadow-sm">
                     <div class="card-body">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="bg-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-user-md text-white"></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-gray-900">Dr. Sarah Mitchell</div>
-                                <div class="text-sm text-gray-500">Cardiologist</div>
+                                <div class="fw-semibold">Dr. Sarah Mitchell</div>
+                                <div class="small text-muted">Cardiologist</div>
                             </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <div class="bg-gray-50 rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium text-gray-600">Today's Patients</span>
-                                    <span class="text-emerald-600 text-sm font-semibold">+12%</span>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-medium text-muted">Today's Patients</span>
+                                    <span class="text-success fw-semibold small">+12%</span>
                                 </div>
-                                <div class="text-2xl font-bold text-gray-900">24</div>
+                                <div class="display-6 fw-bold text-dark">24</div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gray-50 rounded-xl p-4">
-                                    <div class="text-sm text-gray-500 mb-1">Prescriptions</div>
-                                    <div class="text-xl font-bold text-gray-900">18</div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3">
+                                        <div class="small text-muted mb-1">Prescriptions</div>
+                                        <div class="h3 fw-bold text-dark">18</div>
+                                    </div>
                                 </div>
-                                <div class="bg-gray-50 rounded-xl p-4">
-                                    <div class="text-sm text-gray-500 mb-1">Tests</div>
-                                    <div class="text-xl font-bold text-gray-900">7</div>
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3">
+                                        <div class="small text-muted mb-1">Tests</div>
+                                        <div class="h3 fw-bold text-dark">7</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

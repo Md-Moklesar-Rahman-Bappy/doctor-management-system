@@ -1,18 +1,37 @@
-@props(['size' => 'md', 'color' => 'brand'])
+@props([
+    'size' => 'md',
+    'color' => 'primary',
+    'type' => 'border'
+])
 
 @php
-    $sizeClass = match($size) {
-        'sm' => 'spinner-sm',
-        'lg' => 'spinner-lg',
-        default => 'spinner'
-    };
+    $sizes = [
+        'sm' => 'spinner-border-sm',
+        'md' => '',
+        'lg' => 'spinner-border-lg',
+    ];
 
-    $colorClass = match($color) {
-        'success' => 'border-success-500',
-        'error' => 'border-error-500',
-        'warning' => 'border-warning-500',
-        default => 'border-brand-500'
-    };
+    $colors = [
+        'primary' => 'text-primary',
+        'secondary' => 'text-secondary',
+        'success' => 'text-success',
+        'danger' => 'text-danger',
+        'warning' => 'text-warning',
+        'info' => 'text-info',
+        'light' => 'text-light',
+        'dark' => 'text-dark',
+    ];
+
+    $sizeClass = $sizes[$size] ?? '';
+    $colorClass = $colors[$color] ?? '';
 @endphp
 
-<div class="{{ $sizeClass }} {{ $colorClass }}"></div>
+@if($type === 'grow')
+    <div class="spinner-grow {{ $sizeClass }} {{ $colorClass }}" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+@else
+    <div class="spinner-border {{ $sizeClass }} {{ $colorClass }}" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+@endif

@@ -1,7 +1,8 @@
 /**
- * Spinners Component - TailAdmin Style
+ * Bootstrap 5 Spinners
  * Handles spinner display with button integration
  */
+
 export function showSpinner(button, spinnerSize = 'md') {
     if (!button) return;
 
@@ -9,10 +10,10 @@ export function showSpinner(button, spinnerSize = 'md') {
     button.disabled = true;
     button.dataset.originalText = originalText;
 
-    const spinnerClass = spinnerSize === 'sm' ? 'spinner-sm' :
-                        spinnerSize === 'lg' ? 'spinner-lg' : 'spinner';
+    const spinnerClass = spinnerSize === 'sm' ? 'spinner-border-sm' :
+                        spinnerSize === 'lg' ? '' : '';
 
-    button.innerHTML = `<div class="${spinnerClass} border-brand-500"></div><span class="ml-2">Loading...</span>`;
+    button.innerHTML = `<span class="spinner-border ${spinnerClass}" role="status" aria-hidden="true"></span><span class="ms-2">Loading...</span>`;
 
     return () => hideSpinner(button);
 }

@@ -1,27 +1,36 @@
-@props(['id' => '', 'name' => '', 'label' => '', 'placeholder' => 'Select an option', 'options' => [], 'selected' => ''])
+@props([
+    'name',
+    'label' => null,
+    'options' => [],
+    'selected' => null,
+    'required' => false,
+    'error' => null,
+    'placeholder' => 'Select...'
+])
 
-<div>
+<div class="mb-3">
     @if($label)
-        <label for="{{ $id }}" class="form-label flex items-center gap-2">
+        <label for="{{ $name }}" class="form-label fw-medium">
             {{ $label }}
+            @if($required)
+                <span class="text-danger">*</span>
+            @endif
         </label>
     @endif
 
-    <div class="relative">
-        <select
-            id="{{ $id }}"
-            name="{{ $name }}"
-            class="select-input"
-        >
-            <option value="">{{ $placeholder }}</option>
-            @foreach($options as $value => $text)
-                <option value="{{ $value }}" {{ $selected == $value ? 'selected' : '' }}>{{ $text }}</option>
-            @endforeach
-        </select>
-        <div class="select-icon">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </div>
-    </div>
+    <select
+        name="{{ $name }}"
+        id="{{ $name }}"
+        {{ $required ? 'required' : '' }}
+        class="form-select {{ $error ? 'is-invalid' : '' }}"
+    >
+        <option value="">{{ $placeholder }}</option>
+        @foreach($options as $value => $label)
+            <option value="{{ $value }}" {{ (old($name, $selected) == $value) ? 'selected' : '' }}>{{ $label }}</option>
+        @endforeach
+    </select>
+
+    @if($error)
+        <div class="invalid-feedback">{{ $error }}</div>
+    @endif
 </div>

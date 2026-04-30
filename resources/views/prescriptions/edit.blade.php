@@ -1,200 +1,140 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Prescriptions', 'url' => route('prescriptions.index')],
     ['label' => 'Edit Prescription'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('prescriptions.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('prescriptions.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Edit Prescription</h1>
+            <h1 class="fw-bold text-dark mb-0">Edit Prescription #{{ $prescription->id }}</h1>
         </div>
-        <p class="text-gray-500">Update the prescription details</p>
+        <p class="text-muted">Update prescription details</p>
     </div>
 
-    <div class="max-w-4xl">
-        <form method="POST" action="{{ route('prescriptions.update', $prescription->id) }}" class="space-y-6">
-            @csrf
-            @method('PUT')
+    <div class="row justify-content-center">
+        <div class="col-lg-10" data-aos="fade-up">
+            <form method="POST" action="{{ route('prescriptions.update', $prescription->id) }}" id="prescription-form" class="d-flex flex-column gap-4">
+                @csrf
+                @method('PUT')
 
-            <x-card>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
-                        <input type="text" value="{{ $prescription->doctor->name ?? 'N/A' }}"
-                                class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600" readonly>
-                        <input type="hidden" name="doctor_id" value="{{ $prescription->doctor_id }}">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient</label>
-                        <input type="text" value="{{ $prescription->patient->unique_id }} - {{ $prescription->patient->patient_name }}"
-                                class="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600" readonly>
-                        <input type="hidden" name="patient_id" value="{{ $prescription->patient_id }}">
-                    </div>
-                </div>
-
-                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h6 class="font-semibold text-gray-700 mb-2">Patient Information</h6>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <span class="text-xs text-gray-500">Unique ID</span>
-                            <p class="font-medium text-gray-900">{{ $prescription->patient->unique_id }}</p>
-                        </div>
-                        <div>
-                            <span class="text-xs text-gray-500">Name</span>
-                            <p class="font-medium text-gray-900">{{ $prescription->patient->patient_name }}</p>
-                        </div>
-                        <div>
-                            <span class="text-xs text-gray-500">Age</span>
-                            <p class="font-medium text-gray-900">{{ $prescription->patient->age }}</p>
-                        </div>
-                        <div>
-                            <span class="text-xs text-gray-500">Sex</span>
-                            <p class="font-medium text-gray-900">{{ $prescription->patient->sex }}</p>
-                        </div>
-                    </div>
-                </div>
-            </x-card>
-
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Problems</h5>
-                <div id="problems-container">
-                    @if($prescription->problem)
-                        @foreach(json_decode($prescription->problem, true) as $problem)
-                            <div class="flex items-center gap-2 mb-2">
-                                <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" value="{{ $problem }}" readonly>
-                                <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeProblem(this)">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
+                <!-- Doctor Info -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary" style="width: 48px; height: 48px;">
+                                <i class="fas fa-user-md text-white"></i>
                             </div>
-                        @endforeach
-                    @endif
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg problem-search" placeholder="Type to search problems...">
-                        <button type="button" class="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 text-sm font-medium" onclick="addProblem(this)">Add</button>
+                            <div>
+                                <div class="fw-semibold">{{ $prescription->doctor->name ?? 'N/A' }}</div>
+                                <div class="small text-muted">{{ $prescription->doctor->email ?? '' }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <input type="hidden" name="problem[]" id="problems-json" value="{{ $prescription->problem }}">
-            </x-card>
 
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Tests</h5>
-                <div id="tests-container">
-                    @if($prescription->tests)
-                        @foreach(json_decode($prescription->tests, true) as $test)
-                            <div class="flex items-center gap-2 mb-2">
-                                <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" value="{{ $test }}" readonly>
-                                <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeTest(this)">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </button>
+                <!-- Patient Info (Read-only) -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Patient Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="small text-muted">Unique ID</label>
+                                <p class="fw-medium mb-0">{{ $prescription->patient->unique_id ?? 'N/A' }}</p>
                             </div>
-                        @endforeach
-                    @endif
-                    <div class="flex items-center gap-2 mb-2">
-                        <input type="text" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg test-search" placeholder="Type to search lab tests...">
-                        <button type="button" class="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 text-sm font-medium" onclick="addTest(this)">Add</button>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Patient Name</label>
+                                <p class="fw-medium mb-0">{{ $prescription->patient->patient_name ?? 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Age</label>
+                                <p class="fw-medium mb-0">{{ $prescription->patient->age ?? 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted">Sex</label>
+                                <p class="fw-medium mb-0">{{ ucfirst($prescription->patient->sex ?? 'N/A') }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label fw-medium">Prescription Date</label>
+                            <input type="date" name="prescription_date" class="form-control" style="max-width: 300px;"
+                                   value="{{ $prescription->prescription_date ?? $prescription->created_at->format('Y-m-d') }}">
+                        </div>
                     </div>
                 </div>
-                <input type="hidden" name="tests[]" id="tests-json" value="{{ $prescription->tests }}">
-            </x-card>
 
-            <x-card>
-                <h5 class="text-lg font-semibold text-gray-900 mb-4">Medicines</h5>
-                <div id="medicines-container">
-                    @if($prescription->medicines)
-                        @foreach(json_decode($prescription->medicines, true) as $index => $medicine)
-                            <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
-                                <div class="col-span-5">
-                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][name]" value="{{ $medicine['name'] ?? '' }}" placeholder="Medicine name">
-                                </div>
-                                <div class="col-span-3">
-                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][dosage]" value="{{ $medicine['dosage'] ?? '' }}" placeholder="Dosage (e.g. 500mg)">
-                                </div>
-                                <div class="col-span-3">
-                                     <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg" name="medicines[{{ $index }}][dosage]" value="{{ $medicine['frequency'] ?? '' }}" placeholder="Frequency (e.g. 3x/day)">
-                                </div>
-                                <div class="col-span-1">
-                                    <button type="button" class="p-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeMedicine(this)">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    </button>
-                                </div>
+                <!-- Problems -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Problems</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="problems-container">
+                            <div class="d-flex gap-2 mb-2">
+                                <input type="text" class="form-control problem-search flex-1" placeholder="Type to search problems...">
+                                <button type="button" class="btn btn-primary" onclick="addProblem(this)">Add</button>
                             </div>
-                        @endforeach
-                    @endif
+                            <div id="selected-problems"></div>
+                        </div>
+                        <input type="hidden" name="problems[]" id="problems-json" value="{{ $prescription->problems }}">
+                    </div>
                 </div>
-                 <button type="button" class="mt-3 px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addMedicine()">
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Add Medicine
-                </button>
-            </x-card>
 
-            <div class="flex gap-3">
-                <a href="{{ route('prescriptions.index') }}" class="btn-secondary">Cancel</a>
-                <x-button type="submit">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
-                    Update Prescription
-                </x-button>
-            </div>
-        </form>
+                <!-- Medicines -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title fw-semibold mb-0">Medicines</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="medicines-container">
+                            @if(isset($prescription->medicines))
+                                @php
+                                    $meds = json_decode($prescription->medicines, true) ?? [];
+                                @endphp
+                                @foreach($meds as $index => $med)
+                                    <div class="row g-2 mb-2 medicine-row align-items-center">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" name="medicines[{{ $index }}][name]" value="{{ $med['name'] ?? '' }}" placeholder="Medicine name">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control" name="medicines[{{ $index }}][dosage]" value="{{ $med['dosage'] ?? '' }}" placeholder="Dosage">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control" name="medicines[{{ $index }}][frequency]" value="{{ $med['frequency'] ?? '' }}" placeholder="Frequency">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMedicine(this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addMedicine()">
+                            <i class="fas fa-plus me-1"></i> Add Medicine
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3">
+                    <a href="{{ route('prescriptions.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Update Prescription
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-let medicineIndex = {{ $prescription->medicines ? count(json_decode($prescription->medicines, true)) : 0 }};
-
-function addMedicine() {
-    const container = document.getElementById('medicines-container');
-    const html = `
-        <div class="grid grid-cols-12 gap-2 mb-2 medicine-row items-center">
-            <div class="col-span-5">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][name]" placeholder="Medicine name">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][dosage]" placeholder="Dosage (e.g. 500mg)">
-            </div>
-            <div class="col-span-3">
-                <input type="text" class="w-full px-3 py-2 border border-slate-200 rounded-lg" name="medicines[${medicineIndex}][frequency]" placeholder="Frequency (e.g. 3x/day)">
-            </div>
-            <div class="col-span-1">
-                <button type="button" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" onclick="removeMedicine(this)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', html);
-    medicineIndex++;
-}
-
-function removeMedicine(btn) {
-    btn.closest('.medicine-row').remove();
-}
-
-function addProblem(btn) {
-    // Add problem logic
-}
-
-function removeProblem(btn) {
-    btn.parentElement.remove();
-}
-
-function addTest(btn) {
-    // Add test logic
-}
-
-function removeTest(btn) {
-    btn.parentElement.remove();
-}
-</script>
-@endpush
 @endsection

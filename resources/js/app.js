@@ -1,26 +1,82 @@
-// TailAdmin Style JS Components
+// Bootstrap 5 + Font Awesome + SweetAlert2 + AOS initialization
 
-// Import components
-import './components/tabs.js';
-import './components/dropdowns.js';
-import './components/toast.js';
-import './components/spinners.js';
-import './components/form-elements.js';
-import './components/data-tables.js';
+// Import Bootstrap JS
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-// Global toast notification function (from previous implementation)
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+window.Swal = Swal;
+
+// Import AOS (Animate On Scroll)
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
+// Import components (Bootstrap 5 compatible)
+import { initFormElements } from './components/form-elements.js';
+import { showToast } from './components/toast.js';
+import { initDropdowns } from './components/dropdowns.js';
+import { initDataTables } from './components/data-tables.js';
+import { initButtonSpinners } from './components/spinners.js';
+import { initTabs } from './components/tabs.js';
+
+// Initialize AOS
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 600,
+        once: true,
+        offset: 50
+    });
+
+    // Initialize all components
+    initFormElements();
+    initDropdowns();
+    initDataTables();
+    initButtonSpinners();
+    initTabs();
+
+    console.log('Bootstrap components loaded successfully');
+});
+
+// Global SweetAlert2 toast notification function
 window.showToast = (message, type = 'success') => {
-    if (window.showToastFromModule) {
-        window.showToastFromModule(message, type);
-    }
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    const icons = {
+        success: 'success',
+        error: 'error',
+        warning: 'warning',
+        info: 'info'
+    };
+
+    Toast.fire({
+        icon: icons[type] || 'info',
+        title: message
+    });
 };
 
-// Confirm delete dialog (from previous implementation)
+// Global SweetAlert2 confirm delete dialog
 window.confirmDelete = (url, name = 'item') => {
-    if (window.confirmDeleteFromModule) {
-        window.confirmDeleteFromModule(url, name);
-    } else {
-        if (confirm(`Delete ${name}? This action cannot be undone.`)) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Delete ${name}? This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = url;
@@ -31,7 +87,7 @@ window.confirmDelete = (url, name = 'item') => {
             document.body.appendChild(form);
             form.submit();
         }
-    }
+    });
 };
 
 // AJAX search function
@@ -50,4 +106,4 @@ window.ajaxSearch = (url, query, targetId, callback) => {
         .catch(error => console.error('Search error:', error));
 };
 
-console.log('TailAdmin components loaded successfully');
+console.log('Bootstrap 5 components loaded successfully');

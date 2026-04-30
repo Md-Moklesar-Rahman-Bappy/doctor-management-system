@@ -1,18 +1,15 @@
 @props([
-    'name' => null,
-    'type' => 'text',
+    'name',
     'label' => null,
-    'placeholder' => null,
-    'value' => null,
-    'required' => false,
     'accept' => null,
-    'help' => null,
-    'error' => null
+    'required' => false,
+    'error' => null,
+    'help' => null
 ])
 
-<div class="mb-4">
+<div class="mb-3">
     @if($label)
-        <label for="{{ $name }}" class="block text-sm font-medium text-secondary-700 mb-1.5">
+        <label for="{{ $name }}" class="form-label fw-medium">
             {{ $label }}
             @if($required)
                 <span class="text-danger">*</span>
@@ -21,21 +18,19 @@
     @endif
 
     <input
-        type="{{ $type }}"
+        type="file"
         name="{{ $name }}"
         id="{{ $name }}"
-        value="{{ old($name, $value) }}"
-        placeholder="{{ $placeholder }}"
-        accept="{{ $accept }}"
+        {{ $accept ? "accept=$accept" : '' }}
         {{ $required ? 'required' : '' }}
-        class="block w-full rounded-lg border-secondary-300 shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm {{ $error ? 'border-danger focus:ring-danger focus:border-danger' : '' }}"
+        class="form-control {{ $error ? 'is-invalid' : '' }}"
     >
 
-    @if($help)
-        <p class="mt-1.5 text-sm text-secondary-500">{{ $help }}</p>
+    @if($error)
+        <div class="invalid-feedback">{{ $error }}</div>
     @endif
 
-    @if($error)
-        <p class="mt-1.5 text-sm text-danger">{{ $error }}</p>
+    @if($help)
+        <div class="form-text small">{{ $help }}</div>
     @endif
 </div>

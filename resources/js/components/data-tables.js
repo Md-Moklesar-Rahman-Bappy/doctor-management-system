@@ -1,23 +1,24 @@
 /**
- * Data Tables - TailAdmin Style
- * Enhanced table functionality with sorting, filtering, and export
+ * Bootstrap 5 Data Tables Enhancement
+ * Adds sorting, filtering, and export functionality to tables
  */
+
 export function initDataTables() {
-    const tables = document.querySelectorAll('.data-table');
+    const tables = document.querySelectorAll('.table[data-sortable], .data-table');
 
     tables.forEach(table => {
         initTableSorting(table);
         initTableFiltering(table);
-        initRowSelection(table);
     });
 }
 
 function initTableSorting(table) {
-    const headers = table.querySelectorAll('thead th[sortable]');
+    const headers = table.querySelectorAll('thead th[sortable], thead th a');
 
     headers.forEach((header, index) => {
         header.style.cursor = 'pointer';
-        header.addEventListener('click', () => {
+        header.addEventListener('click', (e) => {
+            e.preventDefault();
             const direction = header.dataset.sortDirection === 'asc' ? 'desc' : 'asc';
             header.dataset.sortDirection = direction;
 
@@ -44,9 +45,9 @@ function sortTable(table, columnIndex, direction) {
         }
 
         // String sort
-        return direction === 'asc'
-            ? aText.localeCompare(bText)
-            : bText.localeCompare(aText);
+        return direction === 'asc' ?
+            aText.localeCompare(bText) :
+            bText.localeCompare(aText);
     });
 
     rows.forEach(row => tbody.appendChild(row));
@@ -64,7 +65,10 @@ function updateSortIndicators(headers, activeIndex, direction) {
 }
 
 function initTableFiltering(table) {
-    const searchInput = table.closest('.card')?.querySelector('input[type="search"], input[name="search"]');
+    const card = table.closest('.card');
+    if (!card) return;
+
+    const searchInput = card.querySelector('input[type="search"], input[name="search"]');
     if (!searchInput) return;
 
     searchInput.addEventListener('input', (e) => {
@@ -78,62 +82,7 @@ function initTableFiltering(table) {
     });
 }
 
-function initRowSelection(table) {
-    const selectAllCheckbox = table.querySelector('thead .row-select-all');
-    if (!selectAllCheckbox) return;
-
-    selectAllCheckbox.addEventListener('change', () => {
-        const checkboxes = table.querySelectorAll('tbody .row-select');
-        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-        updateBulkActions(table);
-    });
-
-    const rowCheckboxes = table.querySelectorAll('tbody .row-select');
-    rowCheckboxes.forEach(cb => {
-        cb.addEventListener('change', () => updateBulkActions(table));
-    });
-}
-
-function updateBulkActions(table) {
-    const selectedCount = table.querySelectorAll('tbody .row-select:checked').length;
-    const bulkActions = table.closest('.card')?.querySelector('.bulk-actions');
-
-    if (bulkActions) {
-        bulkActions.style.display = selectedCount > 0 ? 'flex' : 'none';
-        const countSpan = bulkActions.querySelector('.selected-count');
-        if (countSpan) countSpan.textContent = selectedCount;
-    }
-}
-
-export function exportTable(tableId, format = 'csv') {
-    const table = document.getElementById(tableId);
-    if (!table) return;
-
-    const rows = table.querySelectorAll('tr');
-    const data = Array.from(rows).map(row =>
-        Array.from(row.cells).map(cell => cell.textContent.trim())
-    );
-
-    if (format === 'csv') {
-        const csv = data.map(row => row.join(',')).join('\n');
-        downloadFile(csv, 'table-export.csv', 'text/csv');
-    } else if (format === 'json') {
-        const json = JSON.stringify(data, null, 2);
-        downloadFile(json, 'table-export.json', 'application/json');
-    }
-}
-
-function downloadFile(content, filename, type) {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
 // Auto-initialize on DOM load
 document.addEventListener('DOMContentLoaded', initDataTables);
 
-export default { initDataTables, exportTable };
+export { initDataTables, exportTable as default };

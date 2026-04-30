@@ -6,104 +6,86 @@ $breadcrumbs = [
     ['label' => 'Login'],
 ];
 @endphp
-<div class="min-h-[80vh] flex items-center justify-center">
-    <div class="w-full max-w-md">
+
+<div class="min-vh-80 d-flex align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 400px;">
         <!-- Logo -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+        <div class="text-center mb-4">
+            <div class="mx-auto mb-3 d-flex align-items-center justify-content-center bg-primary rounded-3" style="width: 64px; height: 64px;">
+                <i class="fas fa-user-md fa-2x text-white"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
-            <p class="text-gray-500 mt-2">Sign in to your account</p>
+            <h2 class="fw-bold text-dark">Welcome Back</h2>
+            <p class="text-muted">Sign in to your account</p>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <form method="POST" action="/login" class="space-y-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST" action="/login" class="d-flex flex-column gap-3">
                     @csrf
 
                     <div>
-                        <label for="email" class="form-label flex items-center gap-2">
-                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            Email Address *
+                        <label for="email" class="form-label fw-medium">
+                            <i class="fas fa-envelope text-muted me-2"></i>Email Address *
                         </label>
-                        <div class="relative">
+                        <div class="input-icon-wrapper">
                             <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                                   class="form-input pl-10" placeholder="doctor@hospital.com">
-                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
+                                   class="form-control ps-4" placeholder="doctor@hospital.com">
+                            <div class="icon"><i class="fas fa-envelope"></i></div>
                         </div>
                         @error('email')
-                            <p class="form-error">{{ $message }}</p>
+                            <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="password" class="form-label flex items-center gap-2">
-                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            Password *
+                        <label for="password" class="form-label fw-medium">
+                            <i class="fas fa-lock text-muted me-2"></i>Password *
                         </label>
-                        <div class="relative">
+                        <div class="input-icon-wrapper">
                             <input type="password" id="password" name="password" required
-                                   class="form-input pl-10" placeholder="••••••••">
-                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-8 0v4h8z"/>
-                            </svg>
+                                   class="form-control ps-4" placeholder="••••••••">
+                            <div class="icon"><i class="fas fa-lock"></i></div>
                         </div>
                         @error('password')
-                            <p class="form-error">{{ $message }}</p>
+                            <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="flex items-center justify-between">
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="remember" class="rounded border-gray-300 text-brand-500 focus:ring-brand-500">
-                            <span class="ml-2 text-sm text-gray-600">Keep me logged in</span>
-                        </label>
-                        <a href="#" class="text-sm text-brand-600 hover:text-brand-700 font-medium">Forgot password?</a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                            <label class="form-check-label small" for="remember">Keep me logged in</label>
+                        </div>
+                        <a href="#" class="small text-primary fw-medium text-decoration-none">Forgot password?</a>
                     </div>
 
-                    @if($errors->any())
-                        <div class="alert-danger">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <ul class="list-disc list-inside">
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                    @if($errors->any() && !$errors->has('email') && !$errors->has('password'))
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <ul class="mb-0 ps-3">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     @endif
 
-                    <button type="submit" class="btn-primary w-full inline-flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        Sign In
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>
                 </form>
 
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-muted mb-0">
                         Don't have an account?
-                        <a href="/register" class="text-brand-600 hover:text-brand-700 font-medium">Register as Doctor</a>
+                        <a href="/register" class="text-primary fw-medium text-decoration-none">Register as Doctor</a>
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <p class="text-center text-sm text-gray-500 mt-8">Free and Open-Source Medical Management System</p>
+        <p class="text-center small text-muted mt-4">Free and Open-Source Medical Management System</p>
     </div>
 </div>
 @endsection

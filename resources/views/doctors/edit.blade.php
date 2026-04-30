@@ -1,98 +1,94 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<?php
+@php
 $breadcrumbs = [
     ['label' => 'Doctors', 'url' => route('doctors.index')],
     ['label' => 'Edit Doctor'],
 ];
-?>
+@endphp
+
 <div>
-    <div class="mb-8">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('doctors.index') }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+    <div class="mb-4" data-aos="fade-down">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <a href="{{ route('doctors.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back
             </a>
-            <h1 class="text-2xl font-bold text-gray-900">Edit Doctor</h1>
+            <h3 class="fw-bold text-dark mb-0">Edit Doctor</h3>
         </div>
-        <p class="text-gray-500">Update doctor details below</p>
+        <p class="text-muted">Update doctor details</p>
     </div>
 
-    <div class="max-w-2xl mx-auto">
-        <x-card>
-            <form method="POST" action="{{ route('doctors.update', $doctor->id) }}" class="space-y-6">
-                @csrf
-                @method('PUT')
+    <div class="row justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('doctors.update', $doctor->id) }}" class="d-flex flex-column gap-3">
+                        @csrf
+                        @method('PUT')
 
-                <x-input name="name" label="Name" :value="old('name', $doctor->name)" required />
-                <x-input name="email" label="Email" type="email" :value="old('email', $doctor->email)" required />
-                <x-input name="phone" label="Phone" :value="old('phone', $doctor->phone)" required />
-                <x-textarea name="address" label="Address" :value="old('address', $doctor->address)" rows="3" required />
+                        <div>
+                            <label for="name" class="form-label fw-medium">Full Name *</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="name" name="name" value="{{ old('name', $doctor->name) }}" required
+                                       class="form-control ps-4">
+                                <div class="icon"><i class="fas fa-user-md"></i></div>
+                            </div>
+                            @error('name')
+                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Degrees</label>
-                    <div id="degrees-container">
-                        @if($doctor->degrees)
-                            @foreach(json_decode($doctor->degrees, true) as $degree)
-                        <div class="flex items-center gap-2 mb-2 degree-row">
-                            <input type="text" name="degrees[]" value="{{ $degree }}" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
-                            <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeDegree(this)">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-medium">Email Address *</label>
+                                <div class="input-icon-wrapper">
+                                    <input type="email" id="email" name="email" value="{{ old('email', $doctor->email) }}" required
+                                           class="form-control ps-4">
+                                    <div class="icon"><i class="fas fa-envelope"></i></div>
+                                </div>
+                                @error('email')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label fw-medium">Phone Number</label>
+                                <div class="input-icon-wrapper">
+                                    <input type="tel" id="phone" name="phone" value="{{ old('phone', $doctor->phone) }}"
+                                           class="form-control ps-4">
+                                    <div class="icon"><i class="fas fa-phone"></i></div>
+                                </div>
+                                @error('phone')
+                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="degrees" class="form-label fw-medium">Degrees</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="degrees" name="degrees" value="{{ old('degrees', $doctor->degrees) }}"
+                                       class="form-control ps-4" placeholder="MBBS, MD, FRCS">
+                                <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+                            </div>
+                            <div class="form-text"><i class="fas fa-info-circle me-1"></i>Enter degrees separated by commas</div>
+                            @error('degrees')
+                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex gap-3 pt-3 border-top">
+                            <a href="{{ route('doctors.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Doctor
                             </button>
                         </div>
-                            @endforeach
-                        @endif
-                    </div>
-                    <button type="button" class="mt-2 px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600" onclick="addDegree()">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        Add Degree
-                    </button>
+                    </form>
                 </div>
-
-                @if($errors->any())
-                <div class="p-4 bg-error-50 border border-error-200 rounded-lg">
-                    <ul class="list-disc list-inside text-sm text-error-600">
-                        @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-gray-200">
-                    <a href="{{ route('doctors.index') }}" class="btn-secondary">Cancel</a>
-                    <x-button type="submit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-4 0V4a1 1 0 011-1h2a1 1 0 011 1v3m-4 0a1 1 0 001 1h2a1 1 0 001-1M4 7h16"/></svg>
-                        Update Doctor
-                    </x-button>
-                </div>
-            </form>
-        </x-card>
+            </div>
+        </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-let degreeIndex = {{ $doctor->degrees ? count(json_decode($doctor->degrees, true)) : 0 }};
-
-function addDegree() {
-    const container = document.getElementById('degrees-container');
-    const html = `
-        <div class="flex items-center gap-2 mb-2 degree-row">
-            <input type="text" name="degrees[]" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg" placeholder="e.g. MBBS">
-            <button type="button" class="px-4 py-2 text-error-600 hover:bg-error-50 rounded-lg" onclick="removeDegree(this)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', html);
-}
-
-function removeDegree(btn) {
-    btn.closest('.degree-row')?.remove();
-}
-</script>
-@endpush
 @endsection

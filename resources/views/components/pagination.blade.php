@@ -1,58 +1,54 @@
-@props(['paginator' => null, 'links' => []])@if($paginator && $paginator->hasPages())
-    <nav class="flex items-center justify-between px-4 py-3 border-t border-gray-200 sm:px-6" aria-label="Pagination">
+@props(['paginator' => null])
+
+@if($paginator && $paginator->hasPages())
+    <nav aria-label="Pagination" class="d-flex justify-content-between align-items-center p-3 border-top">
         <!-- Mobile View -->
-        <div class="flex flex-1 justify-between sm:hidden">
+        <div class="d-flex justify-content-between w-100 d-sm-none">
             @if($paginator->previousPageUrl())
-                <a href="{{ $paginator->previousPageUrl() }}" class="pagination-item pagination-prev">
-                    <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    Previous
+                <a href="{{ $paginator->previousPageUrl() }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-chevron-left me-1"></i> Previous
                 </a>
             @endif
 
             @if($paginator->nextPageUrl())
-                <a href="{{ $paginator->nextPageUrl() }}" class="pagination-item pagination-next ml-3">
-                    Next
-                    <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
+                <a href="{{ $paginator->nextPageUrl() }}" class="btn btn-outline-secondary btn-sm ms-auto">
+                    Next <i class="fas fa-chevron-right ms-1"></i>
                 </a>
             @endif
         </div>
 
         <!-- Desktop View -->
-        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
-            <div class="flex items-center gap-1">
+        <div class="d-none d-sm-flex justify-content-center flex-grow-1">
+            <ul class="pagination mb-0">
                 <!-- Previous Link -->
                 @if($paginator->previousPageUrl())
-                    <a href="{{ $paginator->previousPageUrl() }}" class="pagination-item pagination-prev">
-                        <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                        <span class="sr-only">Previous</span>
-                    </a>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $paginator->previousPageUrl() }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
                 @endif
 
                 <!-- Page Numbers -->
                 @foreach($paginator->links()->elements[0] ?? [] as $page => $url)
-                    @if($page == $paginator->currentPage())
-                        <span class="pagination-item pagination-page pagination-page-active">{{ $page }}</span>
-                    @else
-                        <a href="{{ $url }}" class="pagination-item pagination-page pagination-page-inactive">{{ $page }}</a>
-                    @endif
+                    <li class="page-item {{ $page == $paginator->currentPage() ? 'active' : '' }}">
+                        @if($page == $paginator->currentPage())
+                            <span class="page-link">{{ $page }}</span>
+                        @else
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        @endif
+                    </li>
                 @endforeach
 
                 <!-- Next Link -->
                 @if($paginator->nextPageUrl())
-                    <a href="{{ $paginator->nextPageUrl() }}" class="pagination-item pagination-next">
-                        <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                        <span class="sr-only">Next</span>
-                    </a>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $paginator->nextPageUrl() }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
                 @endif
-            </div>
+            </ul>
         </div>
     </nav>
 @endif
