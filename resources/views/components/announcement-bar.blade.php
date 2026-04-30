@@ -1,18 +1,25 @@
-@props(['message' => '', 'link' => '', 'linkText' => '', 'dismissible' => true, 'id' => 'announcement'])
+@props([
+    'id' => 'announcement-' . uniqid(),
+    'type' => 'info',
+    'message' => '',
+    'dismissible' => true
+])
 
-<div x-data="{ show: true }" x-show="show" class="announcement relative" id="{{ $id }}">
-    <div class="flex items-center justify-center gap-2">
-        <span>{{ $message }}</span>
-        @if($link)
-            <a href="{{ $link }}" class="announcement-link">{{ $linkText ?: 'Learn more' }}</a>
-        @endif
-    </div>
+@php
+    $types = [
+        'info' => ['bg' => 'bg-info-subtle', 'text' => 'text-info-emphasis', 'icon' => 'fa-info-circle'],
+        'success' => ['bg' => 'bg-success-subtle', 'text' => 'text-success-emphasis', 'icon' => 'fa-check-circle'],
+        'warning' => ['bg' => 'bg-warning-subtle', 'text' => 'text-warning-emphasis', 'icon' => 'fa-exclamation-triangle'],
+        'danger' => ['bg' => 'bg-danger-subtle', 'text' => 'text-danger-emphasis', 'icon' => 'fa-exclamation-circle'],
+    ];
 
+    $config = $types[$type] ?? $types['info'];
+@endphp
+
+<div class="alert {{ $config['bg'] }} {{ $config['text'] }} d-flex align-items-center gap-2 py-2 px-3 mb-0 position-relative" role="alert">
+    <i class="fas {{ $config['icon'] }}"></i>
+    <span class="small flex-grow-1">{{ $message }}</span>
     @if($dismissible)
-        <button @click="show = false" class="announcement-close">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     @endif
 </div>
