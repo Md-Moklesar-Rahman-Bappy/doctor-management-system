@@ -89,9 +89,12 @@ class ProblemController extends Controller
     public function autocomplete(Request $request)
     {
         $term = $request->input('term', '');
-        $problems = Problem::where('name', 'like', "%{$term}%")
+        $problems = Problem::where(function ($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%")
+                  ->orWhere('description', 'like', "%{$term}%");
+            })
             ->limit(10)
-            ->get();
+            ->get(['id', 'name', 'description']);
 
         return response()->json([
             'success' => true,

@@ -46,7 +46,7 @@ $breadcrumbs = [
                         <h5 class="card-title fw-semibold mb-0">Patient Information</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label class="form-label fw-medium">Search Patient by ID *</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">

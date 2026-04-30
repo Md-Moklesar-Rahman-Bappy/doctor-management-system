@@ -22,13 +22,14 @@ $breadcrumbs = [
     <div class="card shadow-sm" data-aos="fade-up">
         <!-- Filter/Search Header -->
         <div class="card-header bg-white border-bottom">
-            <form method="GET" action="{{ route('doctors.index') }}" class="d-flex align-items-center gap-2 flex-wrap">
-                <div class="input-group flex-1" style="max-width: 400px;">
+            <form method="GET" action="{{ route('doctors.index') }}" class="d-flex align-items-center gap-2 flex-wrap position-relative">
+                <div class="input-group flex-1 position-relative" style="max-width: 400px;">
                     <span class="input-group-text bg-light border-end-0">
                         <i class="fas fa-search text-muted"></i>
                     </span>
-                    <input type="text" name="search" value="{{ $search ?? '' }}"
-                           class="form-control border-start-0" placeholder="Search by name, email, phone...">
+                    <input type="text" id="doctor-search" name="search" value="{{ $search ?? '' }}"
+                           class="form-control border-start-0" placeholder="Search by name, email, phone..." autocomplete="off">
+                    <div id="doctor-dropdown" class="position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 300px; overflow-y: auto;"></div>
                 </div>
                 <button type="submit" class="btn btn-secondary">
                     <i class="fas fa-search me-1"></i>Search
@@ -120,4 +121,62 @@ $breadcrumbs = [
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('doctor-search');
+    if (!searchInput) return;
+
+    const dropdown = document.getElementById('doctor-dropdown');
+    const autocompleteUrl = '{{ route("doctors.autocomplete") }}';
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            dropdown.classList.add('d-none');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(autocompleteUrl + '?term=' + encodeURIComponent(term))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0 && dropdown) {
+                        dropdown.innerHTML = data.data.map(item =>
+                            '<div class="px-3 py-2 hover-bg-light cursor-pointer border-bottom" onclick="selectDoctor(\'' + item.id + '\', \'' + item.name + '\')">' +
+                                '<div class="d-flex justify-content-between align-items-start">' +
+                                    '<div>' +
+                                        '<span class="fw-medium">' + item.name + '</span>' +
+                                        (item.email ? '<br><small class="text-muted"><i class="fas fa-envelope me-1"></i>' + item.email + '</small>' : '') +
+                                        (item.phone ? '<br><small class="text-muted"><i class="fas fa-phone me-1"></i>' + item.phone + '</small>' : '') +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>'
+                        ).join('');
+                        dropdown.classList.remove('d-none');
+                    } else if (dropdown) {
+                        dropdown.innerHTML = '<div class="px-3 py-3 text-muted text-center">No doctors found</div>';
+                        dropdown.classList.remove('d-none');
+                    }
+                });
+        }, 300);
+    });
+
+    window.selectDoctor = function(id, name) {
+        searchInput.value = name;
+        dropdown.classList.add('d-none');
+    };
+
+    document.addEventListener('click', function(e) {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== searchInput) {
+            dropdown.classList.add('d-none');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

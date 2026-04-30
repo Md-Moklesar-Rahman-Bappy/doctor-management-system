@@ -30,14 +30,15 @@ $breadcrumbs = [
     <div class="card shadow-sm" data-aos="fade-up">
         <!-- Filter/Search Header -->
         <div class="card-header bg-white border-bottom">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 position-relative">
                 <form method="GET" action="{{ route('lab-tests.index') }}" class="d-flex align-items-center gap-2 flex-1" style="max-width: 400px;">
-                    <div class="input-group flex-1">
+                    <div class="input-group flex-1 position-relative">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
                         <input type="text" name="search" id="searchInput" value="{{ $search ?? '' }}"
-                               class="form-control border-start-0" placeholder="Search by test name, code or department...">
+                               class="form-control border-start-0" placeholder="Search by test name, code or department..." autocomplete="off">
+                        <div id="lab-test-dropdown" class="position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 300px; overflow-y: auto;"></div>
                     </div>
                     <button type="submit" class="btn btn-secondary">
                         <i class="fas fa-search me-1"></i>Search
@@ -68,6 +69,7 @@ $breadcrumbs = [
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
+                        <th>SL</th>
                         <th>
                             <a href="{{ route('lab-tests.index', ['sort' => 'test', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
                                 Test
@@ -93,12 +95,13 @@ $breadcrumbs = [
                             </a>
                         </th>
                         <th class="text-muted">Details</th>
-                        <th class="text-center" style="width: 100px;">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($tests as $index => $test)
-                    <tr class="transition-all hover-bg-light">
+                    <tr>
+                        <td class="text-muted">{{ $tests->firstItem() + $index }}</td>
                         <td>
                             <div class="d-flex flex-column">
                                 <span class="fw-medium text-dark">{{ $test->test }}</span>
@@ -136,24 +139,18 @@ $breadcrumbs = [
                                 @endif
                             </div>
                         </td>
-                        <td class="text-center">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('lab-tests.edit', $test->id) }}">
-                                            <i class="fas fa-edit me-2 text-primary"></i>Edit
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteTest({{ $test->id }}, '{{ addslashes($test->test) }}')">
-                                            <i class="fas fa-trash me-2"></i>Delete
-                                        </a>
-                                    </li>
-                                </ul>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a href="{{ route('lab-tests.edit', $test->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ route('lab-tests.destroy', $test->id) }}" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -161,16 +158,16 @@ $breadcrumbs = [
                     <tr>
                         <td colspan="5" class="py-5">
                             <x-empty-state
-                                title="No tests found"
+                                title="No lab tests found"
                                 description="Add your first test or import from Excel to get started"
                             >
                                 <x-slot:action>
-                                    <div class="d-flex gap-2">
-                                        <a href="{{ route('lab-tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                                            <i class="fas fa-plus"></i> Add Test
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="{{ route('lab_tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                            <i class="fas fa-flask me-1"></i> Add Test
                                         </a>
-                                        <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-secondary d-flex align-items-center gap-2">
-                                            <i class="fas fa-file-import"></i> Import
+                                        <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                                            <i class="fas fa-file-import me-1"></i> Import
                                         </button>
                                     </div>
                                 </x-slot:action>
@@ -245,26 +242,59 @@ $breadcrumbs = [
 
 @push('scripts')
 <script>
-function deleteTest(id, testName) {
-    Swal.fire({
-        title: 'Delete "' + testName + '"?',
-        text: 'This action cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/lab-tests/' + id;
-            form.innerHTML = '@csrf<input type="hidden" name="_method" value="DELETE">';
-            document.body.appendChild(form);
-            form.submit();
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+
+    const dropdown = document.getElementById('lab-test-dropdown');
+    const autocompleteUrl = '{{ route("lab-tests.autocomplete") }}';
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            dropdown.classList.add('d-none');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(autocompleteUrl + '?term=' + encodeURIComponent(term))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0 && dropdown) {
+                        dropdown.innerHTML = data.data.map(item =>
+                            '<div class="px-3 py-2 hover-bg-light cursor-pointer border-bottom" onclick="selectLabTest(\'' + item.test + '\', \'' + item.code + '\')">' +
+                                '<div class="d-flex justify-content-between align-items-start">' +
+                                    '<div>' +
+                                        '<span class="fw-medium">' + item.test + '</span>' +
+                                        (item.code ? '<br><small class="text-muted">Code: ' + item.code + '</small>' : '') +
+                                    '</div>' +
+                                    (item.department ? '<span class="badge bg-light text-dark border">' + item.department + '</span>' : '') +
+                                '</div>' +
+                            '</div>'
+                        ).join('');
+                        dropdown.classList.remove('d-none');
+                    } else if (dropdown) {
+                        dropdown.innerHTML = '<div class="px-3 py-3 text-muted text-center">No tests found</div>';
+                        dropdown.classList.remove('d-none');
+                    }
+                });
+        }, 300);
+    });
+
+    window.selectLabTest = function(testName, code) {
+        searchInput.value = testName;
+        dropdown.classList.add('d-none');
+    };
+
+    document.addEventListener('click', function(e) {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== searchInput) {
+            dropdown.classList.add('d-none');
         }
     });
-}
+});
 </script>
 @endpush
 @endsection

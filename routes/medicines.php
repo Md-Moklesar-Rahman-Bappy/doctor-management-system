@@ -9,6 +9,7 @@ Route::post('/medicines', [MedicineController::class, 'store'])->name('medicines
 Route::get('/medicines/create', [MedicineController::class, 'create'])->name('medicines.create');
 Route::get('/medicines/search', [MedicineController::class, 'search'])->name('medicines.search');
 Route::post('/medicines/search', [MedicineController::class, 'search']);
+Route::get('/medicines/autocomplete', [MedicineController::class, 'autocomplete'])->name('medicines.autocomplete');
 Route::get('/medicines/{id}', [MedicineController::class, 'show'])->name('medicines.show');
 Route::put('/medicines/{id}', [MedicineController::class, 'update'])->name('medicines.update');
 Route::patch('/medicines/{id}', [MedicineController::class, 'update']);

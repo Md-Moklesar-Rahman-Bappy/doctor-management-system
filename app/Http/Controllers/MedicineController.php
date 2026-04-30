@@ -38,8 +38,8 @@ class MedicineController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('brand_name', 'like', "%{$search}%")
-                    ->orWhere('generic_name', 'like', "%{$search}%")
-                    ->orWhere('company_name', 'like', "%{$search}%");
+                  ->orWhere('generic_name', 'like', "%{$search}%")
+                  ->orWhere('company_name', 'like', "%{$search}%");
             });
         }
 
@@ -98,8 +98,11 @@ class MedicineController extends Controller
     public function search(Request $request): JsonResponse
     {
         $query = $request->input('q', '');
-        $medicines = Medicine::where('brand_name', 'like', "%{$query}%")
-            ->orWhere('company_name', 'like', "%{$query}%")
+        $medicines = Medicine::where(function ($q) use ($query) {
+                $q->where('brand_name', 'like', "%{$query}%")
+                  ->orWhere('generic_name', 'like', "%{$query}%")
+                  ->orWhere('company_name', 'like', "%{$query}%");
+            })
             ->limit(20)
             ->get();
 
@@ -112,9 +115,11 @@ class MedicineController extends Controller
     public function autocomplete(Request $request): JsonResponse
     {
         $term = $request->input('term', '');
-        $medicines = Medicine::where('brand_name', 'like', "%{$term}%")
-            ->orWhere('generic_name', 'like', "%{$term}%")
-            ->orWhere('company_name', 'like', "%{$term}%")
+        $medicines = Medicine::where(function ($q) use ($term) {
+                $q->where('brand_name', 'like', "%{$term}%")
+                  ->orWhere('generic_name', 'like', "%{$term}%")
+                  ->orWhere('company_name', 'like', "%{$term}%");
+            })
             ->limit(10)
             ->get(['id', 'brand_name', 'generic_name', 'dosage_type', 'company_name']);
 
@@ -165,9 +170,11 @@ class MedicineController extends Controller
         $query = Medicine::query();
 
         if ($search) {
-            $query->where('brand_name', 'like', "%{$search}%")
-                ->orWhere('generic_name', 'like', "%{$search}%")
-                ->orWhere('company_name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('brand_name', 'like', "%{$search}%")
+                  ->orWhere('generic_name', 'like', "%{$search}%")
+                  ->orWhere('company_name', 'like', "%{$search}%");
+            });
         }
 
         $columns = [

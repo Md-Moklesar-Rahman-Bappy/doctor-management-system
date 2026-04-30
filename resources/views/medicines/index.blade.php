@@ -46,14 +46,15 @@ $breadcrumbs = [
     <div class="card shadow-sm" data-aos="fade-up">
         <!-- Filter/Search Header -->
         <div class="card-header bg-white border-bottom">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 position-relative">
                 <form method="GET" action="{{ route('medicines.index') }}" class="d-flex align-items-center gap-2 flex-1" style="max-width: 400px;">
-                    <div class="input-group flex-1">
+                    <div class="input-group flex-1 position-relative">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
-                        <input type="text" name="search" value="{{ $search ?? '' }}"
-                               class="form-control border-start-0" placeholder="Search brand or generic name...">
+                        <input type="text" id="medicine-search" name="search" value="{{ $search ?? '' }}"
+                               class="form-control border-start-0" placeholder="Search brand or generic name..." autocomplete="off">
+                        <div id="medicine-dropdown" class="position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 300px; overflow-y: auto;"></div>
                     </div>
                     <button type="submit" class="btn btn-secondary">
                         <i class="fas fa-search me-1"></i>Search
@@ -138,12 +139,17 @@ $breadcrumbs = [
                         <td colspan="8" class="py-5">
                             <x-empty-state
                                 title="No medicines found"
-                                description="Add your first medicine to get started"
+                                description="Add your first medicine or import from Excel to get started"
                             >
                                 <x-slot:action>
-                                    <a href="{{ route('medicines.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                                        <i class="fas fa-pills me-1"></i> Add Medicine
-                                    </a>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="{{ route('medicines.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                            <i class="fas fa-pills me-1"></i> Add Medicine
+                                        </a>
+                                        <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                                            <i class="fas fa-file-import me-1"></i> Import
+                                        </button>
+                                    </div>
                                 </x-slot:action>
                             </x-empty-state>
                         </td>
@@ -215,4 +221,63 @@ $breadcrumbs = [
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('medicine-search');
+    if (!searchInput) return;
+
+    const dropdown = document.getElementById('medicine-dropdown');
+    const autocompleteUrl = '{{ route("medicines.autocomplete") }}';
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            dropdown.classList.add('d-none');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(autocompleteUrl + '?term=' + encodeURIComponent(term))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data.length > 0 && dropdown) {
+                        dropdown.innerHTML = data.data.map(item =>
+                            '<div class="px-3 py-2 hover-bg-light cursor-pointer border-bottom" onclick="selectMedicine(\'' + item.brand_name + '\', \'' + item.generic_name + '\')">' +
+                                '<div class="d-flex justify-content-between align-items-start">' +
+                                    '<div>' +
+                                        '<span class="fw-medium">' + item.brand_name + '</span>' +
+                                        (item.generic_name ? '<br><small class="text-muted">' + item.generic_name + '</small>' : '') +
+                                    '</div>' +
+                                    (item.dosage_type ? '<span class="badge bg-light text-dark border">' + item.dosage_type + '</span>' : '') +
+                                '</div>' +
+                                (item.company_name ? '<small class="text-muted"><i class="fas fa-building me-1"></i>' + item.company_name + '</small>' : '') +
+                            '</div>'
+                        ).join('');
+                        dropdown.classList.remove('d-none');
+                    } else if (dropdown) {
+                        dropdown.innerHTML = '<div class="px-3 py-3 text-muted text-center">No medicines found</div>';
+                        dropdown.classList.remove('d-none');
+                    }
+                });
+        }, 300);
+    });
+
+    window.selectMedicine = function(brandName, genericName) {
+        searchInput.value = brandName;
+        dropdown.classList.add('d-none');
+    };
+
+    document.addEventListener('click', function(e) {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== searchInput) {
+            dropdown.classList.add('d-none');
+        }
+    });
+});
+</script>
+@endpush
 @endsection

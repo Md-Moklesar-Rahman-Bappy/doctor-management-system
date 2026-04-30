@@ -127,14 +127,16 @@ $breadcrumbs = [
                     @empty
                     <tr>
                         <td colspan="6" class="py-5">
-                            <div class="text-center">
-                                <i class="fas fa-vial text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                                <p class="fw-medium text-muted">No lab test reports found</p>
-                                <p class="small text-muted">Add your first report to get started</p>
-                                <a href="{{ route('lab_test_reports.create') }}" class="btn btn-warning d-flex align-items-center gap-2 mt-3">
-                                    <i class="fas fa-vial"></i> Add Report
-                                </a>
-                            </div>
+                            <x-empty-state
+                                title="No lab test reports found"
+                                description="Add your first report to get started"
+                            >
+                                <x-slot:action>
+                                    <a href="{{ route('lab_test_reports.create') }}" class="btn btn-warning d-flex align-items-center gap-2">
+                                        <i class="fas fa-vial me-1"></i> Add Report
+                                    </a>
+                                </x-slot:action>
+                            </x-empty-state>
                         </td>
                     </tr>
                     @endforelse

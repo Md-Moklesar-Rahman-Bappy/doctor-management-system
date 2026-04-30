@@ -37,8 +37,8 @@ class LabTestController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('test', 'like', "%{$search}%")
-                    ->orWhere('code', 'like', "%{$search}%")
-                    ->orWhere('department', 'like', "%{$search}%");
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('department', 'like', "%{$search}%");
             });
         }
 
@@ -98,8 +98,8 @@ class LabTestController extends Controller
         if ($term) {
             $query->where(function ($q) use ($term) {
                 $q->where('test', 'like', "%{$term}%")
-                    ->orWhere('code', 'like', "%{$term}%")
-                    ->orWhere('department', 'like', "%{$term}%");
+                  ->orWhere('code', 'like', "%{$term}%")
+                  ->orWhere('department', 'like', "%{$term}%");
             });
         }
 
@@ -184,9 +184,11 @@ class LabTestController extends Controller
     public function autocomplete(Request $request)
     {
         $term = $request->input('term', '');
-        $tests = LabTest::where('test', 'like', "%{$term}%")
-            ->orWhere('code', 'like', "%{$term}%")
-            ->orWhere('department', 'like', "%{$term}%")
+        $tests = LabTest::where(function ($q) use ($term) {
+                $q->where('test', 'like', "%{$term}%")
+                  ->orWhere('code', 'like', "%{$term}%")
+                  ->orWhere('department', 'like', "%{$term}%");
+            })
             ->limit(10)
             ->get(['id', 'test', 'code', 'department']);
 
