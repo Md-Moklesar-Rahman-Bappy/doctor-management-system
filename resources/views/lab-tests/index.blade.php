@@ -3,7 +3,7 @@
 @section('content')
 @php
 $breadcrumbs = [
-    ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
+    ['label' => 'Lab Tests', 'url' => route('lab-tests.index')],
 ];
 @endphp
 
@@ -14,7 +14,7 @@ $breadcrumbs = [
             <h3 class="page-title mb-1">Lab Tests</h3>
             <p class="page-description mb-0">Manage your laboratory tests</p>
         </div>
-        <a href="{{ route('lab_tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+        <a href="{{ route('lab-tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
             <i class="fas fa-plus"></i> Add Test
         </a>
     </div>
@@ -31,7 +31,7 @@ $breadcrumbs = [
         <!-- Filter/Search Header -->
         <div class="card-header bg-white border-bottom">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <form method="GET" action="{{ route('lab_tests.index') }}" class="d-flex align-items-center gap-2 flex-1" style="max-width: 400px;">
+                <form method="GET" action="{{ route('lab-tests.index') }}" class="d-flex align-items-center gap-2 flex-1" style="max-width: 400px;">
                     <div class="input-group flex-1">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
@@ -43,14 +43,14 @@ $breadcrumbs = [
                         <i class="fas fa-search me-1"></i>Search
                     </button>
                     @if($search)
-                        <a href="{{ route('lab_tests.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('lab-tests.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-times me-1"></i>Clear
                         </a>
                     @endif
                 </form>
 
                 <div class="d-flex gap-2">
-                    <a href="{{ route('lab_tests.template') }}" class="btn btn-outline-secondary btn-sm" title="Download Template">
+                    <a href="{{ route('lab-tests.template') }}" class="btn btn-outline-secondary btn-sm" title="Download Template">
                         <i class="fas fa-download me-1"></i>Template
                     </a>
                     <button onclick="document.getElementById('exportModal').classList.remove('d-none')" class="btn btn-outline-secondary btn-sm" title="Export CSV">
@@ -65,91 +65,108 @@ $breadcrumbs = [
 
         <!-- Table -->
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>SL</th>
                         <th>
-                            <a href="{{ route('lab_tests.index', ['sort' => 'department', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
-                                Department
-                                @if(request('sort') == 'department')
-                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
-                                @endif
-                            </a>
-                        </th>
-                        <th>Sample Type</th>
-                        <th>Panel</th>
-                        <th>
-                            <a href="{{ route('lab_tests.index', ['sort' => 'test', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                            <a href="{{ route('lab-tests.index', ['sort' => 'test', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
                                 Test
                                 @if(request('sort') == 'test')
-                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                    <span class="text-primary">{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
                                 @endif
                             </a>
                         </th>
                         <th>
-                            <a href="{{ route('lab_tests.index', ['sort' => 'code', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                            <a href="{{ route('lab-tests.index', ['sort' => 'code', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
                                 Code
                                 @if(request('sort') == 'code')
-                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                    <span class="text-primary">{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
                                 @endif
                             </a>
                         </th>
-                        <th>Unit</th>
-                        <th>Result Type</th>
-                        <th>Normal Range</th>
-                        <th>Actions</th>
+                        <th>
+                            <a href="{{ route('lab-tests.index', ['sort' => 'department', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Department
+                                @if(request('sort') == 'department')
+                                    <span class="text-primary">{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+                                @endif
+                            </a>
+                        </th>
+                        <th class="text-muted">Details</th>
+                        <th class="text-center" style="width: 100px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($tests as $index => $test)
-                    <tr>
-                        <td class="text-muted">{{ $tests->firstItem() + $index }}</td>
-                        <td class="fw-medium">{{ $test->department }}</td>
-                        <td class="text-muted">{{ $test->sample_type }}</td>
-                        <td class="text-muted">{{ $test->panel }}</td>
-                        <td class="fw-medium">{{ $test->test }}</td>
-                        <td class="text-muted font-monospace">{{ $test->code }}</td>
-                        <td class="text-muted">{{ $test->unit }}</td>
-                        <td class="text-muted">{{ $test->result_type }}</td>
-                        <td class="text-muted">
-                            @if($test->normal_range)
-                                {{ $test->normal_range }}
-                            @elseif($test->normal_range_lower && $test->normal_range_upper)
-                                {{ $test->normal_range_lower }} - {{ $test->normal_range_upper }}
-                            @elseif($test->normal_range_lower)
-                                > {{ $test->normal_range_lower }}
-                            @elseif($test->normal_range_upper)
-                                < {{ $test->normal_range_upper }}
-                            @else
-                                -
-                            @endif
-                        </td>
+                    <tr class="transition-all hover-bg-light">
                         <td>
-                            <div class="d-flex gap-1">
-                                <a href="{{ route('lab_tests.edit', $test->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form method="POST" action="{{ route('lab_tests.destroy', $test->id) }}" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium text-dark">{{ $test->test }}</span>
+                                @if($test->panel)
+                                    <small class="text-muted">{{ $test->panel }}</small>
+                                @endif
+                            </div>
+                        </td>
+                        <td><code class="bg-light px-2 py-1 rounded">{{ $test->code }}</code></td>
+                        <td><span class="badge bg-light text-dark border">{{ $test->department }}</span></td>
+                        <td>
+                            <div class="d-flex flex-column gap-1" style="font-size: 0.85rem;">
+                                @if($test->sample_type)
+                                    <span class="text-muted"><i class="fas fa-vial me-1 text-primary" style="width: 14px;"></i>{{ $test->sample_type }}</span>
+                                @endif
+                                @if($test->unit || $test->result_type)
+                                    <span class="text-muted">
+                                        @if($test->unit)<i class="fas fa-balance-scale me-1 text-info" style="width: 14px;"></i>{{ $test->unit }}@endif
+                                        @if($test->result_type) · {{ $test->result_type }}@endif
+                                    </span>
+                                @endif
+                                @if($test->normal_range || $test->normal_range_lower || $test->normal_range_upper)
+                                    <span class="text-success">
+                                        <i class="fas fa-chart-line me-1" style="width: 14px;"></i>
+                                        @if($test->normal_range)
+                                            {{ $test->normal_range }}
+                                        @elseif($test->normal_range_lower && $test->normal_range_upper)
+                                            {{ $test->normal_range_lower }} - {{ $test->normal_range_upper }}
+                                        @elseif($test->normal_range_lower)
+                                            > {{ $test->normal_range_lower }}
+                                        @elseif($test->normal_range_upper)
+                                            < {{ $test->normal_range_upper }}
+                                        @endif
+                                    </span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('lab-tests.edit', $test->id) }}">
+                                            <i class="fas fa-edit me-2 text-primary"></i>Edit
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteTest({{ $test->id }}, '{{ addslashes($test->test) }}')">
+                                            <i class="fas fa-trash me-2"></i>Delete
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="py-5">
+                        <td colspan="5" class="py-5">
                             <x-empty-state
                                 title="No tests found"
                                 description="Add your first test or import from Excel to get started"
                             >
                                 <x-slot:action>
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('lab_tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                        <a href="{{ route('lab-tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
                                             <i class="fas fa-plus"></i> Add Test
                                         </a>
                                         <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-secondary d-flex align-items-center gap-2">
@@ -182,7 +199,7 @@ $breadcrumbs = [
                         <h5 class="modal-title">Import Tests from Excel</h5>
                         <button onclick="document.getElementById('importModal').classList.add('d-none')" class="btn-close"></button>
                     </div>
-                    <form action="{{ route('lab_tests.import') }}" method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3 p-4">
+                    <form action="{{ route('lab-tests.import') }}" method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3 p-4">
                         @csrf
                         <p class="small text-muted">Upload an Excel file (.xlsx, .xls, .csv) with columns: department, sample_type, panel, test, code, unit, result_type, normal_range</p>
                         <div>
@@ -208,7 +225,7 @@ $breadcrumbs = [
                         <h5 class="modal-title">Export Tests</h5>
                         <button onclick="document.getElementById('exportModal').classList.add('d-none')" class="btn-close"></button>
                     </div>
-                    <form action="{{ route('lab_tests.export') }}" method="GET" class="d-flex flex-column gap-3 p-4">
+                    <form action="{{ route('lab-tests.export') }}" method="GET" class="d-flex flex-column gap-3 p-4">
                         <div>
                             <label class="form-label fw-medium">Search (optional)</label>
                             <input type="text" name="search" value="{{ $search ?? '' }}" class="form-control">
@@ -228,10 +245,10 @@ $breadcrumbs = [
 
 @push('scripts')
 <script>
-function deleteTest(id) {
+function deleteTest(id, testName) {
     Swal.fire({
-        title: 'Are you sure?',
-        text: 'Delete this test?',
+        title: 'Delete "' + testName + '"?',
+        text: 'This action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
@@ -241,7 +258,7 @@ function deleteTest(id) {
         if (result.isConfirmed) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '/lab_tests/' + id;
+            form.action = '/lab-tests/' + id;
             form.innerHTML = '@csrf<input type="hidden" name="_method" value="DELETE">';
             document.body.appendChild(form);
             form.submit();

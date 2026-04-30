@@ -3,7 +3,7 @@
 @section('content')
 @php
 $breadcrumbs = [
-    ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
+    ['label' => 'Lab Tests', 'url' => route('lab-tests.index')],
     ['label' => 'Add New Test'],
 ];
 @endphp
@@ -11,7 +11,7 @@ $breadcrumbs = [
 <div>
     <div class="mb-4" data-aos="fade-down">
         <div class="d-flex align-items-center gap-3 mb-3">
-            <a href="{{ route('lab_tests.index') }}" class="btn btn-outline-secondary btn-sm">
+            <a href="{{ route('lab-tests.index') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-arrow-left me-1"></i> Back
             </a>
             <h3 class="fw-bold text-dark mb-0">Add New Lab Test</h3>
@@ -23,7 +23,7 @@ $breadcrumbs = [
         <div class="col-lg-8" data-aos="fade-up">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('lab_tests.store') }}" class="d-flex flex-column gap-3">
+                    <form method="POST" action="{{ route('lab-tests.store') }}" class="d-flex flex-column gap-3">
                         @csrf
 
                         <div class="row g-3">
@@ -108,7 +108,7 @@ $breadcrumbs = [
                         </div>
 
                         <div class="d-flex gap-3 pt-3 border-top">
-                            <a href="{{ route('lab_tests.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('lab-tests.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times me-1"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">

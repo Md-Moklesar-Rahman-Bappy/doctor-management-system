@@ -44,26 +44,26 @@ class LabTestController extends Controller
 
         $tests = $query->orderBy($sortBy, $direction)->paginate($perPage)->appends($request->except('page'));
 
-        return view('lab_tests.index', compact('tests', 'search', 'sortBy', 'direction'));
+        return view('lab-tests.index', compact('tests', 'search', 'sortBy', 'direction'));
     }
 
     public function create(): View
     {
-        return view('lab_tests.create');
+        return view('lab-tests.create');
     }
 
     public function store(StoreLabTestRequest $request): RedirectResponse
     {
         LabTest::create($request->validated());
 
-        return redirect()->route('lab_tests.index')->with('success', 'Lab Test created successfully!');
+        return redirect()->route('lab-tests.index')->with('success', 'Lab Test created successfully!');
     }
 
     public function edit($id): View
     {
         $test = LabTest::findOrFail($id);
 
-        return view('lab_tests.edit', compact('test'));
+        return view('lab-tests.edit', compact('test'));
     }
 
     public function update(UpdateLabTestRequest $request, $id): RedirectResponse
@@ -72,7 +72,7 @@ class LabTestController extends Controller
 
         $test->update($request->validated());
 
-        return redirect()->route('lab_tests.index')->with('success', 'Lab Test updated successfully!');
+        return redirect()->route('lab-tests.index')->with('success', 'Lab Test updated successfully!');
     }
 
     public function destroy($id): RedirectResponse
@@ -81,9 +81,9 @@ class LabTestController extends Controller
             $test = LabTest::findOrFail($id);
             $test->delete();
 
-            return redirect()->route('lab_tests.index')->with('success', 'Lab Test deleted successfully!');
+            return redirect()->route('lab-tests.index')->with('success', 'Lab Test deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('lab_tests.index')->with('error', 'Error deleting lab test. Please try again.');
+            return redirect()->route('lab-tests.index')->with('error', 'Error deleting lab test. Please try again.');
         }
     }
 
@@ -135,10 +135,10 @@ class LabTestController extends Controller
         $totalImported = $this->importService->importFromFile($request, new LabTest, $columnMap);
 
         if ($totalImported === 0) {
-            return redirect()->route('lab_tests.index')->with('error', 'File is empty or could not be read.');
+            return redirect()->route('lab-tests.index')->with('error', 'File is empty or could not be read.');
         }
 
-        return redirect()->route('lab_tests.index')->with('success', "{$totalImported} lab tests imported successfully!");
+        return redirect()->route('lab-tests.index')->with('success', "{$totalImported} lab tests imported successfully!");
     }
 
     public function template(): StreamedResponse
@@ -200,13 +200,13 @@ class LabTestController extends Controller
     {
         $test = LabTest::findOrFail($id);
 
-        return view('lab_tests.show', compact('test'));
+        return view('lab-tests.show', compact('test'));
     }
 
     public function downloadDuplicates()
     {
         if (!session('duplicate_rows')) {
-            return redirect()->route('lab_tests.index')->with('error', 'No duplicate data found.');
+            return redirect()->route('lab-tests.index')->with('error', 'No duplicate data found.');
         }
 
         $headers = [
@@ -227,7 +227,7 @@ class LabTestController extends Controller
     public function downloadFailed()
     {
         if (!session('failed_rows')) {
-            return redirect()->route('lab_tests.index')->with('error', 'No failed data found.');
+            return redirect()->route('lab-tests.index')->with('error', 'No failed data found.');
         }
 
         $headers = [

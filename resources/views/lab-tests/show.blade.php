@@ -3,7 +3,7 @@
 @section('content')
 @php
 $breadcrumbs = [
-    ['label' => 'Lab Tests', 'url' => route('lab_tests.index')],
+    ['label' => 'Lab Tests', 'url' => route('lab-tests.index')],
     ['label' => $test->test ?? 'Test Details'],
 ];
 @endphp
@@ -11,7 +11,7 @@ $breadcrumbs = [
 <div>
     <div class="mb-4" data-aos="fade-down">
         <div class="d-flex align-items-center gap-3 mb-3">
-            <a href="{{ route('lab_tests.index') }}" class="btn btn-outline-secondary btn-sm">
+            <a href="{{ route('lab-tests.index') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-arrow-left me-1"></i> Back
             </a>
             <h3 class="fw-bold text-dark mb-0">{{ $test->test }}</h3>
@@ -87,10 +87,10 @@ $breadcrumbs = [
                     </div>
                 </div>
                 <div class="card-footer bg-white border-top d-flex gap-2">
-                    <a href="{{ route('lab_tests.edit', $test->id) }}" class="btn btn-sm btn-outline-secondary">
+                    <a href="{{ route('lab-tests.edit', $test->id) }}" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-edit me-1"></i> Edit
                     </a>
-                    <form method="POST" action="{{ route('lab_tests.destroy', $test->id) }}" class="d-inline">
+                    <form method="POST" action="{{ route('lab-tests.destroy', $test->id) }}" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">

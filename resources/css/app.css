@@ -298,6 +298,19 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Utility classes for autocomplete dropdowns */
+.hover-bg-light:hover {
+    background-color: #f8f9fa;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}
+
 /* Badge custom */
 .badge-lg {
     padding: 0.5em 0.75em;

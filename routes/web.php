@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 // Include modular route files
 require __DIR__.'/medicines.php';
-require __DIR__.'/lab_tests.php';
+require __DIR__.'/lab-tests.php';
 require __DIR__.'/doctors.php';
 require __DIR__.'/patients.php';
 require __DIR__.'/prescriptions.php';

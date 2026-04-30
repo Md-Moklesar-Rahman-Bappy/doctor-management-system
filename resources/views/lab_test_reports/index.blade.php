@@ -36,13 +36,14 @@ $breadcrumbs = [
 
     <div class="card shadow-sm" data-aos="fade-up">
         <div class="card-header bg-white border-bottom">
-            <form method="GET" action="{{ route('lab_test_reports.index') }}" class="d-flex align-items-center gap-2 flex-wrap">
+            <form method="GET" action="{{ route('lab_test_reports.index') }}" class="d-flex align-items-center gap-2 flex-wrap position-relative">
                 <div class="input-group flex-1" style="max-width: 400px;">
                     <span class="input-group-text bg-light border-end-0">
                         <i class="fas fa-search text-muted"></i>
                     </span>
-                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search by patient ID or name..." class="form-control border-start-0">
+                    <input type="text" id="search-input" name="search" value="{{ $search ?? '' }}" placeholder="Search by patient ID or name..." class="form-control border-start-0" autocomplete="off">
                 </div>
+                <div id="autocomplete-dropdown" class="position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-width: 400px;"></div>
                 <button type="submit" class="btn btn-secondary">
                     <i class="fas fa-search me-1"></i>Search
                 </button>
@@ -166,11 +167,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         debounceTimer = setTimeout(() => {
-            fetch('/patients/autocomplete?term=' + encodeURIComponent(term))
+            fetch('{{ route("patients.autocomplete") }}?term=' + encodeURIComponent(term))
                 .then(res => res.json())
                 .then(data => {
-                    if (data.length > 0 && dropdown) {
-                        dropdown.innerHTML = data.map(item =>
+                    if (data.success && data.data.length > 0 && dropdown) {
+                        dropdown.innerHTML = data.data.map(item =>
                             `<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.location='/lab-test-reports?search=${encodeURIComponent(item.unique_id)}'">
                                 <span class="fw-medium">${item.unique_id}</span> - ${item.patient_name}
                             </div>`

@@ -165,7 +165,7 @@ Successfully implemented a complete TailAdmin-inspired redesign of the Doctor Me
 To complete the FULL TailAdmin redesign, you still need to update:
 1. `resources/views/prescriptions/index.blade.php` (and create/edit)
 2. `resources/views/medicines/index.blade.php` (and create/edit)
-3. `resources/views/lab_tests/index.blade.php` (and create/edit)
+3. `resources/views/lab-tests/index.blade.php` (and create/edit)
 4. `resources/views/lab_test_reports/index.blade.php`
 5. `resources/views/problems/index.blade.php`
 6. Create SaaS-style dashboard variant

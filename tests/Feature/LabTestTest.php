@@ -16,7 +16,7 @@ class LabTestTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $response = $this->get('/lab_tests');
+        $response = $this->get('/lab-tests');
         $response->assertStatus(200);
     }
 
@@ -25,7 +25,7 @@ class LabTestTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $response = $this->post('/lab_tests', [
+        $response = $this->post('/lab-tests', [
             'department' => 'Biochemistry',
             'sample_type' => 'Blood',
             'panel' => 'Liver Function',
@@ -36,7 +36,7 @@ class LabTestTest extends TestCase
             'normal_range' => '7-56',
         ]);
 
-        $response->assertRedirect('/lab_tests');
+        $response->assertRedirect('/lab-tests');
         $this->assertDatabaseHas('lab_tests', [
             'test' => 'ALT',
             'department' => 'Biochemistry',
@@ -48,7 +48,7 @@ class LabTestTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $response = $this->post('/lab_tests', [
+        $response = $this->post('/lab-tests', [
             'department' => 'Biochemistry',
             'sample_type' => 'Blood',
         ]);
@@ -67,7 +67,7 @@ class LabTestTest extends TestCase
             'code' => 'OLD001',
         ]);
 
-        $response = $this->put("/lab_tests/{$test->id}", [
+        $response = $this->put("/lab-tests/{$test->id}", [
             'department' => 'New Dept',
             'sample_type' => 'Blood',
             'panel' => 'New Panel',
@@ -77,7 +77,7 @@ class LabTestTest extends TestCase
             'normal_range' => '0-100',
         ]);
 
-        $response->assertRedirect(route('lab_tests.index'));
+        $response->assertRedirect(route('lab-tests.index'));
         $this->assertDatabaseHas('lab_tests', [
             'id' => $test->id,
             'test' => 'New Test',
@@ -91,9 +91,9 @@ class LabTestTest extends TestCase
 
         $test = LabTest::factory()->create();
 
-        $response = $this->delete("/lab_tests/{$test->id}");
+        $response = $this->delete("/lab-tests/{$test->id}");
 
-        $response->assertRedirect('/lab_tests');
+        $response->assertRedirect('/lab-tests');
         $this->assertDatabaseMissing('lab_tests', ['id' => $test->id]);
     }
 }
