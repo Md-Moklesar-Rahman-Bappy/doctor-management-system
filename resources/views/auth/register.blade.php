@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.auth')
 
 @section('content')
 @php
@@ -7,7 +7,7 @@ $breadcrumbs = [
 ];
 @endphp
 
-<div class="min-vh-100 d-flex align-items-center" style="margin-top: -56px;">
+<div class="min-vh-100 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-8">

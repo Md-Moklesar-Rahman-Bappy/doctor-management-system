@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.auth')
 
 @section('content')
 <div class="min-vh-100 d-flex align-items-center" data-aos="fade-up">
