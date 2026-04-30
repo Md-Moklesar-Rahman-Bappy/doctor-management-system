@@ -118,6 +118,6 @@ $breadcrumbs = [
                 {{ $doctors->links('components.pagination') }}
             </div>
         @endif
-    </x-card>
+    </div>
 </div>
 @endsection

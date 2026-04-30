@@ -113,6 +113,6 @@ $breadcrumbs = [
                 {{ $patients->links('components.pagination') }}
             </div>
         @endif
-    </x-card>
+    </div>
 </div>
 @endsection
