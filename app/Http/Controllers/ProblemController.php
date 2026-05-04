@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProblemRequest;
+use App\Http\Requests\UpdateProblemRequest;
 use App\Models\Problem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
