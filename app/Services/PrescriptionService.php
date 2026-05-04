@@ -14,7 +14,11 @@ class PrescriptionService
 
         // If creating new patient inline
         if ($request->filled('new_patient_name')) {
-            $patient = Patient::create($request->validated() + [
+            $patient = Patient::create([
+                'patient_name' => $request->new_patient_name,
+                'age' => $request->new_patient_age,
+                'sex' => $request->new_patient_sex,
+                'date' => $request->new_patient_date,
                 'user_id' => $userId,
                 'unique_id' => 'PAT-'.strtoupper(substr(md5(uniqid()), 0, 8)),
             ]);
@@ -27,9 +31,9 @@ class PrescriptionService
             'user_id' => $userId,
             'patient_id' => $patientId,
             'doctor_id' => $doctorId,
-            'problem' => $request->problem ? json_encode($request->problem) : null,
-            'tests' => $request->tests ? json_encode($request->tests) : null,
-            'medicines' => $request->medicines ? json_encode($request->medicines) : null,
+            'problem' => $request->problem ? json_decode($request->problem, true) : null,
+            'tests' => $request->tests ? json_decode($request->tests, true) : null,
+            'medicines' => $request->medicines ? json_decode($request->medicines, true) : null,
         ]);
     }
 

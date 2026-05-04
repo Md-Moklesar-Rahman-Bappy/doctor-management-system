@@ -64,16 +64,24 @@ class PrescriptionController extends Controller
 
     public function store(StorePrescriptionRequest $request)
     {
-        $doctor = auth()->user()->doctor ?? null;
-        $doctorId = $doctor ? $doctor->id : $request->doctor_id;
+        try {
+            $doctor = auth()->user()->doctor ?? null;
+            $doctorId = $doctor ? $doctor->id : $request->doctor_id;
 
-        $prescription = $this->prescriptionService->createPrescription($request, $doctorId);
+            $prescription = $this->prescriptionService->createPrescription($request, $doctorId);
 
-        if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'prescription_id' => $prescription->id]);
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'prescription_id' => $prescription->id]);
+            }
+
+            return redirect()->route('prescriptions.index')->with('success', 'Prescription created successfully!');
+        } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+
+            return back()->with('error', 'Error creating prescription: ' . $e->getMessage());
         }
-
-        return redirect()->route('prescriptions.index')->with('success', 'Prescription created successfully!');
     }
 
     public function show($id): View

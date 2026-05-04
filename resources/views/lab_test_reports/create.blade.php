@@ -45,7 +45,7 @@ $breadcrumbs = [
 
                         <div id="selected-patient-info" class="{{ $selectedPatientId ? '' : 'd-none' }}">
                             <div class="bg-light rounded p-3">
-                                <div class="row g-3">
+                                <div class="row g-3 mb-3">
                                     <div class="col-md-3">
                                         <label class="small text-muted">Unique ID</label>
                                         <p class="fw-medium mb-0" id="info-unique-id">{{ $selectedPatient->unique_id ?? '-' }}</p>
@@ -62,6 +62,11 @@ $breadcrumbs = [
                                         <label class="small text-muted">Sex</label>
                                         <input type="text" id="info-sex" class="form-control" value="{{ $selectedPatient->sex ?? '' }}" readonly>
                                     </div>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-medium">Date *</label>
+                                    <input type="date" name="date" id="report-date" class="form-control"
+                                           value="{{ date('Y-m-d') }}" required>
                                 </div>
                             </div>
                         </div>
@@ -142,27 +147,31 @@ $breadcrumbs = [
 @push('scripts')
 <script>
 let searchTimeout;
+const patientUniqueRouteTemplate = '{{ route("patients.byUniqueId", ["uniqueId" => "PLACEHOLDER"]) }}';
 
 document.getElementById('patient-search').addEventListener('input', function() {
     clearTimeout(searchTimeout);
-    const searchTerm = this.value;
+    const searchTerm = this.value.trim();
     const dropdown = document.getElementById('patient-dropdown');
 
     if (searchTerm.length < 2) {
         dropdown.classList.add('d-none');
+        dropdown.innerHTML = '';
         return;
     }
 
     searchTimeout = setTimeout(() => {
         fetch('{{ route("patients.autocomplete") }}?term=' + encodeURIComponent(searchTerm))
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
             .then(data => {
-                if (data.success && data.data.length > 0) {
+                if (data.success && data.data && data.data.length > 0) {
                     dropdown.innerHTML = data.data.map(p => {
-                        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
-                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="selectPatient(\'' + encoded + '\')">' +
+                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" data-id="' + p.id + '" data-unique-id="' + p.unique_id + '" data-name="' + p.patient_name.replace(/"/g, '&quot;') + '" data-age="' + (p.age || 'N/A') + '" data-sex="' + (p.sex || 'N/A') + '">' +
                             '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
-                            '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                            '<span class="text-muted small ms-2">Age: ' + (p.age || 'N/A') + ', ' + (p.sex || 'N/A') + '</span>' +
                             '</div>';
                     }).join('');
                     dropdown.classList.remove('d-none');
@@ -170,20 +179,42 @@ document.getElementById('patient-search').addEventListener('input', function() {
                     dropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
                     dropdown.classList.remove('d-none');
                 }
+            })
+            .catch(err => {
+                console.error('Search error:', err);
+                dropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+                dropdown.classList.remove('d-none');
             });
     }, 300);
 });
 
-function selectPatient(encodedData) {
-    const p = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
-    document.getElementById('patient-id').value = p.id;
-    document.getElementById('patient-search').value = p.unique_id + ' - ' + p.patient_name;
-    document.getElementById('patient-dropdown').classList.add('d-none');
+// Handle dropdown item click using event delegation
+document.getElementById('patient-dropdown').addEventListener('click', function(e) {
+    const item = e.target.closest('[data-id]');
+    if (!item) return;
 
-    document.getElementById('info-unique-id').textContent = p.unique_id;
-    document.getElementById('info-name').value = p.patient_name;
-    document.getElementById('info-age').value = p.age;
-    document.getElementById('info-sex').value = p.sex;
+    const id = item.getAttribute('data-id');
+    const uniqueId = item.getAttribute('data-unique-id');
+    const name = item.getAttribute('data-name');
+    const age = item.getAttribute('data-age');
+    const sex = item.getAttribute('data-sex');
+
+    selectPatient(parseInt(id), uniqueId, name, age, sex);
+});
+
+function selectPatient(id, uniqueId, patientName, age, sex) {
+    document.getElementById('patient-id').value = id;
+    document.getElementById('patient-search').value = uniqueId + ' - ' + patientName;
+    document.getElementById('patient-dropdown').classList.add('d-none');
+    document.getElementById('patient-dropdown').innerHTML = '';
+
+    const sexFormatted = sex ? (sex.charAt(0).toUpperCase() + sex.slice(1)) : 'N/A';
+
+    document.getElementById('info-unique-id').textContent = uniqueId || 'N/A';
+    document.getElementById('info-name').value = patientName || 'N/A';
+    document.getElementById('info-age').value = age || 'N/A';
+    document.getElementById('info-sex').value = sexFormatted;
+    document.getElementById('report-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('selected-patient-info').classList.remove('d-none');
 }
 

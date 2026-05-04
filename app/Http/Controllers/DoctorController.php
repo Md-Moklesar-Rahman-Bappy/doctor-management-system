@@ -43,7 +43,13 @@ class DoctorController extends Controller
 
     public function store(StoreDoctorRequest $request): RedirectResponse
     {
-        Doctor::create($request->validated() + ['user_id' => auth()->id(), 'email_verified' => false]);
+        $data = $request->validated();
+
+        // Filter out empty degrees and convert to JSON
+        $degrees = isset($data['degrees']) ? array_filter($data['degrees']) : [];
+        $data['degrees'] = !empty($degrees) ? json_encode(array_values($degrees)) : null;
+
+        Doctor::create($data + ['user_id' => auth()->id(), 'email_verified' => false]);
 
         return redirect()->route('doctors.index')->with('success', 'Doctor created successfully!');
     }
@@ -81,7 +87,13 @@ class DoctorController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $doctor->update($request->validated());
+        $data = $request->validated();
+
+        // Filter out empty degrees and convert to JSON
+        $degrees = isset($data['degrees']) ? array_filter($data['degrees']) : [];
+        $data['degrees'] = !empty($degrees) ? json_encode(array_values($degrees)) : null;
+
+        $doctor->update($data);
 
         return redirect()->route('doctors.index')->with('success', 'Doctor updated successfully!');
     }

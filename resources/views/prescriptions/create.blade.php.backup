@@ -133,6 +133,7 @@ $breadcrumbs = [
                     </div>
                     <div class="card-body">
                         <div id="problems-container">
+                            <!-- First problem input (default) -->
                             <div class="input-group mb-2 problem-row">
                                 <div class="input-icon-wrapper flex-1">
                                     <input type="text" name="problem[]" class="form-control ps-4"
@@ -148,6 +149,8 @@ $breadcrumbs = [
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addProblem()">
                             <i class="fas fa-plus me-1"></i> Add Problem
                         </button>
+
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Add all problems one by one (optional)</div>
                     </div>
                 </div>
 
@@ -158,6 +161,7 @@ $breadcrumbs = [
                     </div>
                     <div class="card-body">
                         <div id="tests-container">
+                            <!-- First test input (default) -->
                             <div class="input-group mb-2 test-row">
                                 <div class="input-icon-wrapper flex-1">
                                     <input type="text" name="tests[]" class="form-control ps-4"
@@ -173,6 +177,8 @@ $breadcrumbs = [
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addTest()">
                             <i class="fas fa-plus me-1"></i> Add Test
                         </button>
+
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Add all tests one by one (optional)</div>
                     </div>
                 </div>
 
@@ -187,6 +193,8 @@ $breadcrumbs = [
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addMedicineSearch()">
                             <i class="fas fa-plus me-1"></i> Add Medicine
                         </button>
+
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Search and add medicines</div>
                     </div>
                 </div>
 
@@ -228,7 +236,6 @@ $breadcrumbs = [
 @push('styles')
 <style>
 .hover-bg-light:hover { background-color: #f8f9fa; }
-.cursor-pointer { cursor: pointer; }
 #patient-dropdown { top: 100%; left: 0; right: 0; }
 </style>
 @endpush
@@ -238,118 +245,174 @@ $breadcrumbs = [
 let medicineIndex = 0;
 let searchTimeout;
 let createdPrescriptionId = null;
+const patientAutocompleteRoute = '{{ route("patients.autocomplete") }}';
+const patientUniqueRouteTemplate = '{{ route("patients.byUniqueId", ["uniqueId" => "PLACEHOLDER"]) }}';
 
-document.addEventListener('DOMContentLoaded', function() {
-    const patientSearch = document.getElementById('patient-search');
-    const patientDropdown = document.getElementById('patient-dropdown');
+// Patient search with live AJAX
+document.getElementById('patient-search').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const searchTerm = this.value.trim();
+    const dropdown = document.getElementById('patient-dropdown');
 
-    if (!patientSearch || !patientDropdown) return;
+    if (searchTerm.length < 2) {
+        dropdown.classList.add('d-none');
+        dropdown.innerHTML = '';
+        return;
+    }
 
-    // Patient search with live AJAX
-    patientSearch.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const searchTerm = this.value.trim();
+    searchTimeout = setTimeout(() => {
+        fetch(patientAutocompleteRoute + '?term=' + encodeURIComponent(searchTerm))
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                if (data.success && data.data && data.data.length > 0) {
+                    dropdown.innerHTML = data.data.map(p => {
+                        const ageValue = p.age || 'N/A';
+                        const sexValue = p.sex || 'N/A';
+                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" data-id="' + p.id + '" data-unique-id="' + p.unique_id + '" data-name="' + p.patient_name.replace(/"/g, '&quot;') + '" data-age="' + ageValue + '" data-sex="' + sexValue + '">' +
+                            '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                            '<span class="text-muted small ms-2">Age: ' + ageValue + ', ' + sexValue + '</span>' +
+                            '</div>';
+                    }).join('');
+                    dropdown.classList.remove('d-none');
+                } else {
+                    dropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                    dropdown.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                console.error('Search error:', err);
+                dropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+                dropdown.classList.remove('d-none');
+            });
+    }, 300);
+});
 
-        if (searchTerm.length < 2) {
-            patientDropdown.classList.add('d-none');
-            patientDropdown.innerHTML = '';
-            return;
-        }
+// Handle dropdown item click using event delegation
+document.getElementById('patient-dropdown').addEventListener('click', function(e) {
+    const item = e.target.closest('[data-id]');
+    if (!item) return;
+
+    const id = item.getAttribute('data-id');
+    const uniqueId = item.getAttribute('data-unique-id');
+    const name = item.getAttribute('data-name');
+    const age = item.getAttribute('data-age');
+    const sex = item.getAttribute('data-sex');
+
+    selectPatient(parseInt(id), uniqueId, name, age, sex);
+});
+
+function selectPatient(id, uniqueId, patientName, age, sex) {
+    document.getElementById('patient-id').value = id;
+    document.getElementById('patient-search').value = uniqueId + ' - ' + patientName;
+    document.getElementById('patient-dropdown').classList.add('d-none');
+    document.getElementById('patient-dropdown').innerHTML = '';
+
+    document.getElementById('new-patient-toggle').checked = false;
+    document.getElementById('new-patient-form').classList.add('d-none');
+
+    // Show basic info immediately
+    displayBasicInfo(uniqueId, patientName, age, sex);
+
+    // Fetch full details in background using proper route
+    const url = patientUniqueRouteTemplate.replace('PLACEHOLDER', encodeURIComponent(uniqueId));
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                displayFullPatientInfo(data.data);
+            }
+        })
+        .catch(err => console.error('Error fetching patient details:', err));
+}
+
+function displayBasicInfo(uniqueId, patientName, age, sex) {
+    const sexFormatted = sex && sex !== 'N/A' ? (sex.charAt(0).toUpperCase() + sex.slice(1)) : 'N/A';
+
+    document.getElementById('info-unique-id').textContent = uniqueId || 'N/A';
+    document.getElementById('info-name').value = patientName || 'N/A';
+    document.getElementById('info-age').value = age || 'N/A';
+    document.getElementById('info-sex').value = sexFormatted;
+    document.getElementById('prescription-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('existing-patient-info').classList.remove('d-none');
+}
 
         searchTimeout = setTimeout(() => {
             fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
                 .then(res => res.json())
                 .then(data => {
                     if (data.success && data.data && data.data.length > 0) {
-                        let html = '';
-                        data.data.forEach(p => {
-                            html += '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.selectPatient(this)"' +
-                                ' data-id="' + p.id + '"' +
-                                ' data-unique-id="' + p.unique_id + '"' +
-                                ' data-name="' + p.patient_name.replace(/"/g, '&quot;') + '"' +
-                                ' data-age="' + p.age + '"' +
-                                ' data-sex="' + p.sex + '">' +
+                        dropdown.innerHTML = data.data.map(p => {
+                            return '<div class="px-3 py-2 hover-bg-light cursor-pointer" data-id="' + p.id + '" data-unique-id="' + p.unique_id + '" data-name="' + p.patient_name.replace(/"/g, '&quot;') + '" data-age="' + p.age + '" data-sex="' + p.sex + '">' +
                                 '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
                                 '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
                                 '</div>';
-                        });
-                        patientDropdown.innerHTML = html;
-                        patientDropdown.classList.remove('d-none');
+                        }).join('');
+                        dropdown.classList.remove('d-none');
                     } else {
-                        patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
-                        patientDropdown.classList.remove('d-none');
+                        dropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                        dropdown.classList.remove('d-none');
                     }
                 })
                 .catch(err => {
                     console.error('Search error:', err);
-                    patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
-                    patientDropdown.classList.remove('d-none');
+                    dropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+                    dropdown.classList.remove('d-none');
                 });
         }, 300);
     });
 
-    // Close dropdown on click outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
-            patientDropdown.classList.add('d-none');
-        }
+    // Handle dropdown item click using event delegation
+    dropdown.addEventListener('click', function(e) {
+        const item = e.target.closest('[data-id]');
+        if (!item) return;
+
+        const id = item.getAttribute('data-id');
+        const uniqueId = item.getAttribute('data-unique-id');
+        const name = item.getAttribute('data-name');
+        const age = item.getAttribute('data-age');
+        const sex = item.getAttribute('data-sex');
+
+        selectPatient(parseInt(id), uniqueId, name, parseInt(age), sex);
     });
+}
 
-    // New patient toggle
-    const newPatientToggle = document.getElementById('new-patient-toggle');
-    if (newPatientToggle) {
-        newPatientToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.getElementById('new-patient-form').classList.remove('d-none');
-                document.getElementById('existing-patient-info').classList.add('d-none');
-                document.getElementById('patient-id').value = '';
-                document.getElementById('patient-search').value = '';
-            } else {
-                document.getElementById('new-patient-form').classList.add('d-none');
-            }
-        });
-    }
-});
-
-// Global function for patient selection
-window.selectPatient = function(el) {
-    const id = el.getAttribute('data-id');
-    const uniqueId = el.getAttribute('data-unique-id');
-    const name = el.getAttribute('data-name');
-    const age = el.getAttribute('data-age');
-    const sex = el.getAttribute('data-sex');
-    const dropdown = document.getElementById('patient-dropdown');
-
+function selectPatient(id, uniqueId, patientName, age, sex) {
     document.getElementById('patient-id').value = id;
-    document.getElementById('patient-search').value = uniqueId + ' - ' + name;
+    document.getElementById('patient-search').value = uniqueId + ' - ' + patientName;
     dropdown.classList.add('d-none');
     dropdown.innerHTML = '';
 
     document.getElementById('new-patient-toggle').checked = false;
     document.getElementById('new-patient-form').classList.add('d-none');
 
-    // Show basic info
-    const sexFormatted = sex ? (sex.charAt(0).toUpperCase() + sex.slice(1)) : 'N/A';
-    document.getElementById('info-unique-id').textContent = uniqueId;
-    document.getElementById('info-name').value = name;
-    document.getElementById('info-age').value = age;
-    document.getElementById('info-sex').value = sexFormatted;
-    document.getElementById('prescription-date').value = '{{ date("Y-m-d") }}';
-    document.getElementById('existing-patient-info').classList.remove('d-none');
+    displayBasicInfo(uniqueId, patientName, age, sex);
 
     // Fetch full details
     fetch('/patients/unique/' + encodeURIComponent(uniqueId))
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                showPatientHistory(data.data);
+                displayFullPatientInfo(data.data);
             }
         })
         .catch(err => console.error('Error fetching patient details:', err));
-};
+}
 
-function showPatientHistory(p) {
-    const infoDiv = document.getElementById('existing-patient-info');
+function displayBasicInfo(uniqueId, patientName, age, sex) {
+    const sexFormatted = sex ? (sex.charAt(0).toUpperCase() + sex.slice(1)) : 'N/A';
+
+    document.getElementById('info-unique-id').textContent = uniqueId || 'N/A';
+    document.getElementById('info-name').value = patientName || 'N/A';
+    document.getElementById('info-age').value = age || 'N/A';
+    document.getElementById('info-sex').value = sexFormatted;
+    document.getElementById('prescription-date').value = '{{ date("Y-m-d") }}';
+    document.getElementById('existing-patient-info').classList.remove('d-none');
+}
+
+function displayFullPatientInfo(p) {
     let historyHtml = '';
 
     if (p.prescriptions && p.prescriptions.length > 0) {
@@ -383,7 +446,158 @@ function showPatientHistory(p) {
         historyHtml += '</div></div>';
     }
 
+    const infoDiv = document.getElementById('existing-patient-info');
     if (historyHtml) {
+        const existingHistory = infoDiv.querySelector('.patient-history');
+        if (existingHistory) existingHistory.remove();
+
+        const historyDiv = document.createElement('div');
+        historyDiv.className = 'patient-history';
+        historyDiv.innerHTML = historyHtml;
+        infoDiv.appendChild(historyDiv);
+    }
+}
+
+    // Patient search with live AJAX
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const searchTerm = this.value.trim();
+
+        if (searchTerm.length < 2) {
+            dropdown.classList.add('d-none');
+            dropdown.innerHTML = '';
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data && data.data.length > 0) {
+                        dropdown.innerHTML = data.data.map(p => {
+                            return '<div class="px-3 py-2 hover-bg-light cursor-pointer" data-id="' + p.id + '" data-unique-id="' + p.unique_id + '" data-name="' + p.patient_name.replace(/"/g, '&quot;') + '" data-age="' + p.age + '" data-sex="' + p.sex + '">' +
+                                '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                                '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                                '</div>';
+                        }).join('');
+                        dropdown.classList.remove('d-none');
+                    } else {
+                        dropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                        dropdown.classList.remove('d-none');
+                    }
+                })
+                .catch(err => {
+                    console.error('Search error:', err);
+                    dropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+                    dropdown.classList.remove('d-none');
+                });
+        }, 300);
+    });
+
+    // Handle dropdown item click using event delegation
+    dropdown.addEventListener('click', function(e) {
+        const item = e.target.closest('[data-id]');
+        if (!item) return;
+
+        const id = item.getAttribute('data-id');
+        const uniqueId = item.getAttribute('data-unique-id');
+        const name = item.getAttribute('data-name');
+        const age = item.getAttribute('data-age');
+        const sex = item.getAttribute('data-sex');
+
+        selectPatient(parseInt(id), uniqueId, name, parseInt(age), sex);
+    });
+    }, 300);
+});
+
+// Handle dropdown item click using event delegation
+document.getElementById('patient-dropdown').addEventListener('click', function(e) {
+    const item = e.target.closest('[data-id]');
+    if (!item) return;
+
+    const id = item.getAttribute('data-id');
+    const uniqueId = item.getAttribute('data-unique-id');
+    const name = item.getAttribute('data-name');
+    const age = item.getAttribute('data-age');
+    const sex = item.getAttribute('data-sex');
+
+    selectPatient(parseInt(id), uniqueId, name, parseInt(age), sex);
+});
+
+function selectPatient(id, uniqueId, patientName, age, sex) {
+    document.getElementById('patient-id').value = id;
+    document.getElementById('patient-search').value = uniqueId + ' - ' + patientName;
+    document.getElementById('patient-dropdown').classList.add('d-none');
+    document.getElementById('patient-dropdown').innerHTML = '';
+
+    document.getElementById('new-patient-toggle').checked = false;
+    document.getElementById('new-patient-form').classList.add('d-none');
+
+    // Show basic info immediately
+    displayBasicInfo(uniqueId, patientName, age, sex);
+
+    // Fetch full details in background using proper route
+    const url = patientUniqueRouteTemplate.replace('PLACEHOLDER', encodeURIComponent(uniqueId));
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                displayFullPatientInfo(data.data);
+            }
+        })
+        .catch(err => console.error('Error fetching patient details:', err));
+}
+
+function displayBasicInfo(uniqueId, patientName, age, sex) {
+    const sexFormatted = sex ? (sex.charAt(0).toUpperCase() + sex.slice(1)) : 'N/A';
+
+    document.getElementById('info-unique-id').textContent = uniqueId || 'N/A';
+    document.getElementById('info-name').value = patientName || 'N/A';
+    document.getElementById('info-age').value = age || 'N/A';
+    document.getElementById('info-sex').value = sexFormatted;
+    document.getElementById('prescription-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('existing-patient-info').classList.remove('d-none');
+}
+
+function displayFullPatientInfo(p) {
+    // Add prescription history if available
+    let historyHtml = '';
+
+    if (p.prescriptions && p.prescriptions.length > 0) {
+        historyHtml += '<div class="mt-3"><label class="small text-muted">Prescription History (' + p.prescriptions.length + ')</label>' +
+            '<div class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">';
+        p.prescriptions.slice(0, 5).forEach(pr => {
+            const problems = pr.problem ? (typeof pr.problem === 'string' ? JSON.parse(pr.problem) : pr.problem) : [];
+            historyHtml += '<div class="small py-1 border-bottom">' +
+                '<i class="fas fa-prescription-bottle-alt text-primary me-1"></i>' +
+                (pr.prescription_date || 'N/A') + ' - ' + (problems.length > 0 ? problems.join(', ') : 'No problems') +
+                '</div>';
+        });
+        if (p.prescriptions.length > 5) {
+            historyHtml += '<div class="small text-muted py-1">...and ' + (p.prescriptions.length - 5) + ' more</div>';
+        }
+        historyHtml += '</div></div>';
+    }
+
+    if (p.lab_test_reports && p.lab_test_reports.length > 0) {
+        historyHtml += '<div class="mt-3"><label class="small text-muted">Lab Test Reports (' + p.lab_test_reports.length + ')</label>' +
+            '<div class="border rounded p-2 bg-white" style="max-height: 100px; overflow-y: auto;">';
+        p.lab_test_reports.slice(0, 3).forEach(lr => {
+            historyHtml += '<div class="small py-1 border-bottom">' +
+                '<i class="fas fa-vial text-info me-1"></i>' +
+                (lr.test_name || 'Lab Test') + ' - ' + (lr.date || 'N/A') +
+                '</div>';
+        });
+        if (p.lab_test_reports.length > 3) {
+            historyHtml += '<div class="small text-muted py-1">...and ' + (p.lab_test_reports.length - 3) + ' more</div>';
+        }
+        historyHtml += '</div></div>';
+    }
+
+    // Append history after the existing info
+    const infoDiv = document.getElementById('existing-patient-info');
+    if (historyHtml) {
+        // Remove existing history if any
         const existingHistory = infoDiv.querySelector('.patient-history');
         if (existingHistory) existingHistory.remove();
 
@@ -406,17 +620,30 @@ document.getElementById('new-patient-toggle').addEventListener('change', functio
     }
 });
 
+// Close dropdown on click outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
+        document.getElementById('patient-dropdown').classList.add('d-none');
+    }
+});
+
 // Problem functions
 function addProblem() {
     const container = document.getElementById('problems-container');
+
     const div = document.createElement('div');
     div.className = 'input-group mb-2 problem-row';
-    div.innerHTML = '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="problem[]" class="form-control ps-4" placeholder="e.g., Fever">' +
-        '<div class="icon"><i class="fas fa-stethoscope"></i></div>' +
-        '</div>' +
-        '<button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)">' +
-        '<i class="fas fa-times"></i></button>';
+    div.innerHTML = `
+        <div class="input-icon-wrapper flex-1">
+            <input type="text" name="problem[]" class="form-control ps-4"
+                   placeholder="e.g., Fever">
+            <div class="icon"><i class="fas fa-stethoscope"></i></div>
+        </div>
+        <button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
     container.appendChild(div);
     updateProblemButtons();
 }
@@ -429,21 +656,28 @@ function removeProblem(button) {
 function updateProblemButtons() {
     const rows = document.querySelectorAll('.problem-row');
     rows.forEach(row => {
-        row.querySelector('button').disabled = rows.length <= 1;
+        const btn = row.querySelector('button');
+        btn.disabled = rows.length <= 1;
     });
 }
 
 // Test functions
 function addTest() {
     const container = document.getElementById('tests-container');
+
     const div = document.createElement('div');
     div.className = 'input-group mb-2 test-row';
-    div.innerHTML = '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="tests[]" class="form-control ps-4" placeholder="e.g., Blood Test">' +
-        '<div class="icon"><i class="fas fa-vial"></i></div>' +
-        '</div>' +
-        '<button type="button" class="btn btn-outline-danger" onclick="removeTest(this)">' +
-        '<i class="fas fa-times"></i></button>';
+    div.innerHTML = `
+        <div class="input-icon-wrapper flex-1">
+            <input type="text" name="tests[]" class="form-control ps-4"
+                   placeholder="e.g., Blood Test">
+            <div class="icon"><i class="fas fa-vial"></i></div>
+        </div>
+        <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
     container.appendChild(div);
     updateTestButtons();
 }
@@ -456,45 +690,67 @@ function removeTest(button) {
 function updateTestButtons() {
     const rows = document.querySelectorAll('.test-row');
     rows.forEach(row => {
-        row.querySelector('button').disabled = rows.length <= 1;
+        const btn = row.querySelector('button');
+        btn.disabled = rows.length <= 1;
     });
 }
 
 // Medicine search functions
 function addMedicineSearch() {
     const container = document.getElementById('medicines-container');
+
     const div = document.createElement('div');
     div.className = 'card mb-2 medicine-search-row';
-    div.innerHTML = '<div class="card-body p-3">' +
-        '<div class="row g-2 align-items-center">' +
-        '<div class="col-md-4">' +
-        '<div class="input-group">' +
-        '<span class="input-group-text bg-light border-end-0"><i class="fas fa-pills text-muted"></i></span>' +
-        '<input type="text" class="form-control border-start-0 medicine-search-input" placeholder="Search brand or generic name..." onkeyup="searchMedicine(this, event)">' +
-        '<div class="medicine-dropdown position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>' +
-        '</div>' +
-        '</div>' +
-        '<div class="col-md-3"><input type="text" class="form-control medicine-dosage" placeholder="Dosage (e.g. 500mg)"></div>' +
-        '<div class="col-md-3"><input type="text" class="form-control medicine-frequency" placeholder="When (e.g. 3x/day)"></div>' +
-        '<div class="col-md-2"><input type="text" class="form-control medicine-duration" placeholder="Duration (e.g. 7 days)"></div>' +
-        '</div>' +
-        '<div class="mt-2 d-flex gap-2 align-items-center">' +
-        '<button type="button" class="btn btn-sm btn-primary" onclick="addMedicine(this)"><i class="fas fa-check me-1"></i> Add</button>' +
-        '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMedicineSearch(this)"><i class="fas fa-times"></i></button>' +
-        '</div>' +
-        '<div class="selected-medicine mt-2 d-none"><span class="badge bg-success"></span></div>' +
-        '<input type="hidden" class="medicine-id" name="medicines[' + medicineIndex + '][id]" value="">' +
-        '<input type="hidden" class="medicine-name" name="medicines[' + medicineIndex + '][name]" value="">' +
-        '<input type="hidden" class="medicine-dosage-hidden" name="medicines[' + medicineIndex + '][dosage]" value="">' +
-        '<input type="hidden" class="medicine-frequency-hidden" name="medicines[' + medicineIndex + '][frequency]" value="">' +
-        '<input type="hidden" class="medicine-duration-hidden" name="medicines[' + medicineIndex + '][duration]" value="">' +
-        '</div>';
+    div.innerHTML = `
+        <div class="card-body p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-pills text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 medicine-search-input"
+                               placeholder="Search brand or generic name..."
+                               onkeyup="searchMedicine(this, event)">
+                        <div class="medicine-dropdown position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control medicine-dosage" placeholder="Dosage (e.g. 500mg)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control medicine-frequency" placeholder="When (e.g. 3x/day)">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control medicine-duration" placeholder="Duration (e.g. 7 days)">
+                </div>
+            </div>
+            <div class="mt-2 d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-sm btn-primary" onclick="addMedicine(this)">
+                    <i class="fas fa-check me-1"></i> Add
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMedicineSearch(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="selected-medicine mt-2 d-none">
+                <span class="badge bg-success"></span>
+            </div>
+            <input type="hidden" class="medicine-id" name="medicines[${medicineIndex}][id]" value="">
+            <input type="hidden" class="medicine-name" name="medicines[${medicineIndex}][name]" value="">
+            <input type="hidden" class="medicine-dosage-hidden" name="medicines[${medicineIndex}][dosage]" value="">
+            <input type="hidden" class="medicine-frequency-hidden" name="medicines[${medicineIndex}][frequency]" value="">
+            <input type="hidden" class="medicine-duration-hidden" name="medicines[${medicineIndex}][duration]" value="">
+        </div>
+    `;
+
     container.appendChild(div);
     medicineIndex++;
 }
 
 function searchMedicine(input, event) {
     if (event.key === 'Enter') return;
+
     const term = input.value.trim();
     const dropdown = input.parentElement.querySelector('.medicine-dropdown');
 
@@ -505,7 +761,7 @@ function searchMedicine(input, event) {
 
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-        fetch('/medicines/autocomplete?term=' + encodeURIComponent(term))
+        fetch('{{ route("medicines.autocomplete") }}?term=' + encodeURIComponent(term))
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data.length > 0) {
@@ -529,6 +785,7 @@ function searchMedicine(input, event) {
 function selectMedicine(element, id, brandName, genericName, strength) {
     const row = element.closest('.medicine-search-row');
     const displayName = brandName + (genericName ? ' (' + genericName + ')' : '') + (strength ? ' - ' + strength : '');
+
     row.querySelector('.medicine-id').value = id;
     row.querySelector('.medicine-name').value = brandName;
     row.querySelector('.selected-medicine span').textContent = displayName;
@@ -553,11 +810,13 @@ function addMedicine(button) {
     row.querySelector('.medicine-frequency-hidden').value = frequency;
     row.querySelector('.medicine-duration-hidden').value = duration;
 
+    // Disable inputs after adding
     row.querySelector('.medicine-dosage').disabled = true;
     row.querySelector('.medicine-frequency').disabled = true;
     row.querySelector('.medicine-duration').disabled = true;
     button.disabled = true;
 
+    // Change button to remove
     const removeBtn = row.querySelector('.btn-outline-danger');
     removeBtn.onclick = function() { row.remove(); };
 }
@@ -578,16 +837,23 @@ document.getElementById('prescription-form').addEventListener('submit', function
         return;
     }
 
+    // Collect problems (optional)
     const problems = [];
     document.querySelectorAll('.problem-row input[name="problem[]"]').forEach(input => {
-        if (input.value.trim()) problems.push(input.value.trim());
+        if (input.value.trim()) {
+            problems.push(input.value.trim());
+        }
     });
 
+    // Collect tests (optional)
     const tests = [];
     document.querySelectorAll('.test-row input[name="tests[]"]').forEach(input => {
-        if (input.value.trim()) tests.push(input.value.trim());
+        if (input.value.trim()) {
+            tests.push(input.value.trim());
+        }
     });
 
+    // Collect medicines
     const medicines = [];
     document.querySelectorAll('.medicine-search-row').forEach(row => {
         const name = row.querySelector('.medicine-name').value;
@@ -656,20 +922,22 @@ function resetForm() {
     document.getElementById('new-patient-toggle').checked = false;
     document.getElementById('problems-container').innerHTML = '<div class="input-group mb-2 problem-row">' +
         '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="problem[]" class="form-control ps-4" placeholder="e.g., Fever">' +
-        '<div class="icon"><i class="fas fa-stethoscope"></i></div>' +
+            '<input type="text" name="problem[]" class="form-control ps-4" placeholder="e.g., Fever">' +
+            '<div class="icon"><i class="fas fa-stethoscope"></i></div>' +
         '</div>' +
         '<button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)" disabled>' +
-        '<i class="fas fa-times"></i></button>' +
-        '</div>';
+            '<i class="fas fa-times"></i>' +
+        '</button>' +
+    '</div>';
     document.getElementById('tests-container').innerHTML = '<div class="input-group mb-2 test-row">' +
         '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="tests[]" class="form-control ps-4" placeholder="e.g., Blood Test">' +
-        '<div class="icon"><i class="fas fa-vial"></i></div>' +
+            '<input type="text" name="tests[]" class="form-control ps-4" placeholder="e.g., Blood Test">' +
+            '<div class="icon"><i class="fas fa-vial"></i></div>' +
         '</div>' +
         '<button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" disabled>' +
-        '<i class="fas fa-times"></i></button>' +
-        '</div>';
+            '<i class="fas fa-times"></i>' +
+        '</button>' +
+    '</div>';
     document.getElementById('medicines-container').innerHTML = '';
     medicineIndex = 0;
 
