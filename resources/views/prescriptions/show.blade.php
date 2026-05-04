@@ -103,49 +103,48 @@ $breadcrumbs = [
                     <h5 class="fw-semibold mb-3 border-bottom pb-2">
                         <i class="fas fa-pills text-primary me-2"></i>Prescribed Medicines
                     </h5>
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Medicine Name</th>
-                                <th>Dosage</th>
-                                <th>সময় (Time)</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $meds = json_decode($prescription->medicines, true) ?? [];
-                            @endphp
-                            @foreach($meds as $index => $med)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td class="fw-medium">{{ $med['name'] ?? 'N/A' }}</td>
-                                    <td>{{ $med['dosage'] ?? 'N/A' }}</td>
-                                    <td>
-                                        @if(isset($med['time']))
-                                            @php
-                                                $timeData = is_string($med['time']) ? json_decode($med['time'], true) : $med['time'];
-                                            @endphp
-                                            {{ $timeData['display'] ?? 'N/A' }}
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if(isset($med['duration']))
-                                            @php
-                                                $durData = is_string($med['duration']) ? json_decode($med['duration'], true) : $med['duration'];
-                                            @endphp
-                                            {{ $durData['display'] ?? 'N/A' }}
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="d-flex flex-column gap-3">
+                        @php
+                            $meds = json_decode($prescription->medicines, true) ?? [];
+                        @endphp
+                        @foreach($meds as $index => $med)
+                            <div class="card p-3 border-0 shadow-sm bg-white">
+                                <div class="row g-2 align-items-center">
+                                    <!-- Medicine Name -->
+                                    <div class="col-md-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="fas fa-pills text-primary"></i>
+                                            <div>
+                                                <div class="fw-medium">
+                                                    {{ $med['name'] ?? 'N/A' }}
+                                                    @if(isset($med['generic_name']) && $med['generic_name'])
+                                                        ({{ $med['generic_name'] }})
+                                                    @endif
+                                                </div>
+                                                @if(isset($med['strength']) && $med['strength'])
+                                                    <div class="small text-muted">{{ $med['strength'] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dosage (1+0+1 Style) -->
+                                    <div class="col-md-3">
+                                        <span class="badge bg-secondary">
+                                            {{ $med['dosage'] ?? 'N/A' }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Duration -->
+                                    <div class="col-md-3">
+                                        <span class="badge bg-info">
+                                            {{ $med['duration'] ?? 'N/A' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
 
                 <!-- Tests -->

@@ -26,30 +26,17 @@ $breadcrumbs = [
                     <form method="POST" action="{{ route('patients.store') }}" class="d-flex flex-column gap-3">
                         @csrf
 
-                        <div>
-                            <label for="patient_name" class="form-label fw-medium">Patient Name *</label>
-                            <div class="input-icon-wrapper">
-                                <input type="text" id="patient_name" name="patient_name" value="{{ old('patient_name') }}" required
-                                       class="form-control ps-4" placeholder="Enter patient name">
-                                <div class="icon"><i class="fas fa-user"></i></div>
-                            </div>
-                            @error('patient_name')
-                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <x-input name="patient_name" label="Patient Name" icon="fas fa-user" required />
 
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="age" class="form-label fw-medium">Age *</label>
-                                <input type="number" id="age" name="age" min="0" max="150" value="{{ old('age') }}" required
-                                       class="form-control" placeholder="Age">
-                                @error('age')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="age" label="Age" icon="fas fa-birthday-cake" type="number" min="0" max="150" required />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="sex" class="form-label fw-medium">Sex *</label>
+                                <label for="sex" class="form-label fw-medium d-flex align-items-center gap-2">
+                                    <i class="fas fa-venus-mars"></i> Sex <span class="text-danger">*</span>
+                                </label>
                                 <select id="sex" name="sex" required class="form-select">
                                     <option value="">Select</option>
                                     <option value="male" {{ old('sex') == 'male' ? 'selected' : '' }}>Male</option>
@@ -61,12 +48,7 @@ $breadcrumbs = [
                             </div>
 
                             <div class="col-md-4">
-                                <label for="date" class="form-label fw-medium">Date *</label>
-                                <input type="date" id="date" name="date" value="{{ old('date', date('Y-m-d')) }}" required
-                                       class="form-control">
-                                @error('date')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="date" label="Date" icon="fas fa-calendar" type="date" required />
                             </div>
                         </div>
 

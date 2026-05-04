@@ -27,21 +27,14 @@ $breadcrumbs = [
                         @csrf
                         @method('PUT')
 
-                        <div>
-                            <label for="name" class="form-label fw-medium">Diagnosis Name *</label>
-                            <div class="input-icon-wrapper">
-                                <input type="text" id="name" name="name" value="{{ old('name', $problem->name) }}" required
-                                       class="form-control ps-4">
-                                <div class="icon"><i class="fas fa-stethoscope"></i></div>
-                            </div>
-                            @error('name')
-                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <x-input name="name" label="Diagnosis Name" icon="fas fa-stethoscope" required />
 
-                        <div>
-                            <label for="description" class="form-label fw-medium">Description</label>
-                            <textarea id="description" name="description" class="form-control" rows="4">{{ old('description', $problem->description) }}</textarea>
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-medium d-flex align-items-center gap-2">
+                                <i class="fas fa-align-left"></i> Description
+                            </label>
+                            <textarea id="description" name="description" class="form-control"
+                                      rows="4">{{ old('description', $problem->description) }}</textarea>
                         </div>
 
                         <div class="d-flex gap-3 pt-3 border-top">

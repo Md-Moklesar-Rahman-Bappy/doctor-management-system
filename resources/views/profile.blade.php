@@ -119,15 +119,12 @@ $breadcrumbs = [
                 <div class="card-body">
                     <form method="POST" action="/profile/password" class="d-flex flex-column gap-3">
                         @csrf
-                        <div>
-                            <label for="current_password" class="form-label fw-medium">
-                                <i class="fas fa-lock text-muted me-2"></i>Current Password *
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label fw-medium d-flex align-items-center gap-2">
+                                <i class="fas fa-lock"></i> Current Password *
                             </label>
-                            <div class="input-icon-wrapper">
-                                <input type="password" id="current_password" name="current_password" required
-                                       class="form-control ps-4" placeholder="Enter current password">
-                                <div class="icon"><i class="fas fa-lock"></i></div>
-                            </div>
+                            <input type="password" id="current_password" name="current_password" required
+                                   class="form-control" placeholder="Enter current password">
                         </div>
 
                         <div class="row g-3">

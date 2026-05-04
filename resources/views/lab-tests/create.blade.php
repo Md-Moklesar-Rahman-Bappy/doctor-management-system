@@ -28,56 +28,37 @@ $breadcrumbs = [
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="department" class="form-label fw-medium">Department *</label>
-                                <input type="text" id="department" name="department" value="{{ old('department') }}" required
-                                       class="form-control" placeholder="e.g. Pathology">
-                                @error('department')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="department" label="Department" icon="fas fa-hospital" required />
                             </div>
 
                             <div class="col-md-6">
-                                <label for="test" class="form-label fw-medium">Test Name *</label>
-                                <input type="text" id="test" name="test" value="{{ old('test') }}" required
-                                       class="form-control" placeholder="e.g. Blood Sugar">
-                                @error('test')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="test" label="Test Name" icon="fas fa-flask" required />
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="code" class="form-label fw-medium">Code *</label>
-                                <input type="text" id="code" name="code" value="{{ old('code') }}" required
-                                       class="form-control font-monospace" placeholder="e.g. BS001">
-                                @error('code')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="code" label="Code" icon="fas fa-barcode" required />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="sample_type" class="form-label fw-medium">Sample Type</label>
-                                <input type="text" id="sample_type" name="sample_type" value="{{ old('sample_type') }}"
-                                       class="form-control" placeholder="e.g. Blood">
+                                <x-input name="sample_type" label="Sample Type" icon="fas fa-vial" />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="panel" class="form-label fw-medium">Panel</label>
-                                <input type="text" id="panel" name="panel" value="{{ old('panel') }}"
-                                       class="form-control" placeholder="e.g. Metabolic">
+                                <x-input name="panel" label="Panel" icon="fas fa-layer-group" />
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="unit" class="form-label fw-medium">Unit</label>
-                                <input type="text" id="unit" name="unit" value="{{ old('unit') }}"
-                                       class="form-control" placeholder="e.g. mg/dL">
+                                <x-input name="unit" label="Unit" icon="fas fa-balance-scale" />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="result_type" class="form-label fw-medium">Result Type</label>
+                                <label for="result_type" class="form-label fw-medium d-flex align-items-center gap-2">
+                                    <i class="fas fa-poll"></i> Result Type
+                                </label>
                                 <select id="result_type" name="result_type" class="form-select">
                                     <option value="">Select Type</option>
                                     <option value="numeric" {{ old('result_type') == 'numeric' ? 'selected' : '' }}>Numeric</option>
@@ -87,23 +68,17 @@ $breadcrumbs = [
                             </div>
 
                             <div class="col-md-4">
-                                <label for="normal_range" class="form-label fw-medium">Normal Range</label>
-                                <input type="text" id="normal_range" name="normal_range" value="{{ old('normal_range') }}"
-                                       class="form-control" placeholder="e.g. 70-110">
+                                <x-input name="normal_range" label="Normal Range" icon="fas fa-chart-line" />
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="normal_range_lower" class="form-label fw-medium">Normal Range Lower</label>
-                                <input type="number" step="0.01" id="normal_range_lower" name="normal_range_lower" value="{{ old('normal_range_lower') }}"
-                                       class="form-control" placeholder="e.g. 70">
+                                <x-input name="normal_range_lower" label="Normal Range Lower" icon="fas fa-arrow-down" type="number" step="0.01" />
                             </div>
 
                             <div class="col-md-6">
-                                <label for="normal_range_upper" class="form-label fw-medium">Normal Range Upper</label>
-                                <input type="number" step="0.01" id="normal_range_upper" name="normal_range_upper" value="{{ old('normal_range_upper') }}"
-                                       class="form-control" placeholder="e.g. 110">
+                                <x-input name="normal_range_upper" label="Normal Range Upper" icon="fas fa-arrow-up" type="number" step="0.01" />
                             </div>
                         </div>
 

@@ -29,58 +29,31 @@ $breadcrumbs = [
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="brand_name" class="form-label fw-medium">Brand Name *</label>
-                                <div class="input-icon-wrapper">
-                                    <input type="text" id="brand_name" name="brand_name" value="{{ old('brand_name', $medicine->brand_name) }}" required
-                                           class="form-control ps-4">
-                                    <div class="icon"><i class="fas fa-pills"></i></div>
-                                </div>
-                                @error('brand_name')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="brand_name" label="Brand Name" icon="fas fa-pills" required />
                             </div>
 
                             <div class="col-md-6">
-                                <label for="generic_name" class="form-label fw-medium">Generic Name *</label>
-                                <div class="input-icon-wrapper">
-                                    <input type="text" id="generic_name" name="generic_name" value="{{ old('generic_name', $medicine->generic_name) }}" required
-                                           class="form-control ps-4">
-                                    <div class="icon"><i class="fas fa-capsules"></i></div>
-                                </div>
-                                @error('generic_name')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="generic_name" label="Generic Name" icon="fas fa-capsules" required />
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label for="dosage_type" class="form-label fw-medium">Dosage Type</label>
-                                <input type="text" id="dosage_type" name="dosage_type" value="{{ old('dosage_type', $medicine->dosage_type) }}"
-                                       class="form-control" placeholder="e.g. Tablet, Syrup">
+                                <x-input name="dosage_type" label="Dosage Type" icon="fas fa-pills" />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="strength" class="form-label fw-medium">Strength</label>
-                                <input type="text" id="strength" name="strength" value="{{ old('strength', $medicine->strength) }}"
-                                       class="form-control" placeholder="e.g. 500mg">
+                                <x-input name="strength" label="Strength" icon="fas fa-balance-scale" />
                             </div>
 
                             <div class="col-md-4">
-                                <label for="package_mark" class="form-label fw-medium">Package</label>
-                                <input type="text" id="package_mark" name="package_mark" value="{{ old('package_mark', $medicine->package_mark) }}"
-                                       class="form-control" placeholder="e.g. 10 tabs">
+                                <x-input name="package_mark" label="Package" icon="fas fa-box" />
                             </div>
                         </div>
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="company_name" class="form-label fw-medium">Company Name</label>
-                                <div class="input-icon-wrapper">
-                                    <input type="text" id="company_name" name="company_name" value="{{ old('company_name', $medicine->company_name) }}"
-                                           class="form-control ps-4">
-                                    <div class="icon"><i class="fas fa-industry"></i></div>
-                                </div>
+                                <x-input name="company_name" label="Company Name" icon="fas fa-industry" />
                             </div>
                         </div>
 

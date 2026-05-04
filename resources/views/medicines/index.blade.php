@@ -80,83 +80,80 @@ $breadcrumbs = [
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>SL</th>
-                        <th>
-                            <a href="{{ route('medicines.index', ['sort' => 'brand_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
-                                Brand Name
-                                @if(request('sort') == 'brand_name')
-                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
+        <!-- Medicine Cards -->
+        <div class="d-flex flex-column gap-3">
+            @forelse($medicines as $index => $medicine)
+            <div class="card p-3 border-0 shadow-sm mb-3 bg-white">
+                <div class="row g-2 align-items-center">
+                    <!-- Brand Name -->
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-pills text-primary"></i>
+                            <div>
+                                <div class="fw-medium">{{ $medicine->brand_name }}</div>
+                                @if($medicine->generic_name)
+                                    <div class="small text-muted">{{ $medicine->generic_name }}</div>
                                 @endif
-                            </a>
-                        </th>
-                        <th>
-                            <a href="{{ route('medicines.index', ['sort' => 'generic_name', 'direction' => request('direction') == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" class="text-decoration-none text-dark d-flex align-items-center gap-1">
-                                Generic Name
-                                @if(request('sort') == 'generic_name')
-                                    <span>{!! request('direction') == 'asc' ? '↑' : '↓' !!}</span>
-                                @endif
-                            </a>
-                        </th>
-                        <th>Dosage Type</th>
-                        <th>Strength</th>
-                        <th>Company</th>
-                        <th>Package</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($medicines as $index => $medicine)
-                    <tr>
-                        <td class="text-muted">{{ $medicines->firstItem() + $index }}</td>
-                        <td><span class="fw-medium">{{ $medicine->brand_name }}</span></td>
-                        <td class="text-muted">{{ $medicine->generic_name }}</td>
-                        <td class="text-muted">{{ $medicine->dosage_type }}</td>
-                        <td class="text-muted">{{ $medicine->strength }}</td>
-                        <td class="text-muted">{{ $medicine->company_name ?? 'N/A' }}</td>
-                        <td class="text-muted">{{ $medicine->package_mark ?? 'N/A' }}</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <a href="{{ route('medicines.edit', $medicine->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form method="POST" action="{{ route('medicines.destroy', $medicine->id) }}" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
                             </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="py-5">
-                            <x-empty-state
-                                title="No medicines found"
-                                description="Add your first medicine or import from Excel to get started"
-                            >
-                                <x-slot:action>
-                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                        <a href="{{ route('medicines.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                                            <i class="fas fa-pills me-1"></i> Add Medicine
-                                        </a>
-                                        <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-outline-secondary d-flex align-items-center gap-2">
-                                            <i class="fas fa-file-import me-1"></i> Import
-                                        </button>
-                                    </div>
-                                </x-slot:action>
-                            </x-empty-state>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+
+                    <!-- Strength -->
+                    <div class="col-md-2">
+                        <span class="badge bg-secondary">{{ $medicine->strength ?? 'N/A' }}</span>
+                    </div>
+
+                    <!-- Dosage Type -->
+                    <div class="col-md-2">
+                        <span class="text-muted small">{{ $medicine->dosage_type ?? 'N/A' }}</span>
+                    </div>
+
+                    <!-- Company -->
+                    <div class="col-md-2">
+                        <span class="text-muted small">{{ $medicine->company_name ?? 'N/A' }}</span>
+                    </div>
+
+                    <!-- Package -->
+                    <div class="col-md-2">
+                        <span class="text-muted small">{{ $medicine->package_mark ?? 'N/A' }}</span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="col-md-1">
+                        <div class="d-flex gap-1">
+                            <a href="{{ route('medicines.edit', $medicine->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ route('medicines.destroy', $medicine->id) }}" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="py-5">
+                <x-empty-state
+                    title="No medicines found"
+                    description="Add your first medicine or import from Excel to get started"
+                >
+                    <x-slot:action>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <a href="{{ route('medicines.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                <i class="fas fa-pills me-1"></i> Add Medicine
+                            </a>
+                            <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                                <i class="fas fa-file-import me-1"></i> Import
+                            </button>
+                        </div>
+                    </x-slot:action>
+                </x-empty-state>
+            </div>
+            @endforelse
         </div>
 
         @if($medicines->hasPages())

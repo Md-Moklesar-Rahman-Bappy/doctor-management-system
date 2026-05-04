@@ -27,67 +27,30 @@ $breadcrumbs = [
                         @csrf
                         @method('PUT')
 
-                        <div>
-                            <label for="name" class="form-label fw-medium">Full Name *</label>
-                            <div class="input-icon-wrapper">
-                                <input type="text" id="name" name="name" value="{{ old('name', $doctor->name) }}" required
-                                       class="form-control ps-4">
-                                <div class="icon"><i class="fas fa-user-md"></i></div>
-                            </div>
-                            @error('name')
-                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <x-input name="name" label="Full Name" icon="fas fa-user-md" required />
 
-                        <div>
-                            <label for="license" class="form-label fw-medium">License Number *</label>
-                            <div class="input-icon-wrapper">
-                                <input type="text" id="license" name="license" value="{{ old('license', $doctor->license) }}" required
-                                       class="form-control ps-4">
-                                <div class="icon"><i class="fas fa-id-card"></i></div>
-                            </div>
-                            @error('license')
-                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <x-input name="license" label="License Number" icon="fas fa-id-card" required />
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="email" class="form-label fw-medium">Email Address *</label>
-                                <div class="input-icon-wrapper">
-                                    <input type="email" id="email" name="email" value="{{ old('email', $doctor->email) }}" required
-                                           class="form-control ps-4">
-                                    <div class="icon"><i class="fas fa-envelope"></i></div>
-                                </div>
-                                @error('email')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="email" label="Email Address" icon="fas fa-envelope" type="email" required />
                             </div>
                             <div class="col-md-6">
-                                <label for="phone" class="form-label fw-medium">Phone Number</label>
-                                <div class="input-icon-wrapper">
-                                    <input type="tel" id="phone" name="phone" value="{{ old('phone', $doctor->phone) }}"
-                                           class="form-control ps-4">
-                                    <div class="icon"><i class="fas fa-phone"></i></div>
-                                </div>
-                                @error('phone')
-                                    <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
+                                <x-input name="phone" label="Phone Number" icon="fas fa-phone" type="tel" />
                             </div>
                         </div>
 
                         <div>
-                            <label class="form-label fw-medium">Degrees</label>
+                            <label class="form-label fw-medium d-flex align-items-center gap-2">
+                                <i class="fas fa-graduation-cap"></i> Degrees
+                            </label>
 
                             <div id="degrees-container">
                                 @if($doctor->degrees && count(json_decode($doctor->degrees, true)) > 0)
                                     @foreach(json_decode($doctor->degrees, true) as $index => $degree)
                                         <div class="input-group mb-2 degree-row">
-                                            <div class="input-icon-wrapper flex-1">
-                                                <input type="text" name="degrees[]" class="form-control ps-4"
-                                                       value="{{ $degree }}" placeholder="e.g., MBBS">
-                                                <div class="icon"><i class="fas fa-graduation-cap"></i></div>
-                                            </div>
+                                            <input type="text" name="degrees[]" class="form-control"
+                                                   value="{{ $degree }}" placeholder="e.g., MBBS">
                                             <button type="button" class="btn btn-outline-danger" onclick="removeDegree(this)" {{ $loop->first && $loop->count == 1 ? 'disabled' : '' }}>
                                                 <i class="fas fa-times"></i>
                                             </button>
@@ -95,11 +58,8 @@ $breadcrumbs = [
                                     @endforeach
                                 @else
                                     <div class="input-group mb-2 degree-row">
-                                        <div class="input-icon-wrapper flex-1">
-                                            <input type="text" name="degrees[]" class="form-control ps-4"
-                                                   placeholder="e.g., MBBS">
-                                            <div class="icon"><i class="fas fa-graduation-cap"></i></div>
-                                        </div>
+                                        <input type="text" name="degrees[]" class="form-control"
+                                               placeholder="e.g., MBBS">
                                         <button type="button" class="btn btn-outline-danger" onclick="removeDegree(this)" disabled>
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -120,13 +80,12 @@ $breadcrumbs = [
                             @enderror
                         </div>
 
-                        <div>
-                            <label for="address" class="form-label fw-medium">Address *</label>
-                            <div class="input-icon-wrapper">
-                                <textarea id="address" name="address" class="form-control ps-4" rows="3"
-                                          placeholder="Enter doctor's address" required>{{ old('address', $doctor->address) }}</textarea>
-                                <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label fw-medium d-flex align-items-center gap-2">
+                                <i class="fas fa-map-marker-alt"></i> Address <span class="text-danger">*</span>
+                            </label>
+                            <textarea id="address" name="address" class="form-control"
+                                      rows="3" placeholder="Enter doctor's address" required>{{ old('address', $doctor->address) }}</textarea>
                             @error('address')
                                 <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
                             @enderror
@@ -143,11 +102,8 @@ $breadcrumbs = [
                             const div = document.createElement('div');
                             div.className = 'input-group mb-2 degree-row';
                             div.innerHTML = `
-                                <div class="input-icon-wrapper flex-1">
-                                    <input type="text" name="degrees[]" class="form-control ps-4"
-                                           placeholder="e.g., MD">
-                                    <div class="icon"><i class="fas fa-graduation-cap"></i></div>
-                                </div>
+                                <input type="text" name="degrees[]" class="form-control"
+                                       placeholder="e.g., MD">
                                 <button type="button" class="btn btn-outline-danger" onclick="removeDegree(this)">
                                     <i class="fas fa-times"></i>
                                 </button>

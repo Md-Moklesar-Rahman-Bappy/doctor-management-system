@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePrescriptionRequest;
 use App\Http\Requests\UpdatePrescriptionRequest;
 use App\Models\LabTest;
 use App\Models\Patient;
@@ -63,18 +62,21 @@ class PrescriptionController extends Controller
         return view('prescriptions.create', compact('doctor', 'problems', 'labTests', 'selectedPatientId'));
     }
 
-    public function store(StorePrescriptionRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
+        \Log::info('Store method called', ['data' => $request->all()]);
+        
         try {
+            \Log::info('Full request data', $request->all());
+            
             $doctor = auth()->user()->doctor ?? null;
             $doctorId = $doctor ? $doctor->id : $request->doctor_id;
             
-            \Log::info('Prescription store attempt', [
-                'doctor_id' => $doctorId,
-                'patient_id' => $request->patient_id,
-                'has_new_patient' => $request->filled('new_patient_name'),
-                'user_id' => auth()->user()->id
-            ]);
+            \Log::info('Doctor ID', ['doctor_id' => $doctorId, 'user_id' => auth()->id()]);
+            
+            if (!$doctorId) {
+                return response()->json(['success' => false, 'message' => 'Doctor profile not found'], 400);
+            }
 
             $prescription = $this->prescriptionService->createPrescription($request, $doctorId);
 
@@ -84,10 +86,10 @@ class PrescriptionController extends Controller
 
             return redirect()->route('prescriptions.index')->with('success', 'Prescription created successfully!');
         } catch (\Exception $e) {
+            \Log::error('Prescription creation error', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }
-
             return back()->with('error', 'Error creating prescription: ' . $e->getMessage());
         }
     }

@@ -76,18 +76,17 @@ $breadcrumbs = [
                 <!-- Problems -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
-                        <h5 class="card-title fw-semibold mb-0">Problems</h5>
+                        <h5 class="card-title fw-semibold mb-0 d-flex align-items-center gap-2">
+                            <i class="fas fa-stethoscope"></i> Problems
+                        </h5>
                     </div>
                     <div class="card-body">
                         <div id="problems-container">
                             @if($prescription->problem && count(json_decode($prescription->problem, true)) > 0)
                                 @foreach(json_decode($prescription->problem, true) as $problem)
                                     <div class="input-group mb-2 problem-row">
-                                        <div class="input-icon-wrapper flex-1">
-                                            <input type="text" name="problem[]" class="form-control ps-4"
-                                                   value="{{ $problem }}" placeholder="e.g., Fever">
-                                            <div class="icon"><i class="fas fa-stethoscope"></i></div>
-                                        </div>
+                                        <input type="text" name="problem[]" class="form-control"
+                                               value="{{ $problem }}" placeholder="e.g., Fever">
                                         <button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)" {{ $loop->first && $loop->count == 1 ? 'disabled' : '' }}>
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -95,11 +94,8 @@ $breadcrumbs = [
                                 @endforeach
                             @else
                                 <div class="input-group mb-2 problem-row">
-                                    <div class="input-icon-wrapper flex-1">
-                                        <input type="text" name="problem[]" class="form-control ps-4"
+                                    <input type="text" name="problem[]" class="form-control"
                                                placeholder="e.g., Fever">
-                                        <div class="icon"><i class="fas fa-stethoscope"></i></div>
-                                    </div>
                                     <button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)" disabled>
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -118,18 +114,17 @@ $breadcrumbs = [
                 <!-- Tests -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
-                        <h5 class="card-title fw-semibold mb-0">Tests</h5>
+                        <h5 class="card-title fw-semibold mb-0 d-flex align-items-center gap-2">
+                            <i class="fas fa-vial"></i> Tests
+                        </h5>
                     </div>
                     <div class="card-body">
                         <div id="tests-container">
                             @if($prescription->tests && count(json_decode($prescription->tests, true)) > 0)
                                 @foreach(json_decode($prescription->tests, true) as $test)
                                     <div class="input-group mb-2 test-row">
-                                        <div class="input-icon-wrapper flex-1">
-                                            <input type="text" name="tests[]" class="form-control ps-4"
-                                                   value="{{ $test }}" placeholder="e.g., Blood Test">
-                                            <div class="icon"><i class="fas fa-vial"></i></div>
-                                        </div>
+                                        <input type="text" name="tests[]" class="form-control"
+                                               value="{{ $test }}" placeholder="e.g., Blood Test">
                                         <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" {{ $loop->first && $loop->count == 1 ? 'disabled' : '' }}>
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -137,16 +132,43 @@ $breadcrumbs = [
                                 @endforeach
                             @else
                                 <div class="input-group mb-2 test-row">
-                                    <div class="input-icon-wrapper flex-1">
-                                        <input type="text" name="tests[]" class="form-control ps-4"
+                                    <input type="text" name="tests[]" class="form-control"
                                                placeholder="e.g., Blood Test">
-                                        <div class="icon"><i class="fas fa-vial"></i></div>
-                                    </div>
                                     <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" disabled>
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             @endif
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addTest()">
+                            <i class="fas fa-plus me-1"></i> Add Test
+                        </button>
+
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Add recommended tests (optional)</div>
+                    </div>
+                </div>
+                    <div class="card-body">
+                        <div id="tests-container">
+                            @if($prescription->tests && count(json_decode($prescription->tests, true)) > 0)
+                                @foreach(json_decode($prescription->tests, true) as $test)
+                                    <div class="input-group mb-2 test-row">
+                                        <input type="text" name="tests[]" class="form-control"
+                                               value="{{ $test }}" placeholder="e.g., Blood Test">
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" {{ $loop->first && $loop->count == 1 ? 'disabled' : '' }}>
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                @endforeach
+                                @else
+                                    <div class="input-group mb-2 test-row">
+                                        <input type="text" name="tests[]" class="form-control"
+                                               placeholder="e.g., Blood Test">
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" disabled>
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                @endif
                         </div>
 
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addTest()">
@@ -160,8 +182,94 @@ $breadcrumbs = [
                 <!-- Medicines -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white">
-                        <h5 class="card-title fw-semibold mb-0">Medicines</h5>
+                        <h5 class="card-title fw-semibold mb-0 d-flex align-items-center gap-2">
+                            <i class="fas fa-pills"></i> Medicines
+                        </h5>
                     </div>
+                    <div class="card-body">
+                        <div id="medicines-container">
+                            @if($prescription->medicines)
+                                @php
+                                    $meds = json_decode($prescription->medicines, true) ?? [];
+                                @endphp
+                                @foreach($meds as $index => $med)
+                                    <div class="card mb-2 medicine-search-row" data-index="{{ $index }}">
+                                        <div class="card-body p-3">
+                                            <div class="row g-2 align-items-center">
+                                                <!-- Medicine Name -->
+                                                <div class="col-md-4">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light border-end-0">
+                                                            <i class="fas fa-pills text-muted"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control border-start-0 medicine-search-input"
+                                                               value="{{ $med['name'] ?? '' }}" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Dosage -->
+                                                <div class="col-md-3">
+                                                    <div class="d-flex align-items-center border rounded px-2" style="height: 38px;">
+                                                        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-1">
+                                                            <option value="0" {{ ($med['dosage'] ?? '') == '0' ? 'selected' : '' }}>0</option>
+                                                            <option value="0.5" {{ ($med['dosage'] ?? '') == '0.5' ? 'selected' : '' }}>½</option>
+                                                            <option value="1" {{ ($med['dosage'] ?? '') == '1' ? 'selected' : '' }} selected>1</option>
+                                                        </select>
+                                                        <span class="text-muted">+</span>
+                                                        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-2">
+                                                            <option value="0" selected>0</option>
+                                                            <option value="0.5">½</option>
+                                                            <option value="1">1</option>
+                                                        </select>
+                                                        <span class="text-muted">+</span>
+                                                        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-3">
+                                                            <option value="0" selected>0</option>
+                                                            <option value="0.5">½</option>
+                                                            <option value="1">1</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Duration -->
+                                                <div class="col-md-3">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light text-muted">For</span>
+                                                        <input type="number" class="form-control medicine-duration-num"
+                                                               value="{{ $med['duration'] ?? '7' }}">
+                                                        <select class="form-select bg-light fw-bold medicine-duration-unit" style="max-width: 100px;">
+                                                            <option value="days" selected>Days</option>
+                                                            <option value="months">Months</option>
+                                                            <option value="weeks">Weeks</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Remove Button -->
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-outline-danger w-100" onclick="removeMedicineRow(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Hidden Inputs -->
+                                            <input type="hidden" class="medicine-id" name="medicines[{{ $index }}][id]" value="{{ $med['id'] ?? '' }}">
+                                            <input type="hidden" class="medicine-name" name="medicines[{{ $index }}][name]" value="{{ $med['name'] ?? '' }}">
+                                            <input type="hidden" class="medicine-dosage-hidden" name="medicines[{{ $index }}][dosage]" value="{{ $med['dosage'] ?? '' }}">
+                                            <input type="hidden" class="medicine-duration-hidden" name="medicines[{{ $index }}][duration]" value="{{ $med['duration'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.medicineSearchInstance.addRow({ showDosage: true, showTime: true, showDuration: true })">
+                            <i class="fas fa-plus me-1"></i> Add Medicine
+                        </button>
+
+                        <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i>Search and add medicines with dosage and duration</div>
+                    </div>
+                </div>
                     <div class="card-body">
                         <div id="medicines-container">
                             @if($prescription->medicines)
@@ -255,11 +363,8 @@ function addProblem() {
     const div = document.createElement('div');
     div.className = 'input-group mb-2 problem-row';
     div.innerHTML = `
-        <div class="input-icon-wrapper flex-1">
-            <input type="text" name="problem[]" class="form-control ps-4"
-                   placeholder="e.g., Fever">
-            <div class="icon"><i class="fas fa-stethoscope"></i></div>
-        </div>
+        <input type="text" name="problem[]" class="form-control"
+               placeholder="e.g., Fever">
         <button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)">
             <i class="fas fa-times"></i>
         </button>
@@ -289,11 +394,8 @@ function addTest() {
     const div = document.createElement('div');
     div.className = 'input-group mb-2 test-row';
     div.innerHTML = `
-        <div class="input-icon-wrapper flex-1">
-            <input type="text" name="tests[]" class="form-control ps-4"
-                   placeholder="e.g., Blood Test">
-            <div class="icon"><i class="fas fa-vial"></i></div>
-        </div>
+        <input type="text" name="tests[]" class="form-control"
+               placeholder="e.g., Blood Test">
         <button type="button" class="btn btn-outline-danger" onclick="removeTest(this)">
             <i class="fas fa-times"></i>
         </button>
