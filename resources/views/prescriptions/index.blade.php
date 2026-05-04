@@ -64,7 +64,7 @@ $breadcrumbs = [
                         <td class="text-muted">{{ $prescription->doctor->name ?? 'N/A' }}</td>
                         <td class="text-muted">{{ $prescription->prescription_date ?? $prescription->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <span class="badge bg-info-subtle text-info-emphasis">{{ count(json_decode($prescription->medicines, true) ?? []) }} items</span>
+                            <span class="badge bg-info-subtle text-info-emphasis">{{ count($prescription->medicines ?? []) }} items</span>
                         </td>
                         <td>
                             <div class="d-flex gap-1">
@@ -73,6 +73,12 @@ $breadcrumbs = [
                                 </a>
                                 <a href="{{ route('prescriptions.edit', $prescription->id) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
                                     <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ route('prescriptions.show', $prescription->id) }}" class="btn btn-sm btn-outline-info" title="Print" onclick="event.preventDefault(); const win = window.open(this.href, '_blank'); win.onload = function() { win.print(); };">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                                <a href="{{ route('prescriptions.download', $prescription->id) }}" class="btn btn-sm btn-outline-success" title="Download PDF">
+                                    <i class="fas fa-download"></i>
                                 </a>
                                 <form method="POST" action="{{ route('prescriptions.destroy', $prescription->id) }}" class="d-inline">
                                     @csrf

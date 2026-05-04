@@ -45,7 +45,7 @@ $breadcrumbs = [
                                 <div class="fw-semibold">{{ $prescription->doctor->name ?? 'N/A' }}</div>
                                 <div class="small text-muted">
                                     @if($prescription->doctor->degrees)
-                                        {{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}
+                                        {{ implode(', ', $prescription->doctor->degrees ?? []) }}
                                     @endif
                                 </div>
                                 @if($prescription->doctor->license)
@@ -91,7 +91,7 @@ $breadcrumbs = [
                             <i class="fas fa-stethoscope text-primary me-2"></i>Diagnoses/Problems
                         </h5>
                         <div class="d-flex flex-wrap gap-2">
-                            @foreach(json_decode($prescription->problems, true) ?? [] as $problem)
+                            @foreach($prescription->problems ?? [] as $problem)
                                 <span class="badge bg-primary-subtle text-primary-emphasis p-2">{{ $problem }}</span>
                             @endforeach
                         </div>
@@ -105,7 +105,7 @@ $breadcrumbs = [
                     </h5>
                     <div class="d-flex flex-column gap-3">
                         @php
-                            $meds = json_decode($prescription->medicines, true) ?? [];
+                            $meds = $prescription->medicines ?? [];
                         @endphp
                         @foreach($meds as $index => $med)
                             <div class="card p-3 border-0 shadow-sm bg-white">
@@ -154,7 +154,7 @@ $breadcrumbs = [
                             <i class="fas fa-flask text-primary me-2"></i>Recommended Tests
                         </h5>
                         <div class="d-flex flex-wrap gap-2">
-                            @foreach(json_decode($prescription->tests, true) ?? [] as $test)
+                            @foreach($prescription->tests ?? [] as $test)
                                 <span class="badge bg-info-subtle text-info-emphasis p-2">{{ $test }}</span>
                             @endforeach
                         </div>

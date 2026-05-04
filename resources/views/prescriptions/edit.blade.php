@@ -82,8 +82,8 @@ $breadcrumbs = [
                     </div>
                     <div class="card-body">
                         <div id="problems-container">
-                            @if($prescription->problem && count(json_decode($prescription->problem, true)) > 0)
-                                @foreach(json_decode($prescription->problem, true) as $problem)
+                            @if($prescription->problem && count($prescription->problem) > 0)
+                                @foreach($prescription->problem as $problem)
                                     <div class="input-group mb-2 problem-row">
                                         <input type="text" name="problem[]" class="form-control"
                                                value="{{ $problem }}" placeholder="e.g., Fever">
@@ -120,8 +120,8 @@ $breadcrumbs = [
                     </div>
                     <div class="card-body">
                         <div id="tests-container">
-                            @if($prescription->tests && count(json_decode($prescription->tests, true)) > 0)
-                                @foreach(json_decode($prescription->tests, true) as $test)
+                            @if($prescription->tests && count($prescription->tests) > 0)
+                                @foreach($prescription->tests as $test)
                                     <div class="input-group mb-2 test-row">
                                         <input type="text" name="tests[]" class="form-control"
                                                value="{{ $test }}" placeholder="e.g., Blood Test">
@@ -150,8 +150,8 @@ $breadcrumbs = [
                 </div>
                     <div class="card-body">
                         <div id="tests-container">
-                            @if($prescription->tests && count(json_decode($prescription->tests, true)) > 0)
-                                @foreach(json_decode($prescription->tests, true) as $test)
+                            @if($prescription->tests && count($prescription->tests) > 0)
+                                @foreach($prescription->tests as $test)
                                     <div class="input-group mb-2 test-row">
                                         <input type="text" name="tests[]" class="form-control"
                                                value="{{ $test }}" placeholder="e.g., Blood Test">
@@ -190,7 +190,7 @@ $breadcrumbs = [
                         <div id="medicines-container">
                             @if($prescription->medicines)
                                 @php
-                                    $meds = json_decode($prescription->medicines, true) ?? [];
+                                    $meds = $prescription->medicines ?? [];
                                 @endphp
                                 @foreach($meds as $index => $med)
                                     <div class="card mb-2 medicine-search-row" data-index="{{ $index }}">
@@ -274,7 +274,7 @@ $breadcrumbs = [
                         <div id="medicines-container">
                             @if($prescription->medicines)
                                 @php
-                                    $meds = json_decode($prescription->medicines, true) ?? [];
+                                    $meds = $prescription->medicines ?? [];
                                 @endphp
                                 @foreach($meds as $index => $med)
                                     <div class="card mb-2 medicine-search-row" data-index="{{ $index }}">
@@ -295,7 +295,7 @@ $breadcrumbs = [
                                                 <div class="col-md-3">
                                                     @if(isset($med['time']))
                                                         @php
-                                                            $timeData = is_string($med['time']) ? json_decode($med['time'], true) : $med['time'];
+                                                            $timeData = $med['time'];
                                                         @endphp
                                                         <div class="small text-muted">
                                                             {{ $timeData['display'] ?? '' }}
@@ -305,7 +305,7 @@ $breadcrumbs = [
                                                 <div class="col-md-3">
                                                     @if(isset($med['duration']))
                                                         @php
-                                                            $durData = is_string($med['duration']) ? json_decode($med['duration'], true) : $med['duration'];
+                                                            $durData = $med['duration'];
                                                         @endphp
                                                         <div class="small text-muted">
                                                             {{ $durData['display'] ?? '' }}
@@ -350,7 +350,7 @@ $breadcrumbs = [
 // Initialize MedicineSearch for edit form
 window.medicineSearchInstance = new MedicineSearch({
     container: '#medicines-container',
-    startIndex: {{ $prescription->medicines ? count(json_decode($prescription->medicines, true)) : 0 }},
+    startIndex: {{ $prescription->medicines ? count($prescription->medicines) : 0 }},
     onSelect: function(row, data) {
         console.log('Medicine added:', data);
     }

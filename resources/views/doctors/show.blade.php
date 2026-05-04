@@ -34,7 +34,7 @@ $breadcrumbs = [
                     </div>
                     @if($doctor->degrees)
                         <div class="d-flex flex-wrap justify-content-center gap-1 mb-3">
-                            @foreach(json_decode($doctor->degrees, true) as $degree)
+                            @foreach($doctor->degrees as $degree)
                                 <span class="badge bg-info-subtle text-info-emphasis">{{ $degree }}</span>
                             @endforeach
                         </div>

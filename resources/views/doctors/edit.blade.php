@@ -46,8 +46,8 @@ $breadcrumbs = [
                             </label>
 
                             <div id="degrees-container">
-                                @if($doctor->degrees && count(json_decode($doctor->degrees, true)) > 0)
-                                    @foreach(json_decode($doctor->degrees, true) as $index => $degree)
+                                @if($doctor->degrees && count($doctor->degrees) > 0)
+                                    @foreach($doctor->degrees as $index => $degree)
                                         <div class="input-group mb-2 degree-row">
                                             <input type="text" name="degrees[]" class="form-control"
                                                    value="{{ $degree }}" placeholder="e.g., MBBS">
@@ -93,7 +93,7 @@ $breadcrumbs = [
 
                         @push('scripts')
                         <script>
-                        let degreeCount = {{ $doctor->degrees ? count(json_decode($doctor->degrees, true)) : 1 }};
+                        let degreeCount = {{ $doctor->degrees ? count($doctor->degrees) : 1 }};
 
                         function addDegree() {
                             degreeCount++;
