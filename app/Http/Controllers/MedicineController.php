@@ -117,11 +117,17 @@ class MedicineController extends Controller
         $term = $request->input('term', '');
         $medicines = Medicine::where(function ($q) use ($term) {
                 $q->where('brand_name', 'like', "%{$term}%")
-                  ->orWhere('generic_name', 'like', "%{$term}%")
-                  ->orWhere('company_name', 'like', "%{$term}%");
+                  ->orWhere('generic_name', 'like', "%{$term}%");
             })
-            ->limit(10)
-            ->get(['id', 'brand_name', 'generic_name', 'dosage_type', 'company_name']);
+            ->orderByRaw("CASE 
+                WHEN brand_name LIKE '{$term}%' THEN 1
+                WHEN brand_name LIKE '%{$term}%' THEN 2
+                WHEN generic_name LIKE '{$term}%' THEN 3
+                WHEN generic_name LIKE '%{$term}%' THEN 4
+                ELSE 5 
+            END")
+            ->orderBy('brand_name')
+            ->get(['id', 'brand_name', 'generic_name', 'strength']);
 
         return response()->json([
             'success' => true,

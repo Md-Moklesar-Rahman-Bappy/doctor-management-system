@@ -96,7 +96,8 @@ $breadcrumbs = [
                                 <th>#</th>
                                 <th>Medicine Name</th>
                                 <th>Dosage</th>
-                                <th>Frequency</th>
+                                <th>সময় (Time)</th>
+                                <th>Duration</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,7 +109,26 @@ $breadcrumbs = [
                                     <td>{{ $index + 1 }}</td>
                                     <td class="fw-medium">{{ $med['name'] ?? 'N/A' }}</td>
                                     <td>{{ $med['dosage'] ?? 'N/A' }}</td>
-                                    <td>{{ $med['frequency'] ?? 'N/A' }}</td>
+                                    <td>
+                                        @if(isset($med['time']))
+                                            @php
+                                                $timeData = is_string($med['time']) ? json_decode($med['time'], true) : $med['time'];
+                                            @endphp
+                                            {{ $timeData['display'] ?? 'N/A' }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(isset($med['duration']))
+                                            @php
+                                                $durData = is_string($med['duration']) ? json_decode($med['duration'], true) : $med['duration'];
+                                            @endphp
+                                            {{ $durData['display'] ?? 'N/A' }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

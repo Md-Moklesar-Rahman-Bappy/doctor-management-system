@@ -232,6 +232,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const autocompleteUrl = '{{ route("medicines.autocomplete") }}';
     let debounceTimer;
 
+    // Highlight matching text
+    function highlightText(text, term) {
+        if (!term || !text) return text;
+        try {
+            const regex = new RegExp(`(${term})`, 'gi');
+            return text.replace(regex, '<strong>$1</strong>');
+        } catch (e) {
+            return text;
+        }
+    }
+
     searchInput.addEventListener('input', function() {
         clearTimeout(debounceTimer);
         const term = this.value.trim();
@@ -246,18 +257,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.success && data.data.length > 0 && dropdown) {
-                        dropdown.innerHTML = data.data.map(item =>
-                            '<div class="px-3 py-2 hover-bg-light cursor-pointer border-bottom" onclick="selectMedicine(\'' + item.brand_name + '\', \'' + item.generic_name + '\')">' +
-                                '<div class="d-flex justify-content-between align-items-start">' +
-                                    '<div>' +
-                                        '<span class="fw-medium">' + item.brand_name + '</span>' +
-                                        (item.generic_name ? '<br><small class="text-muted">' + item.generic_name + '</small>' : '') +
-                                    '</div>' +
-                                    (item.dosage_type ? '<span class="badge bg-light text-dark border">' + item.dosage_type + '</span>' : '') +
-                                '</div>' +
-                                (item.company_name ? '<small class="text-muted"><i class="fas fa-building me-1"></i>' + item.company_name + '</small>' : '') +
-                            '</div>'
-                        ).join('');
+                        dropdown.innerHTML = data.data.map(item => {
+                            const brandHtml = highlightText(item.brand_name, term);
+                            const strengthHtml = item.strength ? ` - ${item.strength}` : '';
+                            const genericHtml = item.generic_name ?
+                                `<div class="small text-muted">${highlightText(item.generic_name, term)}</div>` : '';
+
+                            return `<div class="px-3 py-2 hover-bg-light cursor-pointer border-bottom"
+                                        onclick="selectMedicine('${item.brand_name.replace(/'/g, "\\'")}')">
+                                <div class="fw-medium">${brandHtml}${strengthHtml}</div>
+                                ${genericHtml}
+                                ${item.company_name ? '<small class="text-muted"><i class="fas fa-building me-1"></i>' + item.company_name + '</small>' : ''}
+                            </div>`;
+                        }).join('');
                         dropdown.classList.remove('d-none');
                     } else if (dropdown) {
                         dropdown.innerHTML = '<div class="px-3 py-3 text-muted text-center">No medicines found</div>';
@@ -267,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     });
 
-    window.selectMedicine = function(brandName, genericName) {
+    window.selectMedicine = function(brandName) {
         searchInput.value = brandName;
         dropdown.classList.add('d-none');
     };

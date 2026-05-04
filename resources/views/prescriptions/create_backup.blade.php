@@ -526,8 +526,8 @@ function searchMedicine(input, event) {
     }, 300);
 }
 
-function selectMedicine(el, id, brandName, genericName, strength) {
-    const row = el.closest('.medicine-search-row');
+function selectMedicine(element, id, brandName, genericName, strength) {
+    const row = element.closest('.medicine-search-row');
     const displayName = brandName + (genericName ? ' (' + genericName + ')' : '') + (strength ? ' - ' + strength : '');
     row.querySelector('.medicine-id').value = id;
     row.querySelector('.medicine-name').value = brandName;

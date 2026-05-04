@@ -50,7 +50,7 @@ class PatientController extends Controller
         return redirect()->route('patients.index')->with('success', 'Patient created successfully!');
     }
 
-    public function show($id): View
+    public function show($id)
     {
         $patient = Patient::with('prescriptions', 'labTestReports')->findOrFail($id);
 
@@ -60,6 +60,10 @@ class PatientController extends Controller
 
         if ($patient->user_id !== $user->id && !$doctor) {
             abort(403, 'Unauthorized action.');
+        }
+
+        if (request()->wantsJson()) {
+            return response()->json(['success' => true, 'data' => $patient]);
         }
 
         return view('patients.show', compact('patient'));

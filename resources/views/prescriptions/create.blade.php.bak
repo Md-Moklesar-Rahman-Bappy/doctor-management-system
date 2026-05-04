@@ -227,8 +227,7 @@ $breadcrumbs = [
 
 @push('styles')
 <style>
-.hover-bg-light:hover { background-color: #f8f9fa; }
-.cursor-pointer { cursor: pointer; }
+.hover-bg-light:hover { background-color: #f8f9fa; cursor: pointer; }
 #patient-dropdown { top: 100%; left: 0; right: 0; }
 </style>
 @endpush
@@ -243,57 +242,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const patientSearch = document.getElementById('patient-search');
     const patientDropdown = document.getElementById('patient-dropdown');
 
-    if (!patientSearch || !patientDropdown) return;
+    if (patientSearch && patientDropdown) {
+        patientSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const searchTerm = this.value.trim();
 
-    // Patient search with live AJAX
-    patientSearch.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const searchTerm = this.value.trim();
+            if (searchTerm.length < 2) {
+                patientDropdown.classList.add('d-none');
+                patientDropdown.innerHTML = '';
+                return;
+            }
 
-        if (searchTerm.length < 2) {
-            patientDropdown.classList.add('d-none');
-            patientDropdown.innerHTML = '';
-            return;
-        }
-
-        searchTimeout = setTimeout(() => {
-            fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.data && data.data.length > 0) {
-                        let html = '';
-                        data.data.forEach(p => {
-                            html += '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.selectPatient(this)"' +
-                                ' data-id="' + p.id + '"' +
-                                ' data-unique-id="' + p.unique_id + '"' +
-                                ' data-name="' + p.patient_name.replace(/"/g, '&quot;') + '"' +
-                                ' data-age="' + p.age + '"' +
-                                ' data-sex="' + p.sex + '">' +
-                                '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
-                                '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
-                                '</div>';
-                        });
-                        patientDropdown.innerHTML = html;
+            searchTimeout = setTimeout(() => {
+                fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.data && data.data.length > 0) {
+                            let html = '';
+                            data.data.forEach(p => {
+                                const name = p.patient_name.replace(/"/g, '&quot;');
+                                html += '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.selectPatient(this)"' +
+                                    ' data-id="' + p.id + '"' +
+                                    ' data-unique-id="' + p.unique_id + '"' +
+                                    ' data-name="' + name + '"' +
+                                    ' data-age="' + p.age + '"' +
+                                    ' data-sex="' + p.sex + '">' +
+                                    '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                                    '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                                    '</div>';
+                            });
+                            patientDropdown.innerHTML = html;
+                            patientDropdown.classList.remove('d-none');
+                        } else {
+                            patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                            patientDropdown.classList.remove('d-none');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Search error:', err);
+                        patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
                         patientDropdown.classList.remove('d-none');
-                    } else {
-                        patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
-                        patientDropdown.classList.remove('d-none');
-                    }
-                })
-                .catch(err => {
-                    console.error('Search error:', err);
-                    patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
-                    patientDropdown.classList.remove('d-none');
-                });
-        }, 300);
-    });
+                    });
+            }, 300);
+        });
 
-    // Close dropdown on click outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
-            patientDropdown.classList.add('d-none');
-        }
-    });
+        // Close dropdown on click outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
+                patientDropdown.classList.add('d-none');
+            }
+        });
+    }
 
     // New patient toggle
     const newPatientToggle = document.getElementById('new-patient-toggle');
@@ -393,18 +392,6 @@ function showPatientHistory(p) {
         infoDiv.appendChild(historyDiv);
     }
 }
-
-// New patient toggle
-document.getElementById('new-patient-toggle').addEventListener('change', function() {
-    if (this.checked) {
-        document.getElementById('new-patient-form').classList.remove('d-none');
-        document.getElementById('existing-patient-info').classList.add('d-none');
-        document.getElementById('patient-id').value = '';
-        document.getElementById('patient-search').value = '';
-    } else {
-        document.getElementById('new-patient-form').classList.add('d-none');
-    }
-});
 
 // Problem functions
 function addProblem() {
@@ -511,7 +498,10 @@ function searchMedicine(input, event) {
                 if (data.success && data.data.length > 0) {
                     dropdown.innerHTML = data.data.map(m => {
                         const displayName = m.brand_name + (m.generic_name ? ' (' + m.generic_name + ')' : '') + (m.strength ? ' - ' + m.strength : '');
-                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="selectMedicine(this, \'' + m.id + '\', \'' + m.brand_name.replace(/'/g, "\\'") + '\', \'' + (m.generic_name || '').replace(/'/g, "\\'") + '\', \'' + (m.strength || '').replace(/'/g, "\\'") + '\')">' +
+                        const brand = m.brand_name.replace(/'/g, "\\'");
+                        const generic = (m.generic_name || '').replace(/'/g, "\\'");
+                        const strength = (m.strength || '').replace(/'/g, "\\'");
+                        return '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="selectMedicine(this, \'' + m.id + '\', \'' + brand + '\', \'' + generic + '\', \'' + strength + '\')">' +
                             '<div class="fw-medium">' + m.brand_name + '</div>' +
                             (m.generic_name ? '<div class="small text-muted">' + m.generic_name + '</div>' : '') +
                             (m.strength ? '<div class="small text-muted">' + m.strength + '</div>' : '') +
@@ -526,8 +516,8 @@ function searchMedicine(input, event) {
     }, 300);
 }
 
-function selectMedicine(el, id, brandName, genericName, strength) {
-    const row = el.closest('.medicine-search-row');
+function selectMedicine(element, id, brandName, genericName, strength) {
+    const row = element.closest('.medicine-search-row');
     const displayName = brandName + (genericName ? ' (' + genericName + ')' : '') + (strength ? ' - ' + strength : '');
     row.querySelector('.medicine-id').value = id;
     row.querySelector('.medicine-name').value = brandName;

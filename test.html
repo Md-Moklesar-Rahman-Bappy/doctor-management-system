@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .prescription-card {
+            width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 40px;
+            border-top: 10px solid #0056b3; /* Professional Medical Blue */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .doc-details h2 { margin: 0; color: #0056b3; }
+        .doc-details p { margin: 2px 0; font-size: 14px; color: #666; }
+        
+        .patient-bar { display: flex; justify-content: space-between; margin-top: 20px; font-size: 14px; }
+        .input-line { border-bottom: 1px solid #ccc; flex-grow: 1; margin-left: 10px; }
+
+        .rx-symbol { font-size: 50px; color: #0056b3; margin: 30px 0; font-family: serif; }
+        .content-area { height: 350px; border-left: 1px solid #eee; padding-left: 20px; }
+
+        .footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 15px; display: flex; justify-content: space-between; font-size: 12px; color: #888; }
+        .sig { text-align: right; margin-top: 50px; }
+        .sig-line { border-top: 1px solid #333; width: 200px; display: inline-block; padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="prescription-card">
+        <div class="header">
+            <div class="doc-details">
+                <h2>Dr. Jane Smith, MD</h2>
+                <p>Internal Medicine | License #987654321</p>
+                <p>123 Medical Plaza, Health City, NY</p>
+            </div>
+        </div>
+        
+        <div class="patient-bar">
+            <div style="width: 50%;">Name: <span class="input-line"></span></div>
+            <div style="width: 20%;">Age: <span class="input-line"></span></div>
+            <div style="width: 25%;">Date: <span class="input-line"></span></div>
+        </div>
+
+        <div class="rx-symbol">Rx</div>
+        <div class="content-area">
+            <!-- Prescription notes go here -->
+        </div>
+
+        <div class="sig">
+            <span class="sig-line">Doctor's Signature</span>
+        </div>
+
+        <div class="footer">
+            <span>Phone: (555) 012-3456</span>
+            <span>://smithmedical.com</span>
+        </div>
+    </div>
+</body>
+</html>

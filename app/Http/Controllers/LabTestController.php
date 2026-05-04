@@ -189,7 +189,14 @@ class LabTestController extends Controller
                   ->orWhere('code', 'like', "%{$term}%")
                   ->orWhere('department', 'like', "%{$term}%");
             })
-            ->limit(10)
+            ->orderByRaw("CASE 
+                WHEN test LIKE '{$term}%' THEN 1
+                WHEN test LIKE '%{$term}%' THEN 2
+                WHEN code LIKE '{$term}%' THEN 3
+                WHEN code LIKE '%{$term}%' THEN 4
+                ELSE 5 
+            END")
+            ->orderBy('test')
             ->get(['id', 'test', 'code', 'department']);
 
         return response()->json([
