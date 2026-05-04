@@ -4,7 +4,8 @@
 <style>
     @media print {
         /* Hide non-print elements */
-        nav, aside.sidebar, .no-print, .alert, .breadcrumb, #toast-container, .navbar {
+        nav, aside.sidebar, .no-print, .alert, .breadcrumb, #toast-container, .navbar,
+        .d-flex.justify-content-between.align-items-start.mb-4 {
             display: none !important;
         }
         /* Show only print area */
@@ -12,31 +13,61 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            visibility: visible;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 15px !important;
+            visibility: visible !important;
         }
         #print-area * {
-            visibility: visible;
+            visibility: visible !important;
         }
-        /* Override AOS animations that hide content */
-        [data-aos] {
+        /* Override ALL animations and transitions */
+        * {
+            animation: none !important;
+            -webkit-animation: none !important;
+            transition: none !important;
+            -webkit-transition: none !important;
+        }
+        /* Force AOS elements to be visible */
+        [data-aos], [data-aos].aos-init, [data-aos].aos-animate {
             opacity: 1 !important;
             transform: none !important;
-            transition: none !important;
+            visibility: visible !important;
         }
         /* Clean up card styles for print */
         .card {
             box-shadow: none !important;
             border: 1px solid #dee2e6 !important;
+            page-break-inside: avoid;
         }
         body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             margin: 0;
             padding: 0;
+            visibility: visible !important;
+        }
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
         }
     }
 </style>
+<script>
+    // Force AOS elements to be visible before print
+    window.addEventListener('beforeprint', function() {
+        document.querySelectorAll('[data-aos]').forEach(el => {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+            el.style.visibility = 'visible';
+            el.classList.add('aos-animate');
+        });
+        // Disable AOS to prevent re-hiding
+        if (window.AOS) {
+            AOS.refreshHard();
+        }
+    });
+</script>
 @endsection
 
 @section('content')
