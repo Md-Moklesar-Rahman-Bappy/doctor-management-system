@@ -1,5 +1,44 @@
 @extends('layouts.dashboard')
 
+@section('styles')
+<style>
+    @media print {
+        /* Hide non-print elements */
+        nav, aside.sidebar, .no-print, .alert, .breadcrumb, #toast-container, .navbar {
+            display: none !important;
+        }
+        /* Show only print area */
+        #print-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            visibility: visible;
+        }
+        #print-area * {
+            visibility: visible;
+        }
+        /* Override AOS animations that hide content */
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+        /* Clean up card styles for print */
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            margin: 0;
+            padding: 0;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 @php
 $breadcrumbs = [
@@ -8,8 +47,7 @@ $breadcrumbs = [
 ];
 @endphp
 
-<div class="main-content">
-    <!-- Printable Area -->
+<!-- Printable Area -->
     <div id="print-area">
         <div class="d-flex justify-content-between align-items-start mb-4" data-aos="fade-down">
             <div>
@@ -169,5 +207,4 @@ $breadcrumbs = [
             </div>
         </div>
     </div>
-</div>
 @endsection
