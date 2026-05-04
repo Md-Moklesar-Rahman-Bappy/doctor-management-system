@@ -28,24 +28,41 @@ class PrescriptionService
         }
 
         // Process medicines to include time and duration properly
-        $medicines = $request->medicines ? json_decode($request->medicines, true) : [];
+        // Handle both JSON string and array input
+        $medicinesInput = $request->medicines;
+        if (is_string($medicinesInput)) {
+            $medicinesInput = json_decode($medicinesInput, true);
+        }
+        $medicines = is_array($medicinesInput) ? $medicinesInput : [];
+        
         $processedMedicines = [];
         foreach ($medicines as $med) {
             $processedMedicines[] = [
                 'id' => $med['id'] ?? null,
                 'name' => $med['name'] ?? '',
                 'dosage' => $med['dosage'] ?? '',
-                'time' => isset($med['time']) ? json_decode($med['time'], true) : null,
-                'duration' => isset($med['duration']) ? json_decode($med['duration'], true) : null,
+                'time' => isset($med['time']) ? (is_string($med['time']) ? json_decode($med['time'], true) : $med['time']) : null,
+                'duration' => isset($med['duration']) ? (is_string($med['duration']) ? json_decode($med['duration'], true) : $med['duration']) : null,
             ];
+        }
+
+        // Handle both JSON string and array input for problem and tests
+        $problem = $request->problem;
+        if (is_string($problem)) {
+            $problem = json_decode($problem, true);
+        }
+        
+        $tests = $request->tests;
+        if (is_string($tests)) {
+            $tests = json_decode($tests, true);
         }
 
         return Prescription::create([
             'user_id' => $userId,
             'patient_id' => $patientId,
             'doctor_id' => $doctorId,
-            'problem' => $request->problem ? json_decode($request->problem, true) : null,
-            'tests' => $request->tests ? json_decode($request->tests, true) : null,
+            'problem' => $problem,
+            'tests' => $tests,
             'medicines' => !empty($processedMedicines) ? $processedMedicines : null,
         ]);
     }
@@ -53,23 +70,39 @@ class PrescriptionService
     public function updatePrescription(Request $request, Prescription $prescription): void
     {
         // Process medicines to include time and duration properly
-        $medicines = $request->medicines ? json_decode($request->medicines, true) : [];
+        $medicinesInput = $request->medicines;
+        if (is_string($medicinesInput)) {
+            $medicinesInput = json_decode($medicinesInput, true);
+        }
+        $medicines = is_array($medicinesInput) ? $medicinesInput : [];
+        
         $processedMedicines = [];
         foreach ($medicines as $med) {
             $processedMedicines[] = [
                 'id' => $med['id'] ?? null,
                 'name' => $med['name'] ?? '',
                 'dosage' => $med['dosage'] ?? '',
-                'time' => isset($med['time']) ? json_decode($med['time'], true) : null,
-                'duration' => isset($med['duration']) ? json_decode($med['duration'], true) : null,
+                'time' => isset($med['time']) ? (is_string($med['time']) ? json_decode($med['time'], true) : $med['time']) : null,
+                'duration' => isset($med['duration']) ? (is_string($med['duration']) ? json_decode($med['duration'], true) : $med['duration']) : null,
             ];
+        }
+
+        // Handle both JSON string and array input for problem and tests
+        $problem = $request->problem;
+        if (is_string($problem)) {
+            $problem = json_decode($problem, true);
+        }
+        
+        $tests = $request->tests;
+        if (is_string($tests)) {
+            $tests = json_decode($tests, true);
         }
 
         $prescription->update([
             'patient_id' => $request->patient_id ?? $prescription->patient_id,
             'doctor_id' => $request->doctor_id ?? $prescription->doctor_id,
-            'problem' => $request->problem ? json_decode($request->problem, true) : $prescription->problem,
-            'tests' => $request->tests ? json_decode($request->tests, true) : $prescription->tests,
+            'problem' => $problem ?? $prescription->problem,
+            'tests' => $tests ?? $prescription->tests,
             'medicines' => !empty($processedMedicines) ? $processedMedicines : $prescription->medicines,
         ]);
     }

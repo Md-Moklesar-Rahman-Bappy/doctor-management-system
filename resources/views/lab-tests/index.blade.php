@@ -163,7 +163,7 @@ $breadcrumbs = [
                             >
                                 <x-slot:action>
                                     <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                        <a href="{{ route('lab_tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                        <a href="{{ route('lab-tests.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
                                             <i class="fas fa-flask me-1"></i> Add Test
                                         </a>
                                         <button onclick="document.getElementById('importModal').classList.remove('d-none')" class="btn btn-outline-secondary d-flex align-items-center gap-2">

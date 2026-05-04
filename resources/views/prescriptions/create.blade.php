@@ -241,6 +241,10 @@ $breadcrumbs = [
 @endpush
 
 @push('scripts')
+<script src="{{ asset('js/prescription-create.js') }}"></script>
+@endpush
+
+@push('scripts')
 <script>
 let medicineIndex = 0;
 let searchTimeout;

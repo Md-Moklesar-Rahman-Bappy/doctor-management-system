@@ -190,7 +190,7 @@
             <div class="doctor-info">
                 <h1>Dr. {{ $prescription->doctor->name ?? 'N/A' }}</h1>
                 @if($prescription->doctor->degrees)
-                    <div class="degrees">{{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}</div>
+                    <div class="degrees">{{ implode(', ', $prescription->doctor->degrees ?? []) }}</div>
                 @endif
                 <div class="details">
                     @if($prescription->doctor->license)
@@ -251,7 +251,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(json_decode($prescription->medicines, true) ?? [] as $medicine)
+                        @foreach($prescription->medicines ?? [] as $medicine)
                             <tr>
                                 <td><strong>{{ $medicine['name'] ?? 'N/A' }}</strong></td>
                                 <td>{{ $medicine['dosage'] ?? 'N/A' }}</td>
@@ -277,7 +277,7 @@
 
         <!-- Problems Section -->
         @if($prescription->problem)
-            @php $problems = json_decode($prescription->problem, true) ?? []; @endphp
+            @php $problems = $prescription->problem ?? []; @endphp
             @if(count($problems) > 0)
                 <div class="section">
                     <div class="section-title">Problems / Diagnosis</div>
@@ -292,7 +292,7 @@
 
         <!-- Tests Section -->
         @if($prescription->tests)
-            @php $tests = json_decode($prescription->tests, true) ?? []; @endphp
+            @php $tests = $prescription->tests ?? []; @endphp
             @if(count($tests) > 0)
                 <div class="section">
                     <div class="section-title">Recommended Tests</div>
@@ -310,7 +310,7 @@
             <div class="signature-line">
                 <div class="signature-name">Dr. {{ $prescription->doctor->name ?? 'N/A' }}</div>
                 @if($prescription->doctor->degrees)
-                    <div class="signature-details">{{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}</div>
+                    <div class="signature-details">{{ implode(', ', $prescription->doctor->degrees ?? []) }}</div>
                 @endif
                 @if($prescription->doctor->license)
                     <div class="signature-details">License #: {{ $prescription->doctor->license }}</div>

@@ -1,4 +1,4 @@
-// Patient search and form submission for prescription create page
+// Patient search and prescription form handling
 let medicineIndex = 0;
 let searchTimeout;
 let createdPrescriptionId = null;
@@ -7,57 +7,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const patientSearch = document.getElementById('patient-search');
     const patientDropdown = document.getElementById('patient-dropdown');
 
-    if (patientSearch && patientDropdown) {
-        // Patient search with live AJAX
-        patientSearch.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const searchTerm = this.value.trim();
+    if (!patientSearch || !patientDropdown) return;
 
-            if (searchTerm.length < 2) {
-                patientDropdown.classList.add('d-none');
-                patientDropdown.innerHTML = '';
-                return;
-            }
+    // Patient search with live AJAX
+    patientSearch.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const searchTerm = this.value.trim();
 
-            searchTimeout = setTimeout(() => {
-                fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success && data.data && data.data.length > 0) {
-                            let html = '';
-                            data.data.forEach(p => {
-                                html += '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.selectPatient(this)"' +
-                                    ' data-id="' + p.id + '"' +
-                                    ' data-unique-id="' + p.unique_id + '"' +
-                                    ' data-name="' + p.patient_name.replace(/"/g, '&quot;') + '"' +
-                                    ' data-age="' + p.age + '"' +
-                                    ' data-sex="' + p.sex + '">' +
-                                    '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
-                                    '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
-                                    '</div>';
-                            });
-                            patientDropdown.innerHTML = html;
-                            patientDropdown.classList.remove('d-none');
-                        } else {
-                            patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
-                            patientDropdown.classList.remove('d-none');
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Search error:', err);
-                        patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+        if (searchTerm.length < 2) {
+            patientDropdown.classList.add('d-none');
+            patientDropdown.innerHTML = '';
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetch('/patients/autocomplete?term=' + encodeURIComponent(searchTerm))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data && data.data.length > 0) {
+                        let html = '';
+                        data.data.forEach(p => {
+                            html += '<div class="px-3 py-2 hover-bg-light cursor-pointer" onclick="window.selectPatient(this)"' +
+                                ' data-id="' + p.id + '"' +
+                                ' data-unique-id="' + p.unique_id + '"' +
+                                ' data-name="' + p.patient_name.replace(/"/g, '&quot;') + '"' +
+                                ' data-age="' + p.age + '"' +
+                                ' data-sex="' + p.sex + '">' +
+                                '<span class="fw-medium">' + p.unique_id + '</span> - ' + p.patient_name +
+                                '<span class="text-muted small ms-2">Age: ' + p.age + ', ' + p.sex + '</span>' +
+                                '</div>';
+                        });
+                        patientDropdown.innerHTML = html;
                         patientDropdown.classList.remove('d-none');
-                    });
-            }, 300);
-        });
+                    } else {
+                        patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">No patients found</div>';
+                        patientDropdown.classList.remove('d-none');
+                    }
+                })
+                .catch(err => {
+                    console.error('Search error:', err);
+                    patientDropdown.innerHTML = '<div class="px-3 py-2 text-muted">Error searching</div>';
+                    patientDropdown.classList.remove('d-none');
+                });
+        }, 300);
+    });
 
-        // Close dropdown on click outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
-                patientDropdown.classList.add('d-none');
-            }
-        });
-    }
+    // Close dropdown on click outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#patient-search') && !e.target.closest('#patient-dropdown')) {
+            patientDropdown.classList.add('d-none');
+        }
+    });
 
     // New patient toggle
     const newPatientToggle = document.getElementById('new-patient-toggle');
@@ -163,12 +163,9 @@ function addProblem() {
     const container = document.getElementById('problems-container');
     const div = document.createElement('div');
     div.className = 'input-group mb-2 problem-row';
-    div.innerHTML = '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="problem[]" class="form-control ps-4" placeholder="e.g., Fever">' +
-        '<div class="icon"><i class="fas fa-stethoscope"></i></div>' +
-        '</div>' +
-        '<button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)">' +
-        '<i class="fas fa-times"></i></button>';
+    div.innerHTML = '<input type="text" name="problem[]" class="form-control" placeholder="e.g., Fever, Cough, Headache">' +
+        '<button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)" disabled>' +
+            '<i class="fas fa-times"></i></button>';
     container.appendChild(div);
     updateProblemButtons();
 }
@@ -190,12 +187,9 @@ function addTest() {
     const container = document.getElementById('tests-container');
     const div = document.createElement('div');
     div.className = 'input-group mb-2 test-row';
-    div.innerHTML = '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="tests[]" class="form-control ps-4" placeholder="e.g., Blood Test">' +
-        '<div class="icon"><i class="fas fa-vial"></i></div>' +
-        '</div>' +
-        '<button type="button" class="btn btn-outline-danger" onclick="removeTest(this)">' +
-        '<i class="fas fa-times"></i></button>';
+    div.innerHTML = '<input type="text" name="tests[]" class="form-control" placeholder="e.g., Blood Test, X-Ray">' +
+        '<button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" disabled>' +
+            '<i class="fas fa-times"></i></button>';
     container.appendChild(div);
     updateTestButtons();
 }
@@ -216,29 +210,75 @@ function updateTestButtons() {
 function addMedicineSearch() {
     const container = document.getElementById('medicines-container');
     const div = document.createElement('div');
-    div.className = 'card mb-2 medicine-search-row';
-    div.innerHTML = '<div class="card-body p-3">' +
-        '<div class="row g-2 align-items-center">' +
-        '<div class="col-md-4">' +
-        '<div class="input-group">' +
-        '<span class="input-group-text bg-light border-end-0"><i class="fas fa-pills text-muted"></i></span>' +
-        '<input type="text" class="form-control border-start-0 medicine-search-input" placeholder="Search brand or generic name..." onkeyup="searchMedicine(this, event)">' +
-        '<div class="medicine-dropdown position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>' +
+    div.className = 'card p-3 border-0 shadow-sm mb-3 bg-white medicine-search-row';
+    div.innerHTML = '<div class="row g-2 align-items-center">' +
+
+        '<!-- 1. Brand Name (Label + Icon + Input) -->' +
+        '<div class="col-md-3">' +
+        '    <div class="input-group">' +
+        '        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-primary"></i></span>' +
+        '        <input type="text" class="form-control border-start-0 medicine-search-input" placeholder="Medicine name" onkeyup="searchMedicine(this, event)">' +
+        '        <div class="medicine-dropdown position-absolute start-0 top-100 mt-1 w-100 shadow-lg bg-white rounded-3 border d-none" style="z-index: 1050; max-height: 200px; overflow-y: auto;"></div>' +
+        '    </div>' +
         '</div>' +
+
+        '<!-- 2. Dosage (1+0+1 Style) -->' +
+        '<div class="col-md-3">' +
+        '    <div class="d-flex align-items-center border rounded px-2 bg-white" style="height: 38px;">' +
+        '        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-1">' +
+        '            <option value="0">0</option>' +
+        '            <option value="0.5">½</option>' +
+        '            <option value="1" selected>1</option>' +
+        '        </select>' +
+        '        <span class="text-muted">+</span>' +
+        '        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-2">' +
+        '            <option value="0" selected>0</option>' +
+        '            <option value="0.5">½</option>' +
+        '            <option value="1">1</option>' +
+        '        </select>' +
+        '        <span class="text-muted">+</span>' +
+        '        <select class="form-select form-select-sm border-0 bg-transparent text-center px-1 fw-bold medicine-dose-3">' +
+        '            <option value="0">0</option>' +
+        '            <option value="0.5">½</option>' +
+        '            <option value="1" selected>1</option>' +
+        '        </select>' +
+        '    </div>' +
         '</div>' +
-        '<div class="col-md-3"><input type="text" class="form-control medicine-dosage" placeholder="Dosage (e.g. 500mg)"></div>' +
-        '<div class="col-md-3"><input type="text" class="form-control medicine-frequency" placeholder="When (e.g. 3x/day)"></div>' +
-        '<div class="col-md-2"><input type="text" class="form-control medicine-duration" placeholder="Duration (e.g. 7 days)"></div>' +
+
+        '<!-- 3. Duration (For) -->' +
+        '<div class="col-md-3">' +
+        '    <div class="input-group">' +
+        '        <span class="input-group-text bg-white small text-muted">For</span>' +
+        '        <input type="number" class="form-control medicine-duration-num" placeholder="7">' +
+        '        <select class="form-select bg-light fw-bold medicine-duration-unit" style="max-width: 100px;">' +
+        '            <option value="days" selected>Days</option>' +
+        '            <option value="months">Months</option>' +
+        '            <option value="weeks">Weeks</option>' +
+        '        </select>' +
+        '    </div>' +
         '</div>' +
-        '<div class="mt-2 d-flex gap-2 align-items-center">' +
-        '<button type="button" class="btn btn-sm btn-primary" onclick="addMedicine(this)"><i class="fas fa-check me-1"></i> Add</button>' +
-        '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMedicineSearch(this)"><i class="fas fa-times"></i></button>' +
+
+        '<!-- 4. Add Button -->' +
+        '<div class="col-md-1">' +
+        '    <button class="btn btn-primary w-100 shadow-sm" title="Add Medicine" onclick="addMedicine(this)">' +
+        '        <i class="fas fa-plus"></i>' +
+        '    </button>' +
         '</div>' +
-        '<div class="selected-medicine mt-2 d-none"><span class="badge bg-success"></span></div>' +
+
+        '<div class="col-12 mt-2 d-none selected-medicine">' +
+        '    <div class="d-flex align-items-center gap-2 flex-wrap">' +
+        '        <span class="badge bg-primary medicine-display-name"></span>' +
+        '        <span class="badge bg-secondary medicine-display-dose"></span>' +
+        '        <span class="badge bg-info medicine-display-duration"></span>' +
+        '        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeMedicineSearch(this)"><i class="fas fa-times"></i></button>' +
+        '    </div>' +
+        '</div>' +
+
         '<input type="hidden" class="medicine-id" name="medicines[' + medicineIndex + '][id]" value="">' +
         '<input type="hidden" class="medicine-name" name="medicines[' + medicineIndex + '][name]" value="">' +
-        '<input type="hidden" class="medicine-dosage-hidden" name="medicines[' + medicineIndex + '][dosage]" value="">' +
-        '<input type="hidden" class="medicine-frequency-hidden" name="medicines[' + medicineIndex + '][frequency]" value="">' +
+        '<input type="hidden" class="medicine-strength" name="medicines[' + medicineIndex + '][strength]" value="">' +
+        '<input type="hidden" class="medicine-generic" name="medicines[' + medicineIndex + '][generic_name]" value="">' +
+        '<input type="hidden" class="medicine-dose-hidden" name="medicines[' + medicineIndex + '][dosage]" value="">' +
         '<input type="hidden" class="medicine-duration-hidden" name="medicines[' + medicineIndex + '][duration]" value="">' +
         '</div>';
     container.appendChild(div);
@@ -280,10 +320,25 @@ function searchMedicine(input, event) {
 
 function selectMedicine(el, id, brandName, genericName, strength) {
     const row = el.closest('.medicine-search-row');
-    const displayName = brandName + (genericName ? ' (' + genericName + ')' : '') + (strength ? ' - ' + strength : '');
+    let displayName = brandName;
+    if (genericName) displayName += ' (' + genericName + ')';
+    if (strength) displayName += ' - ' + strength;
+
     row.querySelector('.medicine-id').value = id;
     row.querySelector('.medicine-name').value = brandName;
-    row.querySelector('.selected-medicine span').textContent = displayName;
+    row.querySelector('.medicine-generic').value = genericName || '';
+    row.querySelector('.medicine-strength').value = strength || '';
+
+    row.querySelector('.medicine-display-name').textContent = displayName;
+    const dose1 = row.querySelector('.medicine-dose-1').value;
+    const dose2 = row.querySelector('.medicine-dose-2').value;
+    const dose3 = row.querySelector('.medicine-dose-3').value;
+    row.querySelector('.medicine-display-dose').textContent = dose1 + ' + ' + dose2 + ' + ' + dose3;
+
+    const durationNum = row.querySelector('.medicine-duration-num').value || '7';
+    const durationUnit = row.querySelector('.medicine-duration-unit').value;
+    row.querySelector('.medicine-display-duration').textContent = durationNum + ' ' + durationUnit;
+
     row.querySelector('.selected-medicine').classList.remove('d-none');
     row.querySelector('.medicine-search-input').classList.add('d-none');
     row.querySelector('.medicine-dropdown').classList.add('d-none');
@@ -292,26 +347,34 @@ function selectMedicine(el, id, brandName, genericName, strength) {
 function addMedicine(button) {
     const row = button.closest('.medicine-search-row');
     const name = row.querySelector('.medicine-name').value;
-    const dosage = row.querySelector('.medicine-dosage').value;
-    const frequency = row.querySelector('.medicine-frequency').value;
-    const duration = row.querySelector('.medicine-duration').value;
+    const id = row.querySelector('.medicine-id').value;
 
-    if (!name) {
-        alert('Please select a medicine first');
+    if (!name || !id) {
+        Swal.fire('Error', 'Please select a medicine first', 'error');
         return;
     }
 
-    row.querySelector('.medicine-dosage-hidden').value = dosage;
-    row.querySelector('.medicine-frequency-hidden').value = frequency;
+    const dose1 = row.querySelector('.medicine-dose-1').value;
+    const dose2 = row.querySelector('.medicine-dose-2').value;
+    const dose3 = row.querySelector('.medicine-dose-3').value;
+    const dosage = dose1 + ' + ' + dose2 + ' + ' + dose3;
+
+    const durationNum = row.querySelector('.medicine-duration-num').value || '7';
+    const durationUnit = row.querySelector('.medicine-duration-unit').value;
+    const duration = durationNum + ' ' + durationUnit;
+
+    row.querySelector('.medicine-dose-hidden').value = dosage;
     row.querySelector('.medicine-duration-hidden').value = duration;
 
-    row.querySelector('.medicine-dosage').disabled = true;
-    row.querySelector('.medicine-frequency').disabled = true;
-    row.querySelector('.medicine-duration').disabled = true;
-    button.disabled = true;
+    row.querySelector('.medicine-display-dose').textContent = dosage;
+    row.querySelector('.medicine-display-duration').textContent = duration;
 
-    const removeBtn = row.querySelector('.btn-outline-danger');
-    removeBtn.onclick = function() { row.remove(); };
+    row.querySelectorAll('select, input').forEach(el => el.disabled = true);
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-check"></i>';
+
+    const removeBtn = row.querySelector('.selected-medicine .btn-outline-danger');
+    if (removeBtn) removeBtn.onclick = function() { row.remove(); };
 }
 
 function removeMedicineSearch(button) {
@@ -321,9 +384,10 @@ function removeMedicineSearch(button) {
 // Form submission via AJAX
 document.getElementById('prescription-form').addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('Form submit handler loaded');
 
     const patientId = document.getElementById('patient-id').value;
-    const newPatientName = document.getElementById('new-patient-name').value;
+    const newPatientName = document.getElementById('new-patient-name')?.value;
 
     if (!patientId && !newPatientName) {
         Swal.fire('Error', 'Please select a patient or create a new patient', 'error');
@@ -347,8 +411,7 @@ document.getElementById('prescription-form').addEventListener('submit', function
             medicines.push({
                 id: row.querySelector('.medicine-id').value,
                 name: name,
-                dosage: row.querySelector('.medicine-dosage-hidden').value,
-                frequency: row.querySelector('.medicine-frequency-hidden').value,
+                dosage: row.querySelector('.medicine-dose-hidden').value,
                 duration: row.querySelector('.medicine-duration-hidden').value
             });
         }
@@ -371,28 +434,69 @@ document.getElementById('prescription-form').addEventListener('submit', function
     formData.set('tests', JSON.stringify(tests));
     formData.set('medicines', JSON.stringify(medicines));
 
-    fetch('{{ route("prescriptions.store") }}', {
+    fetch(this.action, {
         method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
         body: formData
     })
-    .then(res => res.json())
+    .then(async res => {
+        const text = await res.text();
+        try {
+            const data = JSON.parse(text);
+            if (!res.ok) throw data;
+            return data;
+        } catch (e) {
+            if (e instanceof SyntaxError) {
+                console.error('Server response (not JSON):', text.substring(0, 500));
+                throw { message: 'Server error - check logs', response: text.substring(0, 200) };
+            }
+            throw e;
+        }
+    })
     .then(data => {
         if (data.success) {
             createdPrescriptionId = data.prescription_id;
-            document.getElementById('download-pdf').href = '/prescriptions/' + createdPrescriptionId;
+            document.getElementById('download-pdf').href = '/prescriptions/' + createdPrescriptionId + '/download';
             document.getElementById('action-buttons').classList.add('d-none');
             document.getElementById('print-options').classList.remove('d-none');
             window.scrollTo({ top: document.getElementById('print-options').offsetTop, behavior: 'smooth' });
         } else {
-            Swal.fire('Error', 'Error creating prescription: ' + (data.message || 'Unknown error'), 'error');
+            Swal.fire('Error', data.message || 'Error creating prescription', 'error');
             submitBtn.disabled = false;
             btnText.textContent = 'Generate Prescription';
             btnSpinner.classList.add('d-none');
         }
     })
     .catch(err => {
-        console.error(err);
-        Swal.fire('Error', 'Error creating prescription', 'error');
+        console.error('Full error object:', err);
+        let msg = '<strong>' + ((err && err.message) || 'Error creating prescription') + '</strong>';
+        let errorList = document.getElementById('error-list');
+        let errorDisplay = document.getElementById('error-display');
+
+        errorList.innerHTML = '';
+        if (err && err.errors) {
+            msg += '<ul style="text-align:left;margin-top:10px;">';
+            for (let field in err.errors) {
+                if (Array.isArray(err.errors[field])) {
+                    err.errors[field].forEach(e => {
+                        msg += '<li>' + e + '</li>';
+                        errorList.innerHTML += '<li>' + e + '</li>';
+                    });
+                } else {
+                    msg += '<li>' + err.errors[field] + '</li>';
+                    errorList.innerHTML += '<li>' + err.errors[field] + '</li>';
+                }
+            }
+            msg += '</ul>';
+            errorDisplay.classList.remove('d-none');
+        } else {
+            errorDisplay.classList.add('d-none');
+        }
+
+        Swal.fire({ title: 'Error', html: msg, icon: 'error', width: '500px' });
         submitBtn.disabled = false;
         btnText.textContent = 'Generate Prescription';
         btnSpinner.classList.add('d-none');
@@ -407,20 +511,14 @@ function resetForm() {
     document.getElementById('new-patient-form').classList.add('d-none');
     document.getElementById('new-patient-toggle').checked = false;
     document.getElementById('problems-container').innerHTML = '<div class="input-group mb-2 problem-row">' +
-        '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="problem[]" class="form-control ps-4" placeholder="e.g., Fever">' +
-        '<div class="icon"><i class="fas fa-stethoscope"></i></div>' +
-        '</div>' +
+        '<input type="text" name="problem[]" class="form-control" placeholder="e.g., Fever, Cough, Headache">' +
         '<button type="button" class="btn btn-outline-danger" onclick="removeProblem(this)" disabled>' +
-        '<i class="fas fa-times"></i></button>' +
+            '<i class="fas fa-times"></i></button>' +
         '</div>';
     document.getElementById('tests-container').innerHTML = '<div class="input-group mb-2 test-row">' +
-        '<div class="input-icon-wrapper flex-1">' +
-        '<input type="text" name="tests[]" class="form-control ps-4" placeholder="e.g., Blood Test">' +
-        '<div class="icon"><i class="fas fa-vial"></i></div>' +
-        '</div>' +
+        '<input type="text" name="tests[]" class="form-control" placeholder="e.g., Blood Test, X-Ray">' +
         '<button type="button" class="btn btn-outline-danger" onclick="removeTest(this)" disabled>' +
-        '<i class="fas fa-times"></i></button>' +
+            '<i class="fas fa-times"></i></button>' +
         '</div>';
     document.getElementById('medicines-container').innerHTML = '';
     medicineIndex = 0;

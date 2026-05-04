@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Models\Doctor;
 use App\Models\User;
@@ -18,6 +18,7 @@ class DoctorTest extends TestCase
 
         $response = $this->post('/doctors', [
             'name' => 'Dr. John Smith',
+            'license' => 'DOC-12345',
             'email' => 'john@example.com',
             'phone' => '1234567890',
             'address' => '123 Main St',

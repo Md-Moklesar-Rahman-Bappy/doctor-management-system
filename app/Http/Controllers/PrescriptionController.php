@@ -62,7 +62,7 @@ class PrescriptionController extends Controller
         return view('prescriptions.create', compact('doctor', 'problems', 'labTests', 'selectedPatientId'));
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    public function store(\App\Http\Requests\StorePrescriptionRequest $request)
     {
         \Log::info('Store method called', ['data' => $request->all()]);
         

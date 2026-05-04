@@ -64,12 +64,12 @@ $breadcrumbs = [
             <div class="card shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title fw-semibold mb-0">Prescriptions</h5>
-                    <span class="badge bg-primary-subtle text-primary-emphasis">{{ $prescriptions->count() }} Total</span>
+                    <span class="badge bg-primary-subtle text-primary-emphasis">{{ $patient->prescriptions->count() }} Total</span>
                 </div>
                 <div class="card-body p-0">
-                    @if($prescriptions->count() > 0)
+                    @if($patient->prescriptions->count() > 0)
                         <div class="list-group list-group-flush">
-                            @foreach($prescriptions as $prescription)
+                            @foreach($patient->prescriptions as $prescription)
                                 <a href="{{ route('prescriptions.show', $prescription->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="fw-medium">Prescription #{{ $prescription->id }}</div>
@@ -92,12 +92,12 @@ $breadcrumbs = [
             <div class="card shadow-sm mt-4">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title fw-semibold mb-0">Lab Reports</h5>
-                    <span class="badge bg-warning-subtle text-warning-emphasis">{{ $labReports->count() }} Total</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis">{{ $patient->labTestReports->count() }} Total</span>
                 </div>
                 <div class="card-body p-0">
-                    @if($labReports->count() > 0)
+                    @if($patient->labTestReports->count() > 0)
                         <div class="list-group list-group-flush">
-                            @foreach($labReports as $report)
+                            @foreach($patient->labTestReports as $report)
                                 <a href="{{ route('lab_test_reports.show', $report->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="fw-medium">{{ $report->test_name }}</div>

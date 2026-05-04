@@ -49,8 +49,8 @@ class StorePrescriptionRequest extends FormRequest
             'errors' => $validator->errors()->toArray(),
             'input' => request()->except(['_token'])
         ]);
-        
-        // Temporary: return a simple error to see if this method is called
-        throw new \Exception('Validation failed in StorePrescriptionRequest - this method is being called!');
+
+        // Let Laravel handle the response based on request type (web vs AJAX)
+        parent::failedValidation($validator);
     }
 }
