@@ -38,6 +38,18 @@ $breadcrumbs = [
                             @enderror
                         </div>
 
+                        <div>
+                            <label for="license" class="form-label fw-medium">License Number *</label>
+                            <div class="input-icon-wrapper">
+                                <input type="text" id="license" name="license" value="{{ old('license') }}" required
+                                       class="form-control ps-4" placeholder="Enter medical license number">
+                                <div class="icon"><i class="fas fa-id-card"></i></div>
+                            </div>
+                            @error('license')
+                                <div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-medium">Email Address *</label>

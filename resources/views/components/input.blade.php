@@ -13,7 +13,8 @@
 
 <div class="mb-3">
     @if($label)
-        <label for="{{ $name }}" class="form-label fw-medium">
+        <label for="{{ $name }}" class="form-label fw-medium d-flex align-items-center gap-2">
+            @if($icon)<i class="{{ $icon }}"></i>@endif
             {{ $label }}
             @if($required)
                 <span class="text-danger">*</span>
@@ -21,11 +22,7 @@
         </label>
     @endif
 
-    <div class="input-icon-wrapper">
-        @if($icon)
-            <div class="icon"><i class="{{ $icon }}"></i></div>
-        @endif
-
+    <div>
         <input
             type="{{ $type }}"
             name="{{ $name }}"
@@ -34,7 +31,7 @@
             placeholder="{{ $placeholder }}"
             {{ $required ? 'required' : '' }}
             {{ $disabled ? 'disabled' : '' }}
-            class="form-control {{ $icon ? 'ps-4' : '' }} {{ $error ? 'is-invalid' : '' }}"
+            class="form-control {{ $error ? 'is-invalid' : '' }}"
         >
 
         @if($error)

@@ -121,22 +121,6 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-.input-icon-wrapper {
-    position: relative;
-}
-
-.input-icon-wrapper .form-control {
-    padding-left: 2.5rem;
-}
-
-.input-icon-wrapper .icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
-}
-
 /* Search input */
 .search-input {
     padding-left: 2.5rem;

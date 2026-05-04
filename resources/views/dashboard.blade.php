@@ -28,9 +28,15 @@ $breadcrumbs = [
         <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
             <div class="card border-0 shadow-sm hover-shadow transition-all h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle" style="width: 48px; height: 48px;">
-                            <i class="fas fa-user-md fa-lg text-primary"></i>
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle flex-shrink-0" style="width: 48px; height: 48px;">
+                                <i class="fas fa-user-md fa-lg text-primary"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted small mb-0">Total Doctors</p>
+                                <h3 class="fw-bold text-dark mb-0">{{ $stats['doctors'] ?? 0 }}</h3>
+                            </div>
                         </div>
                         <div class="text-end">
                             <span class="badge bg-success-subtle text-success-emphasis">
@@ -38,8 +44,6 @@ $breadcrumbs = [
                             </span>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-1">{{ $stats['doctors'] ?? 0 }}</h3>
-                    <p class="text-muted small mb-0">Total Doctors</p>
                 </div>
             </div>
         </div>
@@ -47,9 +51,15 @@ $breadcrumbs = [
         <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
             <div class="card border-0 shadow-sm hover-shadow transition-all h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-success-subtle" style="width: 48px; height: 48px;">
-                            <i class="fas fa-users fa-lg text-success"></i>
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-success-subtle flex-shrink-0" style="width: 48px; height: 48px;">
+                                <i class="fas fa-users fa-lg text-success"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted small mb-0">Total Patients</p>
+                                <h3 class="fw-bold text-dark mb-0">{{ $stats['patients'] ?? 0 }}</h3>
+                            </div>
                         </div>
                         <div class="text-end">
                             <span class="badge bg-success-subtle text-success-emphasis">
@@ -57,8 +67,6 @@ $breadcrumbs = [
                             </span>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-1">{{ $stats['patients'] ?? 0 }}</h3>
-                    <p class="text-muted small mb-0">Total Patients</p>
                 </div>
             </div>
         </div>
@@ -66,9 +74,15 @@ $breadcrumbs = [
         <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
             <div class="card border-0 shadow-sm hover-shadow transition-all h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-info-subtle" style="width: 48px; height: 48px;">
-                            <i class="fas fa-file-prescription fa-lg text-info"></i>
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-info-subtle flex-shrink-0" style="width: 48px; height: 48px;">
+                                <i class="fas fa-file-prescription fa-lg text-info"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted small mb-0">Prescriptions</p>
+                                <h3 class="fw-bold text-dark mb-0">{{ $stats['prescriptions'] ?? 0 }}</h3>
+                            </div>
                         </div>
                         <div class="text-end">
                             <span class="badge bg-success-subtle text-success-emphasis">
@@ -76,8 +90,6 @@ $breadcrumbs = [
                             </span>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-1">{{ $stats['prescriptions'] ?? 0 }}</h3>
-                    <p class="text-muted small mb-0">Prescriptions</p>
                 </div>
             </div>
         </div>
@@ -85,9 +97,15 @@ $breadcrumbs = [
         <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="400">
             <div class="card border-0 shadow-sm hover-shadow transition-all h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center bg-warning-subtle" style="width: 48px; height: 48px;">
-                            <i class="fas fa-vial fa-lg text-warning"></i>
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-warning-subtle flex-shrink-0" style="width: 48px; height: 48px;">
+                                <i class="fas fa-vial fa-lg text-warning"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted small mb-0">Lab Reports</p>
+                                <h3 class="fw-bold text-dark mb-0">{{ $stats['labReports'] ?? 0 }}</h3>
+                            </div>
                         </div>
                         <div class="text-end">
                             <span class="badge bg-danger-subtle text-danger-emphasis">
@@ -95,8 +113,6 @@ $breadcrumbs = [
                             </span>
                         </div>
                     </div>
-                    <h3 class="fw-bold text-dark mb-1">{{ $stats['labReports'] ?? 0 }}</h3>
-                    <p class="text-muted small mb-0">Lab Reports</p>
                 </div>
             </div>
         </div>
@@ -149,45 +165,53 @@ $breadcrumbs = [
                     <div class="row g-3">
                         <div class="col-md-6 col-xl-3">
                             <a href="{{ route('doctors.create') }}" class="card border-0 shadow-sm hover-shadow transition-all text-decoration-none h-100">
-                                <div class="card-body text-center p-4">
-                                    <div class="rounded-circle bg-primary-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
-                                        <i class="fas fa-user-md fa-2x text-primary"></i>
+                                <div class="card-body d-flex align-items-center gap-3 p-4">
+                                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                        <i class="fas fa-user-md fa-lg text-primary"></i>
                                     </div>
-                                    <h6 class="fw-semibold">Add Doctor</h6>
-                                    <p class="small text-muted mb-0">Register new doctor</p>
+                                    <div>
+                                        <h6 class="fw-semibold mb-1">Add Doctor</h6>
+                                        <p class="small text-muted mb-0">Register new doctor</p>
+                                    </div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-6 col-xl-3">
                             <a href="{{ route('patients.create') }}" class="card border-0 shadow-sm hover-shadow transition-all text-decoration-none h-100">
-                                <div class="card-body text-center p-4">
-                                    <div class="rounded-circle bg-success-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
-                                        <i class="fas fa-user-plus fa-2x text-success"></i>
+                                <div class="card-body d-flex align-items-center gap-3 p-4">
+                                    <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                        <i class="fas fa-user-plus fa-lg text-success"></i>
                                     </div>
-                                    <h6 class="fw-semibold">Add Patient</h6>
-                                    <p class="small text-muted mb-0">Register new patient</p>
+                                    <div>
+                                        <h6 class="fw-semibold mb-1">Add Patient</h6>
+                                        <p class="small text-muted mb-0">Register new patient</p>
+                                    </div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-6 col-xl-3">
                             <a href="{{ route('prescriptions.create') }}" class="card border-0 shadow-sm hover-shadow transition-all text-decoration-none h-100">
-                                <div class="card-body text-center p-4">
-                                    <div class="rounded-circle bg-info-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
-                                        <i class="fas fa-file-medical fa-2x text-info"></i>
+                                <div class="card-body d-flex align-items-center gap-3 p-4">
+                                    <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                        <i class="fas fa-file-medical fa-lg text-info"></i>
                                     </div>
-                                    <h6 class="fw-semibold">New Prescription</h6>
-                                    <p class="small text-muted mb-0">Create prescription</p>
+                                    <div>
+                                        <h6 class="fw-semibold mb-1">New Prescription</h6>
+                                        <p class="small text-muted mb-0">Create prescription</p>
+                                    </div>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-6 col-xl-3">
                             <a href="{{ route('lab_test_reports.create') }}" class="card border-0 shadow-sm hover-shadow transition-all text-decoration-none h-100">
-                                <div class="card-body text-center p-4">
-                                    <div class="rounded-circle bg-warning-subtle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
-                                        <i class="fas fa-vial fa-2x text-warning"></i>
+                                <div class="card-body d-flex align-items-center gap-3 p-4">
+                                    <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                        <i class="fas fa-vial fa-lg text-warning"></i>
                                     </div>
-                                    <h6 class="fw-semibold">Lab Report</h6>
-                                    <p class="small text-muted mb-0">Add lab report</p>
+                                    <div>
+                                        <h6 class="fw-semibold mb-1">Lab Report</h6>
+                                        <p class="small text-muted mb-0">Add lab report</p>
+                                    </div>
                                 </div>
                             </a>
                         </div>

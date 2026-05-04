@@ -22,12 +22,16 @@ $breadcrumbs = [
     <div class="row g-4">
         <div class="col-lg-4" data-aos="fade-right">
             <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-user-md text-white" style="font-size: 2rem;"></i>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <i class="fas fa-user-md text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ $doctor->name }}</h5>
+                            <p class="text-muted small mb-0">{{ $doctor->email }}</p>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">{{ $doctor->name }}</h5>
-                    <p class="text-muted small mb-2">{{ $doctor->email }}</p>
                     @if($doctor->degrees)
                         <div class="d-flex flex-wrap justify-content-center gap-1 mb-3">
                             @foreach(json_decode($doctor->degrees, true) as $degree)
@@ -36,15 +40,21 @@ $breadcrumbs = [
                         </div>
                     @endif
                     <div class="border-top pt-3">
-                        <div class="row g-2 text-start small">
-                            <div class="col-6">
-                                <span class="text-muted">Phone</span>
-                            </div>
-                            <div class="col-6 text-end">
-                                <span class="fw-medium">{{ $doctor->phone ?? 'N/A' }}</span>
-                            </div>
-                        </div>
-                    </div>
+                         <div class="row g-2 text-start small">
+                             <div class="col-6">
+                                 <span class="text-muted">License</span>
+                             </div>
+                             <div class="col-6 text-end">
+                                 <span class="fw-medium">{{ $doctor->license ?? 'N/A' }}</span>
+                             </div>
+                             <div class="col-6">
+                                 <span class="text-muted">Phone</span>
+                             </div>
+                             <div class="col-6 text-end">
+                                 <span class="fw-medium">{{ $doctor->phone ?? 'N/A' }}</span>
+                             </div>
+                         </div>
+                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <a href="{{ route('doctors.edit', $doctor->id) }}" class="btn btn-sm btn-outline-secondary flex-1">
                             <i class="fas fa-edit me-1"></i> Edit

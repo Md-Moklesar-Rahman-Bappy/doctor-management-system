@@ -5,29 +5,27 @@
     'action' => null
 ])
 
-<div class="empty-state text-center py-5" data-aos="fade-up">
-    @if($icon)
-        <div class="mb-4">
+<div class="py-5" data-aos="fade-up">
+    <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+        @if($icon)
             {{ $icon }}
-        </div>
-    @else
-        <div class="mb-4">
-            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                <i class="fas fa-inbox text-muted" style="font-size: 2rem; opacity: 0.3;"></i>
+        @else
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                <i class="fas fa-inbox text-muted"></i>
             </div>
+        @endif
+        <div class="text-start">
+            @if($title)
+                <h5 class="fw-bold text-dark mb-1">{{ $title }}</h5>
+            @endif
+            @if($description)
+                <p class="text-muted mb-0">{{ $description }}</p>
+            @endif
         </div>
-    @endif
-
-    @if($title)
-        <h5 class="fw-bold text-dark mb-2">{{ $title }}</h5>
-    @endif
-
-    @if($description)
-        <p class="text-muted mb-4" style="max-width: 320px; margin: 0 auto;">{{ $description }}</p>
-    @endif
+    </div>
 
     @if($action)
-        <div class="mt-2">
+        <div class="text-center mt-3">
             {{ $action }}
         </div>
     @endif

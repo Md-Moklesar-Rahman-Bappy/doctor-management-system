@@ -627,12 +627,12 @@ document.getElementById('prescription-form').addEventListener('submit', function
     .then(data => {
         if (data.success) {
             createdPrescriptionId = data.prescription_id;
-            document.getElementById('download-pdf').href = '/prescriptions/' + createdPrescriptionId;
+            document.getElementById('download-pdf').href = '{{ url("prescriptions") }}/' + createdPrescriptionId + '/download';
             document.getElementById('action-buttons').classList.add('d-none');
             document.getElementById('print-options').classList.remove('d-none');
             window.scrollTo({ top: document.getElementById('print-options').offsetTop, behavior: 'smooth' });
         } else {
-            Swal.fire('Error', 'Error creating prescription: ' + (data.message || 'Unknown error'), 'error');
+            Swal.fire('Error', 'Error creating prescription: ' + (data.message || JSON.stringify(data)), 'error');
             submitBtn.disabled = false;
             btnText.textContent = 'Generate Prescription';
             btnSpinner.classList.add('d-none');

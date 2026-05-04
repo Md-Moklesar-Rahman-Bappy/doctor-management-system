@@ -22,15 +22,16 @@ $breadcrumbs = [
     <div class="row g-4">
         <div class="col-lg-4" data-aos="fade-right">
             <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-stethoscope fa-2x text-primary"></i>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <i class="fas fa-stethoscope text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ $problem->name }}</h5>
+                            <span class="badge bg-info-subtle text-info-emphasis">Active</span>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">{{ $problem->name }}</h5>
-                    <span class="badge bg-info-subtle text-info-emphasis">Active</span>
-                </div>
-            </div>
-        </div>
 
         <div class="col-lg-8" data-aos="fade-left">
             <div class="card shadow-sm">

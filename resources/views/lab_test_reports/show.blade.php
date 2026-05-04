@@ -23,12 +23,16 @@ $breadcrumbs = [
         <!-- Patient Info -->
         <div class="col-lg-4" data-aos="fade-right">
             <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <span class="fw-bold text-primary" style="font-size: 1.5rem;">{{ strtoupper(substr($report->patient->patient_name ?? 'P', 0, 2)) }}</span>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.25rem;">{{ strtoupper(substr($report->patient->patient_name ?? 'P', 0, 2)) }}</span>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ $report->patient->patient_name ?? 'N/A' }}</h5>
+                            <p class="text-muted small mb-0">{{ $report->patient->unique_id ?? 'N/A' }}</p>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">{{ $report->patient->patient_name ?? 'N/A' }}</h5>
-                    <p class="text-muted small">{{ $report->patient->unique_id ?? 'N/A' }}</p>
                     <div class="d-flex justify-content-center gap-2">
                         <span class="badge bg-info-subtle text-info-emphasis">{{ ucfirst($report->patient->sex ?? 'N/A') }}</span>
                         <span class="badge bg-secondary-subtle text-secondary-emphasis">Age: {{ $report->patient->age ?? 'N/A' }}</span>

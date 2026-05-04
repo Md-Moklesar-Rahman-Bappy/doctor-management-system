@@ -9,7 +9,7 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'name', 'degrees', 'email', 'phone', 'address'];
+    protected $fillable = ['user_id', 'name', 'license', 'degrees', 'email', 'phone', 'address'];
 
     protected $casts = [
         'degrees' => 'json',

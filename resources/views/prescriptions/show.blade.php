@@ -20,6 +20,9 @@ $breadcrumbs = [
                 <button onclick="window.print()" class="btn btn-primary">
                     <i class="fas fa-print me-1"></i> Print
                 </button>
+                <a href="{{ route('prescriptions.download', $prescription->id) }}" class="btn btn-secondary">
+                    <i class="fas fa-download me-1"></i> Download PDF
+                </a>
                 <a href="{{ route('prescriptions.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Back
                 </a>
@@ -28,27 +31,33 @@ $breadcrumbs = [
 
         <div class="card shadow-sm" data-aos="fade-up">
             <!-- Header -->
-            <div class="card-header bg-white border-bottom">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h4 class="fw-bold text-primary mb-0">
-                            <i class="fas fa-hospital me-2"></i>Medical Center
-                        </h4>
-                        <p class="small text-muted mb-0">123 Health Street, Medical District</p>
-                        <p class="small text-muted">Phone: (555) 123-4567 | Email: info@medicalcenter.com</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <div class="d-inline-block p-3 bg-light rounded">
-                            <div class="fw-semibold">{{ $prescription->doctor->name ?? 'N/A' }}</div>
-                            <div class="small text-muted">
-                                @if($prescription->doctor->degrees)
-                                    {{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}
+                <div class="card-header bg-white border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="fw-bold text-primary mb-0">
+                                <i class="fas fa-hospital me-2"></i>Medical Center
+                            </h4>
+                            <p class="small text-muted mb-0">123 Health Street, Medical District</p>
+                            <p class="small text-muted">Phone: (555) 123-4567 | Email: info@medicalcenter.com</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="d-inline-block p-3 bg-light rounded">
+                                <div class="fw-semibold">{{ $prescription->doctor->name ?? 'N/A' }}</div>
+                                <div class="small text-muted">
+                                    @if($prescription->doctor->degrees)
+                                        {{ implode(', ', json_decode($prescription->doctor->degrees, true) ?? []) }}
+                                    @endif
+                                </div>
+                                @if($prescription->doctor->license)
+                                    <div class="small text-muted">License #: {{ $prescription->doctor->license }}</div>
+                                @endif
+                                @if($prescription->doctor->phone)
+                                    <div class="small text-muted">Phone: {{ $prescription->doctor->phone }}</div>
                                 @endif
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <div class="card-body">
                 <!-- Patient Info -->
@@ -68,6 +77,10 @@ $breadcrumbs = [
                     <div class="col-md-3">
                         <label class="small text-muted text-uppercase">Sex</label>
                         <p class="fw-medium mb-0">{{ ucfirst($prescription->patient->sex ?? 'N/A') }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-muted text-uppercase">Date</label>
+                        <p class="fw-medium mb-0">{{ $prescription->created_at->format('d M Y') }}</p>
                     </div>
                 </div>
 

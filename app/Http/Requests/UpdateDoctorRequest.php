@@ -20,6 +20,7 @@ class UpdateDoctorRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
+            'license' => 'required|string|unique:doctors,license,'.$doctorId,
             'email' => 'required|email|unique:doctors,email,'.$doctorId,
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
@@ -31,6 +32,8 @@ class UpdateDoctorRequest extends FormRequest
     {
         return [
             'name.required' => 'Doctor name is required.',
+            'license.required' => 'License number is required.',
+            'license.unique' => 'This license number is already registered.',
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email is already registered.',

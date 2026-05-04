@@ -23,12 +23,16 @@ $breadcrumbs = [
         <!-- Patient Info Card -->
         <div class="col-lg-4" data-aos="fade-right">
             <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <span class="fw-bold text-primary" style="font-size: 1.5rem;">{{ strtoupper(substr($patient->patient_name, 0, 2)) }}</span>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.25rem;">{{ strtoupper(substr($patient->patient_name, 0, 2)) }}</span>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ $patient->patient_name }}</h5>
+                            <p class="text-muted small mb-0">{{ $patient->unique_id }}</p>
+                        </div>
                     </div>
-                    <h5 class="fw-bold">{{ $patient->patient_name }}</h5>
-                    <p class="text-muted small mb-2">{{ $patient->unique_id }}</p>
                     <div class="d-flex justify-content-center gap-2 mb-3">
                         <span class="badge bg-info-subtle text-info-emphasis">{{ ucfirst($patient->sex) }}</span>
                         <span class="badge bg-secondary-subtle text-secondary-emphasis">Age: {{ $patient->age }}</span>

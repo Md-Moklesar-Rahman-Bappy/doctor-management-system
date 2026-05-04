@@ -18,6 +18,7 @@ class StoreDoctorRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'license' => 'required|string|unique:doctors,license',
             'email' => 'required|email|unique:doctors,email',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
@@ -31,6 +32,8 @@ class StoreDoctorRequest extends FormRequest
         return [
             'name.required' => 'Doctor name is required.',
             'name.max' => 'Doctor name cannot exceed 255 characters.',
+            'license.required' => 'License number is required.',
+            'license.unique' => 'This license number is already registered.',
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email is already registered.',

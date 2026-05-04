@@ -8,6 +8,7 @@ Route::get('/prescriptions', [PrescriptionController::class, 'index'])->name('pr
 Route::get('/prescriptions/create', [PrescriptionController::class, 'create'])->name('prescriptions.create');
 Route::post('/prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
 Route::get('/prescriptions/{id}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
+Route::get('/prescriptions/{id}/download', [PrescriptionController::class, 'downloadPdf'])->name('prescriptions.download');
 Route::get('/prescriptions/{id}/edit', [PrescriptionController::class, 'edit'])->name('prescriptions.edit');
 Route::put('/prescriptions/{id}', [PrescriptionController::class, 'update'])->name('prescriptions.update');
 Route::delete('/prescriptions/{id}', [PrescriptionController::class, 'destroy'])->name('prescriptions.destroy');

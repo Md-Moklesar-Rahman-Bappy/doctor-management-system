@@ -12,6 +12,7 @@ use App\Services\PrescriptionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PrescriptionController extends Controller
 {
@@ -67,6 +68,13 @@ class PrescriptionController extends Controller
         try {
             $doctor = auth()->user()->doctor ?? null;
             $doctorId = $doctor ? $doctor->id : $request->doctor_id;
+            
+            \Log::info('Prescription store attempt', [
+                'doctor_id' => $doctorId,
+                'patient_id' => $request->patient_id,
+                'has_new_patient' => $request->filled('new_patient_name'),
+                'user_id' => auth()->user()->id
+            ]);
 
             $prescription = $this->prescriptionService->createPrescription($request, $doctorId);
 
@@ -151,6 +159,27 @@ class PrescriptionController extends Controller
         $prescription->delete();
 
         return redirect()->route('prescriptions.index')->with('success', 'Prescription deleted successfully!');
+    }
+
+    public function downloadPdf($id)
+    {
+        $prescription = Prescription::with(['patient', 'doctor'])->findOrFail($id);
+        $user = auth()->user();
+
+        // Authorization check - user must be the doctor or the patient's owner
+        $isDoctor = $prescription->doctor && $prescription->doctor->user_id === $user->id;
+        $isPatientOwner = $prescription->patient && $prescription->patient->user_id === $user->id;
+
+        if (!$isDoctor && !$isPatientOwner && !$user->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $pdf = Pdf::loadView('prescriptions.pdf', compact('prescription'))
+            ->setPaper('a4', 'portrait');
+
+        $fileName = 'prescription_' . ($prescription->patient->patient_name ?? 'patient') . '_' . $prescription->created_at->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($fileName);
     }
 
     public function getPatientPrescriptions($patientId)
